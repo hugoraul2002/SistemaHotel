@@ -11,7 +11,7 @@ const LoginComponent = () => {
     const navigate = useNavigate();
     const validateUsername = (value) => {
         if (!value.includes('@')) {
-            setError('Username no debe ser un correo electrónico.');
+            setError('Correo inválido.');
         } else {
             setError('');
         }
@@ -26,11 +26,8 @@ const LoginComponent = () => {
     const handleLogin = async (e) => {
         e.preventDefault();
         try {
-            // const response = await axiosClient.post('auth/login',{username, password});
             const response = await login({email, password});
-            console.log(response);
             if (response.data.token) {
-                console.log(response);
                 localStorage.setItem('token', response.token);
                 navigate('/Inicio');
             }
@@ -84,7 +81,7 @@ const LoginComponent = () => {
                         </div>
                         <div className="mt-4 flex items-center justify-between">
                             <span className="border-b w-1/5 md:w-1/4"></span>
-                            <button className="text-xs text-gray-500 uppercase">o registrate</button>
+                            <button className="text-xs text-gray-500 uppercase hover:bg-gray-500 hover:text-white rounded p-2">o registrate</button>
                             <span className="border-b w-1/5 md:w-1/4"></span>
                         </div>
                     </form>

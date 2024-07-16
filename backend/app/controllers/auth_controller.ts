@@ -14,17 +14,11 @@ export default class AuthController {
     const { email, password } = await request.validateUsing(loginValidator)
     const user = await User.verifyCredentials(email, password)
 
-    // const token = await User.accessTokens.create(user)
-    // console.log({
-    //   user: user.toJSON(),
-    //   token,
-    // })
-
-    // return {
-    //   user: user.toJSON(),
-    //   token,
-    // }
-    return User.accessTokens.create(user)
+    const token = await User.accessTokens.create(user)
+    return {
+      type: 'bearer',
+      token: token.value!.release(),
+    }
   }
 
   async logout({ auth }: HttpContext) {

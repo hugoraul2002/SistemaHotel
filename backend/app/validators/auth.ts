@@ -12,7 +12,7 @@ export const registrerValidator = vine.compile(
       .unique(async (db, value) => {
         const user = await db.from('users').select('id').where('email', value).first()
         return !user
-      }), // Add a comma here
+      }),
     password,
   })
 )

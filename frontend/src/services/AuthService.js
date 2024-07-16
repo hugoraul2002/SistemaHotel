@@ -10,14 +10,13 @@ const register = async (data) => {
 };
 
 const login = async (data) => {
-    console.log(data);
   const response = await axios.post(`${API_URL}/login`, data);
   console.log(response);
   if (response.status === 200) {
     localStorage.setItem('token', response.data.token);
   }
   console.log(response);
-  return response.data;
+  return response;
 };
 
 const logout = async () => {
