@@ -4,7 +4,7 @@ import { BaseModel, column, hasOne } from '@adonisjs/lucid/orm'
 import { withAuthFinder } from '@adonisjs/auth/mixins/lucid'
 import { DbAccessTokensProvider } from '@adonisjs/auth/access_tokens'
 import Cliente from '#models/cliente'
-import { HasOne } from '@adonisjs/lucid/types/relations'
+import type { HasOne } from '@adonisjs/lucid/types/relations'
 
 const AuthFinder = withAuthFinder(() => hash.use('scrypt'), {
   uids: ['email'],
@@ -27,7 +27,9 @@ export default class User extends compose(BaseModel, AuthFinder) {
   @column()
   declare anulado: boolean
 
-  @hasOne(() => Cliente)
+  @hasOne(() => Cliente, {
+    foreignKey: 'userId',
+  })
   declare cliente: HasOne<typeof Cliente>
 
   static accessTokens = DbAccessTokensProvider.forModel(User, {

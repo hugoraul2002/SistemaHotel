@@ -27,9 +27,17 @@ router
   })
   .prefix('auth')
 
+// router
+//   .group(() => {
+//     router.resource('clientes', ClientesController)
+//   })
+//   .prefix('clientes')
+
 router
   .group(() => {
-    router.resource('clientes', ClientesController).apiOnly()
+    router.get('/', [ClientesController, 'index'])
+    router.post('/store', [ClientesController, 'store'])
+    router.get('/:id', [ClientesController, 'show']).use(middleware.auth())
+    router.post('/update/:id', [ClientesController, 'update']).use(middleware.auth())
   })
   .prefix('clientes')
-  .use(middleware.auth())

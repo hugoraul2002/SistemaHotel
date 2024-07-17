@@ -7,7 +7,11 @@ export default class AuthController {
     const data = await request.validateUsing(registrerValidator)
     const user = await User.create(data)
 
-    return User.accessTokens.create(user)
+    const token = await User.accessTokens.create(user)
+    return {
+      token: token.value!.release(),
+      user,
+    }
   }
 
   async login({ request }: HttpContext) {
