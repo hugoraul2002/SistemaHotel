@@ -1,10 +1,12 @@
-import { useNavigate } from 'react-router-dom';
-export const Inicio = () => {
-  const navigate = useNavigate();
+import React from 'react'; 
+import { useNavigate } from 'react-router-dom'; 
 
-  const handleLogout = () => {
-    localStorage.removeItem('token');
-    navigate('/');
+export const Inicio: React.FC = () => { 
+  const navigate = useNavigate(); 
+
+  const handleLogout = () => { 
+    localStorage.removeItem('token'); 
+    navigate('/'); 
   };
 
   return (
@@ -17,7 +19,7 @@ export const Inicio = () => {
             </div>
           </div>
           <div className="flex items-center space-x-4">
-          <a href="#home" className="text-gray-500 hover:bg-gray-600 hover:text-white hover:font-bold px-3 py-2 rounded-md text-sm font-medium">Reservaciones</a>
+            <a href="#home" className="text-gray-500 hover:bg-gray-600 hover:text-white hover:font-bold px-3 py-2 rounded-md text-sm font-medium">Reservaciones</a>
             <a href="#home" className="text-gray-500 hover:bg-gray-600 hover:text-white hover:font-bold px-3 py-2 rounded-md text-sm font-medium">Check In</a>
             
             <a href="#about" className="text-gray-500 hover:bg-gray-600 hover:text-white hover:font-bold px-3 py-2 rounded-md text-sm font-medium">Check Out</a>
@@ -28,4 +30,4 @@ export const Inicio = () => {
       </div>
     </nav>
   );
-}
+};

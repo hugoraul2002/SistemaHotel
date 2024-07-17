@@ -18,6 +18,7 @@ router.get('/', async () => {
   }
 })
 
+// Rutas de autenticación
 router
   .group(() => {
     router.post('/register', [AuthController, 'register'])
@@ -27,17 +28,13 @@ router
   })
   .prefix('auth')
 
-// router
-//   .group(() => {
-//     router.resource('clientes', ClientesController)
-//   })
-//   .prefix('clientes')
-
+// Rutas de clientes
 router
   .group(() => {
     router.get('/', [ClientesController, 'index'])
     router.post('/store', [ClientesController, 'store'])
-    router.get('/:id', [ClientesController, 'show']).use(middleware.auth())
-    router.post('/update/:id', [ClientesController, 'update']).use(middleware.auth())
+    router.get('/:id', [ClientesController, 'show'])
+    router.post('/update/:id', [ClientesController, 'update'])
   })
   .prefix('clientes')
+  .use(middleware.auth())

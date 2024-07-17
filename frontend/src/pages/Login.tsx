@@ -1,39 +1,44 @@
-import { useState } from 'react';
+import React, { useState, ChangeEvent, FormEvent } from 'react';
 import imageUrl from '../assets/recepcion.jpg';
-
 import { useNavigate } from 'react-router-dom';
 import { login } from '../services/AuthService';
+import { AxiosError } from 'axios';
 
-const LoginComponent = () => {
+const LoginComponent: React.FC = () => {
     const [error, setError] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const navigate = useNavigate();
-    const validateUsername = (value) => {
-        if (!value.includes('@')) {
+
+    const validateUsername = (value: string) => {
+        if (!value.includes('@') || !value.includes('.')) {
             setError('Correo inválido.');
         } else {
             setError('');
         }
     };
 
-    const handleChange = (e) => {
+    const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
         const { value } = e.target;
         setEmail(value);
         validateUsername(value);
     };
 
-    const handleLogin = async (e) => {
+    const handleLogin = async (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         try {
-            const response = await login({email, password});
-            if (response.data.token) {
+            const response = await login({ email, password });
+            if (response.token) {
                 localStorage.setItem('token', response.token);
                 navigate('/Inicio');
             }
-        } catch (error) {
+        } catch (err) {
+            const error = err as AxiosError;
+            console.log('ERRORES.');
+            console.log(error);
+            console.log(err);
             if (error.response && error.response.status === 401) {
-                setError(error.response.data.message);
+                setError((error.response.data as { message: string }).message);
             } else {
                 setError('Error al iniciar sesión.');
             }
@@ -49,7 +54,7 @@ const LoginComponent = () => {
                     <form onSubmit={handleLogin}>
                         <div className="mt-4 flex items-center justify-between">
                             <span className="border-b w-1/5 lg:w-1/4"></span>
-                            <button className="text-xs text-center text-gray-500 uppercase">¡Bienvenido!</button>
+                            <p className="text-xs text-center text-gray-500 uppercase">¡Bienvenido!</p>
                             <span className="border-b w-1/5 lg:w-1/4"></span>
                         </div>
                         <div className="mt-4">
@@ -58,11 +63,11 @@ const LoginComponent = () => {
                                 className="bg-gray-200 text-gray-700 focus:outline-none focus:shadow-outline border border-gray-300 rounded py-2 px-4 block w-full appearance-none"
                                 type="text"
                                 value={email}
-                                onChange={(e) => handleChange(e)}
+                                onChange={handleChange}
                             />
                             <div className="min-h-[20px]">
                                 <p className="text-red-500 text-xs italic mt-0.5">{error}</p>
-                        </div>
+                            </div>
                         </div>
                         <div className="mt-4">
                             <div className="flex justify-between">
@@ -89,8 +94,6 @@ const LoginComponent = () => {
             </div>
         </div>
     );
-
 };
-
 
 export default LoginComponent;

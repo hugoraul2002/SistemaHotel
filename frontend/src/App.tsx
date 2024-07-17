@@ -2,8 +2,8 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 
 import './App.css'
-import  Login from './components/Login'
-import { Inicio } from './components/Inicio';
+import  Login from './pages/Login';
+import { Inicio } from './pages/Inicio';
 
 function App() {
 
