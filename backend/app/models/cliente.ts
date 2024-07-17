@@ -1,14 +1,15 @@
-import { BaseModel, column } from '@adonisjs/lucid/orm'
-
+import { BaseModel, belongsTo, column } from '@adonisjs/lucid/orm'
+import User from '#models/user'
+import { BelongsTo } from '@adonisjs/lucid/types/relations'
 export default class Cliente extends BaseModel {
   @column({ isPrimary: true })
   declare id: number
 
   @column()
-  declare idUsuario: number
+  declare userId: number
 
   @column()
-  declare tipoDocumento: 'NIT' | 'CUI' | 'IDE'
+  declare tipoDocumento: string
 
   @column()
   declare numDocumento: string
@@ -24,4 +25,7 @@ export default class Cliente extends BaseModel {
 
   @column()
   declare activo: boolean
+
+  @belongsTo(() => User)
+  declare user: BelongsTo<typeof User>
 }

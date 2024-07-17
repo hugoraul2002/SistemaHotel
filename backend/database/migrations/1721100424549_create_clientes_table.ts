@@ -6,13 +6,7 @@ export default class extends BaseSchema {
   async up() {
     this.schema.createTable(this.tableName, (table) => {
       table.increments('id')
-      table
-        .integer('idUsuario')
-        .notNullable()
-        .unsigned()
-        .references('id')
-        .inTable('users')
-        .onDelete('CASCADE')
+      table.integer('idUsuario').unsigned().references('id').inTable('users').onDelete('CASCADE')
       table.enum('tipoDocumento', ['NIT', 'CUI', 'IDE']).notNullable()
       table.string('numDocumento').notNullable()
       table.string('nombre').notNullable()
