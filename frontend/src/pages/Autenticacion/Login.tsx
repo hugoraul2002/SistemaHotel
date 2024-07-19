@@ -1,14 +1,20 @@
-import React, { useState, ChangeEvent, FormEvent } from 'react';
-import imageUrl from '../assets/recepcion.jpg';
+import React, { useState, ChangeEvent, FormEvent, useRef } from 'react';
+import imageUrl from '../../assets/recepcion.jpg';
 import { useNavigate } from 'react-router-dom';
-import { login } from '../services/AuthService';
+import { login } from '../../services/AuthService';
 import { AxiosError } from 'axios';
+import { Toast } from 'primereact/toast';
 
 const LoginComponent: React.FC = () => {
     const [error, setError] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const navigate = useNavigate();
+    const toast = useRef<Toast>(null);
+
+    const showSuccess = () => {
+        toast.current?.show({ severity: 'success', summary: 'Éxito', detail: 'Usuario registrado.', life: 3000   });
+      }
 
     const validateUsername = (value: string) => {
         if (!value.includes('@') || !value.includes('.')) {
@@ -29,14 +35,12 @@ const LoginComponent: React.FC = () => {
         try {
             const response = await login({ email, password });
             if (response.token) {
+                showSuccess();
                 localStorage.setItem('token', response.token);
                 navigate('/Inicio');
             }
         } catch (err) {
             const error = err as AxiosError;
-            console.log('ERRORES.');
-            console.log(error);
-            console.log(err);
             if (error.response && error.response.status === 401) {
                 setError((error.response.data as { message: string }).message);
             } else {
@@ -47,6 +51,7 @@ const LoginComponent: React.FC = () => {
 
     return (
         <div className="py-16">
+            <Toast ref={toast} />
             <div className="flex bg-white rounded-lg shadow-lg overflow-hidden mx-auto max-w-sm lg:max-w-4xl">
                 <div className="hidden lg:block lg:w-1/2 bg-cover" style={{ backgroundImage: `url(${imageUrl})`, minHeight: '400px' }}></div>
                 <div className="w-full p-8 lg:w-1/2">
@@ -86,7 +91,7 @@ const LoginComponent: React.FC = () => {
                         </div>
                         <div className="mt-4 flex items-center justify-between">
                             <span className="border-b w-1/5 md:w-1/4"></span>
-                            <button className="text-xs text-gray-500 uppercase hover:bg-gray-500 hover:text-white rounded p-2">o registrate</button>
+                            <button className="text-xs text-gray-500 uppercase hover:bg-gray-500 hover:text-white rounded p-2" onClick={()=>navigate('/register')}>o registrate</button>
                             <span className="border-b w-1/5 md:w-1/4"></span>
                         </div>
                     </form>

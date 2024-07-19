@@ -1,13 +1,46 @@
-import { registrerValidator, loginValidator } from '#validators/auth'
+import { registerValidator, loginValidator, registerClienteValidator } from '#validators/auth'
 import type { HttpContext } from '@adonisjs/core/http'
 import User from '#models/user'
+import Cliente from '#models/cliente'
 
 export default class AuthController {
   async register({ request }: HttpContext) {
-    const data = await request.validateUsing(registrerValidator)
+    const data = await request.validateUsing(registerValidator)
     const user = await User.create(data)
 
     const token = await User.accessTokens.create(user)
+    return {
+      token: token.value!.release(),
+      user,
+    }
+  }
+
+  async registerCliente({ request }: HttpContext) {
+    const data = await request.validateUsing(registerClienteValidator)
+
+    const { full_name: fullName, email, password } = data
+    const {
+      tipo_documento: tipoDocumento,
+      num_documento: numDocumento,
+      nombre,
+      telefono,
+      direccion,
+    } = data
+
+    const user = await User.create({ full_name: fullName, email, password })
+    const clienteData = {
+      user_id: user.id,
+      tipoDocumento,
+      numDocumento,
+      nombre,
+      telefono,
+      direccion,
+      activo: true,
+    }
+    await Cliente.create(clienteData)
+    const token = await User.accessTokens.create(user)
+
+    // Retorna el token y la información del usuario
     return {
       token: token.value!.release(),
       user,
