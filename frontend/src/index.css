@@ -1,9 +1,15 @@
 
 @layer tailwind-base, primereact, tailwind-utilities;
 
-/* IMPORTANT: In "styled" mode you must add the PrimeReact Theme here. Do NOT include in "unstyled" mode */
-@import 'primereact/resources/themes/lara-light-blue/theme.css' layer(primereact);
 
+/* @import 'primereact/resources/themes/lara-light-indigo/theme.css' layer(primereact); */
+/* @import 'primereact/resources/themes/lara-light-indigo/theme.css' layer(primereact);
+@import 'primereact/resources/themes/lara-dark-blue/theme.css' layer(primereact); */
+/* @import 'primereact/resources/themes/mdc-light-deeppurple/theme.css' layer(primereact); */
+/* @import 'primereact/resources/themes/lara-dark-blue/theme.css' layer(primereact);  */
+@import 'primereact/resources/themes/lara-light-indigo/theme.css' layer(primereact);
+
+ /* @import 'primereact/resources/primereact.min.css' layer(primereact);  */
 @layer tailwind-base {
   @tailwind base;
 }
@@ -12,5 +18,10 @@
   @tailwind components;
   @tailwind utilities;
 }
-
+.logo {
+  height: 40px; /* Ajusta la altura del logo según tus necesidades */
+  width: auto; /* Mantén la proporción de aspecto */
+  display: inline-block;
+  margin-right: 10px;
+}
 

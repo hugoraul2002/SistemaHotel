@@ -4,6 +4,10 @@ import { useNavigate } from 'react-router-dom';
 import { login } from '../../services/AuthService';
 import { AxiosError } from 'axios';
 import { Toast } from 'primereact/toast';
+import { InputText } from 'primereact/inputtext';
+import { Password } from 'primereact/password';
+import { Button } from 'primereact/button';
+import { Card } from 'primereact/card';
 
 const LoginComponent: React.FC = () => {
     const [error, setError] = useState('');
@@ -13,8 +17,8 @@ const LoginComponent: React.FC = () => {
     const toast = useRef<Toast>(null);
 
     const showSuccess = () => {
-        toast.current?.show({ severity: 'success', summary: 'Éxito', detail: 'Usuario registrado.', life: 3000   });
-      }
+        toast.current?.show({ severity: 'success', summary: 'Éxito', detail: 'Usuario registrado.', life: 3000 });
+    }
 
     const validateUsername = (value: string) => {
         if (!value.includes('@') || !value.includes('.')) {
@@ -33,6 +37,7 @@ const LoginComponent: React.FC = () => {
     const handleLogin = async (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         try {
+            console.log(email, password);
             const response = await login({ email, password });
             if (response.token) {
                 showSuccess();
@@ -49,23 +54,25 @@ const LoginComponent: React.FC = () => {
         }
     };
 
+    
+
     return (
-        <div className="py-16">
+        <div className="flex justify-center items-center min-h-screen bg-gray-100 ">
             <Toast ref={toast} />
-            <div className="flex bg-white rounded-lg shadow-lg overflow-hidden mx-auto max-w-sm lg:max-w-4xl">
-                <div className="hidden lg:block lg:w-1/2 bg-cover" style={{ backgroundImage: `url(${imageUrl})`, minHeight: '400px' }}></div>
-                <div className="w-full p-8 lg:w-1/2">
-                    <h2 className="text-2xl font-semibold text-gray-700 text-center">Hotel Margarita</h2>
+            <div className="flex  rounded-lg shadow-lg overflow-hidden w-full max-w-4xl sm:h-full">
+                <div className="hidden lg:block lg:w-1/2 bg-cover" style={{ backgroundImage: `url(${imageUrl})` }}></div>
+                <Card className=" w-full p-8 lg:w-1/2 ">
+                    <h2 className="text-2xl font-semibold text-center mb-4">Hotel Margarita</h2>
                     <form onSubmit={handleLogin}>
                         <div className="mt-4 flex items-center justify-between">
                             <span className="border-b w-1/5 lg:w-1/4"></span>
-                            <p className="text-xs text-center text-gray-500 uppercase">¡Bienvenido!</p>
+                            <p className="text-xs text-center  uppercase">¡Bienvenido!</p>
                             <span className="border-b w-1/5 lg:w-1/4"></span>
                         </div>
                         <div className="mt-4">
-                            <label className="block text-gray-700 text-sm font-bold mb-2 text-left">Email</label>
-                            <input
-                                className="bg-gray-200 text-gray-700 focus:outline-none focus:shadow-outline border border-gray-300 rounded py-2 px-4 block w-full appearance-none"
+                            <label className="block text-sm font-bold mb-2 text-left">Email</label>
+                            <InputText
+                                className="w-full"
                                 type="text"
                                 value={email}
                                 onChange={handleChange}
@@ -76,26 +83,26 @@ const LoginComponent: React.FC = () => {
                         </div>
                         <div className="mt-4">
                             <div className="flex justify-between">
-                                <label className="block text-gray-700 text-sm font-bold mb-2">Password</label>
-                                <button className="text-xs text-gray-500">¿Olvidó su contraseña?</button>
+                                <label className="block text-sm font-bold mb-2">Contraseña</label>
+                                <Button label="¿Olvidó su contraseña?" className="p-button-link p-button-sm text-xs " />
                             </div>
-                            <input
-                                className="bg-gray-200 text-gray-700 focus:outline-none focus:shadow-outline border border-gray-300 rounded py-2 px-4 block w-full appearance-none"
-                                type="password"
+                            <Password
+                                className="w-full"
                                 value={password}
                                 onChange={(e) => setPassword(e.target.value)}
+                                feedback={false}                                
                             />
                         </div>
                         <div className="mt-8">
-                            <button className="bg-gray-700 text-white font-bold py-2 px-4 w-full rounded hover:bg-gray-600" type="submit">Iniciar sesión</button>
+                            <Button label="Iniciar sesión" className="w-full" severity='secondary' type="submit" />
                         </div>
                         <div className="mt-4 flex items-center justify-between">
                             <span className="border-b w-1/5 md:w-1/4"></span>
-                            <button className="text-xs text-gray-500 uppercase hover:bg-gray-500 hover:text-white rounded p-2" onClick={()=>navigate('/register')}>o registrate</button>
+                            <Button label="o registrate" className="p-button-link p-button-sm text-xs uppercase" onClick={() => navigate('/register')} />
                             <span className="border-b w-1/5 md:w-1/4"></span>
                         </div>
                     </form>
-                </div>
+                </Card>
             </div>
         </div>
     );

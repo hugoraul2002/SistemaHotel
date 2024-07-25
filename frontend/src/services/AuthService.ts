@@ -1,5 +1,5 @@
 import axios from 'axios';
-
+import { UsuarioCliente } from '../helpers/validators/Validadores';
 // const API_URL = process.env.REACT_APP_API_URL;
 const API_URL = 'http://localhost:3333/auth';
 
@@ -26,6 +26,14 @@ interface MeResponse {
 
 const register = async (data: RegisterData): Promise<AuthResponse> => {
   const response = await axios.post<AuthResponse>(`${API_URL}/register`, data);
+  return response.data;
+};
+
+const registerCliente = async (data: UsuarioCliente): Promise<AuthResponse> => {
+  console.log(data);
+  const response = await axios.post<AuthResponse>(`${API_URL}/registerCliente`, data);
+  if (response.status === 200) {
+    localStorage.setItem('token', response.data.token);}
   return response.data;
 };
 
@@ -61,4 +69,4 @@ const me = async (): Promise<MeResponse> => {
   return response.data;
 };
 
-export { register, login, logout, me };
+export { register, login, logout, me , registerCliente};
