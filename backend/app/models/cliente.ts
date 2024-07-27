@@ -1,6 +1,7 @@
-import { BaseModel, belongsTo, column } from '@adonisjs/lucid/orm'
+import { BaseModel, belongsTo, column, hasMany } from '@adonisjs/lucid/orm'
 import User from '#models/user'
-import type { BelongsTo } from '@adonisjs/lucid/types/relations'
+import type { BelongsTo, HasMany } from '@adonisjs/lucid/types/relations'
+import Reservacion from '#models/reservacion'
 export default class Cliente extends BaseModel {
   @column({ isPrimary: true })
   declare id: number
@@ -30,4 +31,9 @@ export default class Cliente extends BaseModel {
     foreignKey: 'userId',
   })
   declare user: BelongsTo<typeof User>
+
+  @hasMany(() => Reservacion, {
+    foreignKey: 'clienteId',
+  })
+  declare reservaciones: HasMany<typeof Reservacion>
 }

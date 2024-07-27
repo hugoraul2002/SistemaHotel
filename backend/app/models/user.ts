@@ -1,12 +1,12 @@
 import hash from '@adonisjs/core/services/hash'
 import { compose } from '@adonisjs/core/helpers'
-import { BaseModel, column, hasOne, belongsTo } from '@adonisjs/lucid/orm'
+import { BaseModel, column, hasOne, belongsTo, hasMany } from '@adonisjs/lucid/orm'
 import { withAuthFinder } from '@adonisjs/auth/mixins/lucid'
 import { DbAccessTokensProvider } from '@adonisjs/auth/access_tokens'
 import Cliente from '#models/cliente'
-import type { HasOne } from '@adonisjs/lucid/types/relations'
-import type { BelongsTo } from '@adonisjs/lucid/types/relations'
+import type { HasOne, BelongsTo, HasMany } from '@adonisjs/lucid/types/relations'
 import Rol from '#models/rol'
+import Reservacion from '#models/reservacion'
 
 const AuthFinder = withAuthFinder(() => hash.use('scrypt'), {
   uids: ['email'],
@@ -41,6 +41,11 @@ export default class User extends compose(BaseModel, AuthFinder) {
     foreignKey: 'rolId',
   })
   declare rol: BelongsTo<typeof Rol>
+
+  @hasMany(() => Reservacion, {
+    foreignKey: 'userId',
+  })
+  declare reservaciones: HasMany<typeof Reservacion>
 
   static accessTokens = DbAccessTokensProvider.forModel(User, {
     expiresIn: '2 days',
