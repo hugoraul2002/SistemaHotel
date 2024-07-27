@@ -27,7 +27,7 @@ export default class AuthController {
       direccion,
     } = data
 
-    const user = await User.create({ full_name: fullName, email, password })
+    const user = await User.create({ full_name: fullName, email, password, rolId: 1 })
     const clienteData = {
       user_id: user.id,
       tipoDocumento,

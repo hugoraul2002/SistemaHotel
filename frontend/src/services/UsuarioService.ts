@@ -13,9 +13,9 @@ export class UsuarioService {
     }
   }
 
-  static async createUser(userData: { full_name: string; email: string; password: string }) {
+  static async createUser(userData: { full_name: string; email: string; password: string; rol_id: number }) {
     try {
-      const response = await axios.post(`${API_URL}/users`, userData);
+      const response = await axios.post(`${API_URL}/store`, userData);
       return response.data;
     } catch (error) {
       console.error('Error creating user:', error);
@@ -25,7 +25,8 @@ export class UsuarioService {
 
   static async getUserById(userId: number) {
     try {
-      const response = await axios.get(`${API_URL}/users/${userId}`);
+      const response = await axios.get(`${API_URL}/${userId}`);
+      console.log(response.data);
       return response.data;
     } catch (error) {
       console.error(`Error fetching user with id ${userId}:`, error);
@@ -33,9 +34,19 @@ export class UsuarioService {
     }
   }
 
-  static async updateUser(userId: number, userData: { full_name?: string; email?: string; password?: string }) {
+  static async updateUser(userId: number, userData: { full_name?: string; email?: string; password?: string, rolId?: number }) {
     try {
-      const response = await axios.put(`${API_URL}/users/${userId}`, userData);
+      const response = await axios.put(`${API_URL}/update/${userId}`, userData);
+      return response.data;
+    } catch (error) {
+      console.error(`Error updating user with id ${userId}:`, error);
+      throw error;
+    }
+  }
+
+  static async updateAnulado(userId: number, userData: { anulado: boolean }) {
+    try {
+      const response = await axios.put(`${API_URL}/updateAnulado/${userId}`, userData);
       return response.data;
     } catch (error) {
       console.error(`Error updating user with id ${userId}:`, error);
@@ -45,7 +56,7 @@ export class UsuarioService {
 
   static async deleteUser(userId: number) {
     try {
-      const response = await axios.delete(`${API_URL}/users/${userId}`);
+      const response = await axios.delete(`${API_URL}/${userId}`);
       return response.data;
     } catch (error) {
       console.error(`Error deleting user with id ${userId}:`, error);

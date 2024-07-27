@@ -14,6 +14,7 @@ export const registerValidator = vine.compile(
         return !user
       }),
     password,
+    rol_id: vine.number().positive(),
   })
 )
 

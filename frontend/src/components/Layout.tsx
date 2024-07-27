@@ -1,6 +1,5 @@
-// Layout.tsx
 import React, { useState } from 'react';
-import { Outlet, useNavigate } from 'react-router-dom';
+import { Outlet } from 'react-router-dom';
 import Navbar from './Navbar';
 import Sidebar from './Sidebar';
 
@@ -10,7 +9,7 @@ const Layout: React.FC = () => {
   return (
     <div className="layout">
       <Navbar visible={visible} setVisible={setVisible} />
-      <div className="flex">
+      <div className="flex px-">
         <Sidebar visible={visible} setVisible={setVisible} />
         <main className="content">
           <Outlet />

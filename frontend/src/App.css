@@ -40,16 +40,17 @@
 .read-the-docs {
   color: #888;
 } */
+ /* .flex {
+  display: flex;
+  flex-grow: 1;
+} */
 .layout {
   display: flex;
   flex-direction: column;
   height: 100vh;
 }
 
-/* .flex {
-  display: flex;
-  flex-grow: 1;
-} */
+
 
 .content {
   flex-grow: 1;

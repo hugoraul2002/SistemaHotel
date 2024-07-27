@@ -12,7 +12,7 @@ import { middleware } from './kernel.js'
 const ClientesController = () => import('#controllers/clientes_controller')
 const AuthController = () => import('#controllers/auth_controller')
 const UsersController = () => import('#controllers/users_controller')
-
+const RolsController = () => import('#controllers/rols_controller')
 router.get('/', async () => {
   return {
     hello: 'world',
@@ -33,6 +33,10 @@ router
 router
   .group(() => {
     router.get('/', [UsersController, 'index'])
+    router.post('/store', [UsersController, 'store'])
+    router.get('/:id', [UsersController, 'show'])
+    router.put('/update/:id', [UsersController, 'update'])
+    router.put('/updateAnulado/:id', [UsersController, 'updateAnulado'])
   })
   .prefix('usuarios')
 
@@ -46,3 +50,12 @@ router
   })
   .prefix('clientes')
   .use(middleware.auth())
+
+router
+  .group(() => {
+    router.get('/', [RolsController, 'index'])
+    router.post('/store', [RolsController, 'store'])
+    router.get('/:id', [RolsController, 'show'])
+    router.post('/update/:id', [RolsController, 'update'])
+  })
+  .prefix('roles')

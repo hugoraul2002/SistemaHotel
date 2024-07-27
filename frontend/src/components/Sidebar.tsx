@@ -1,9 +1,8 @@
 import React from 'react';
 import { Sidebar } from 'primereact/sidebar';
-import { Avatar } from 'primereact/avatar';
 import { Menu } from 'primereact/menu';
 import { useNavigate } from 'react-router-dom';
-export default function BarraLateral({ visible, setVisible }: { visible: boolean, setVisible: React.Dispatch<React.SetStateAction<boolean>> }) {
+export default function Barra({ visible, setVisible }: { visible: boolean, setVisible: React.Dispatch<React.SetStateAction<boolean>> }) {
     const navigate = useNavigate();
     const customIcons = (
         <>
@@ -15,12 +14,12 @@ export default function BarraLateral({ visible, setVisible }: { visible: boolean
 
     const customHeader = (
         <div className="flex align-items-center gap-2">
-            <Avatar image="https://primefaces.org/cdn/primereact/images/avatar/amyelsner.png" shape="circle" />
-            <span className="font-bold">Amy Elsner</span>
+            {/* <Avatar image="https://primefaces.org/cdn/primereact/images/avatar/amyelsner.png" shape="circle" /> */}
+            <span className="font-bold">Hugo</span>
         </div>
     );
 
-    const redirecciona = (ruta: string): void => {
+    const navegar = (ruta: string): void => {
         setVisible(false);
         navigate(ruta);
     }
@@ -39,7 +38,7 @@ export default function BarraLateral({ visible, setVisible }: { visible: boolean
                 { label: 'Reporte de Gastos', icon: 'pi pi-file' }
             ]
         },
-        { label: 'Usuarios', icon: 'pi pi-user',command: () => redirecciona('/usuarios')},
+        { label: 'Usuarios', icon: 'pi pi-user',command: () => navegar('/usuarios')},
         { label: 'Configuración', icon: 'pi pi-cog' },
         { label: 'Salir', icon: 'pi pi-sign-out' }
     ];

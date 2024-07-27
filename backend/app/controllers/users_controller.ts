@@ -3,8 +3,7 @@ import User from '#models/user'
 import { registerValidator } from '#validators/auth'
 export default class UsersController {
   async index() {
-    const users = await User.all()
-    console.log(users)
+    const users = await User.query().where('anulado', false)
     return users
   }
 
@@ -21,7 +20,15 @@ export default class UsersController {
 
   async update({ params, request }: HttpContext) {
     const user = await User.findOrFail(params.id)
-    const data = request.only(['full_name', 'email', 'password'])
+    const data = request.only(['full_name', 'email', 'password', 'rolId'])
+    user.merge(data)
+    await user.save()
+    return user
+  }
+
+  async updateAnulado({ params, request }: HttpContext) {
+    const user = await User.findOrFail(params.id)
+    const data = request.only(['anulado'])
     user.merge(data)
     await user.save()
     return user

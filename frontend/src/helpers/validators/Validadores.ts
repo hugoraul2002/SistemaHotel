@@ -11,11 +11,17 @@ export const UsuarioClienteSchema = z.object({
   direccion: z.string().min(1, { message: 'La dirección es obligatoria' }),
 });
 
-export const Usuario = z.object({
-  id: z.number().nullable(),
-  full_name: z.string(),
-  email: z.string(),
-  password: z.string(),
+export const Rol = z.object({
+  id: z.number().positive(),
+  nombre: z.string(),
+});
+
+export const UsuarioSchema = z.object({
+  full_name: z.string().min(3, { message: 'Debe tener al menos 3 caracteres' }),
+  email: z.string().email({ message: 'Correo electrónico no válido' }),
+  password: z.string().min(6, { message: 'La contraseña debe tener al menos 6 caracteres' }),
+  rol: Rol.refine((rol) => rol.nombre!='', { message: 'El rol es obligatorio y debe ser válido' }),
 });
 
 export type UsuarioCliente = z.infer<typeof UsuarioClienteSchema>;
+export type UsuarioValidador = z.infer<typeof UsuarioSchema>;

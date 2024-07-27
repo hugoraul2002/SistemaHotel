@@ -18,7 +18,6 @@ function App() {
           <Route element={<Layout />}>
             <Route path="/inicio" element={<Inicio />} />
             <Route path="/usuarios" element={<UsuarioPage />} />
-            {/* Agrega aquí más rutas protegidas si es necesario */}
           </Route>
         </Route>
       </Routes>
