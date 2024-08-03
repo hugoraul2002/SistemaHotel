@@ -3,6 +3,7 @@ import type { HasMany } from '@adonisjs/lucid/types/relations'
 import Habitacion from '#models/habitacion'
 
 export default class Nivel extends BaseModel {
+  static table = 'niveles'
   @column({ isPrimary: true })
   declare id: number
 

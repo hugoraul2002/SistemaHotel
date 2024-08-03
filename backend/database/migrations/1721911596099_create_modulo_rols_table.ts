@@ -7,7 +7,7 @@ export default class ModuloRol extends BaseSchema {
     this.schema.createTable(this.tableName, (table) => {
       table.increments('id')
       table.integer('rol_id').unsigned().references('id').inTable('roles').onDelete('CASCADE')
-      table.integer('modulo_id').unsigned().references('id').inTable('modulos').onDelete
+      table.integer('modulo_id').unsigned().references('id').inTable('modulos').onDelete('CASCADE')
     })
   }
 

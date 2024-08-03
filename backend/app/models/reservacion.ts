@@ -6,6 +6,7 @@ import User from '#models/user'
 import Cliente from '#models/cliente'
 
 export default class Reservacion extends BaseModel {
+  static table = 'reservaciones'
   @column({ isPrimary: true })
   declare id: number
 

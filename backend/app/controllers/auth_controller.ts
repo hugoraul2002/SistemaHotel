@@ -50,11 +50,12 @@ export default class AuthController {
   async login({ request }: HttpContext) {
     const { email, password } = await request.validateUsing(loginValidator)
     const user = await User.verifyCredentials(email, password)
-
+    await user.load('rol')
     const token = await User.accessTokens.create(user)
     return {
       type: 'bearer',
       token: token.value!.release(),
+      user,
     }
   }
 
@@ -66,8 +67,9 @@ export default class AuthController {
 
   async me({ auth }: HttpContext) {
     await auth.check()
+    await auth.user!.load('rol')
     return {
-      user: auth.user,
+      user: auth.user!,
     }
   }
 }

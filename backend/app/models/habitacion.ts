@@ -4,6 +4,7 @@ import Nivel from '#models/nivel'
 import ClaseHabitacion from '#models/clase_habitacion'
 import Reservacion from '#models/reservacion'
 export default class Habitacion extends BaseModel {
+  static table = 'habitaciones'
   @column({ isPrimary: true })
   declare id: number
 

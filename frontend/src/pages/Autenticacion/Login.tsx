@@ -37,11 +37,9 @@ const LoginComponent: React.FC = () => {
     const handleLogin = async (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         try {
-            console.log(email, password);
             const response = await login({ email, password });
             if (response.token) {
                 showSuccess();
-                localStorage.setItem('token', response.token);
                 navigate('/Inicio');
             }
         } catch (err) {
@@ -81,16 +79,17 @@ const LoginComponent: React.FC = () => {
                                 <p className="text-red-500 text-xs italic mt-0.5">{error}</p>
                             </div>
                         </div>
-                        <div className="mt-4">
-                            <div className="flex justify-between">
+                        <div className="mt-4 w-full">
+                            {/*}<div className="flex justify-between">
                                 <label className="block text-sm font-bold mb-2">Contraseña</label>
                                 <Button label="¿Olvidó su contraseña?" className="p-button-link p-button-sm text-xs " />
-                            </div>
+                            </div>*/}
                             <Password
                                 className="w-full"
                                 value={password}
                                 onChange={(e) => setPassword(e.target.value)}
-                                feedback={false}                                
+                                feedback={false}  
+                                style={{ width: '100%' }}                              
                             />
                         </div>
                         <div className="mt-8">

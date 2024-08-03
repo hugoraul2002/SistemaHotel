@@ -7,6 +7,9 @@ import Register from './pages/Autenticacion/Register';
 import Layout from './components/Layout';
 import PrivateRoute from './components/RutaProtegida';
 import UsuarioPage from './pages/UsuarioPage';
+import NivelPage from './pages/NivelPage';
+import ClaseHabitacionPage from './pages/ClaseHabitacion';
+import HabitacionPage from './pages/HabitacionPage';
 
 function App() {
   return (
@@ -18,6 +21,10 @@ function App() {
           <Route element={<Layout />}>
             <Route path="/inicio" element={<Inicio />} />
             <Route path="/usuarios" element={<UsuarioPage />} />
+            <Route path="/niveles" element={<NivelPage />} />
+            <Route path="/claseshabitacion" element={<ClaseHabitacionPage />} />
+            <Route path="/habitaciones" element={<HabitacionPage />} />
+
           </Route>
         </Route>
       </Routes>

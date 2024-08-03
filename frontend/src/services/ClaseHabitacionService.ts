@@ -1,9 +1,8 @@
 import axios from 'axios';
+const API_URL = 'http://localhost:3333/claseHabitacion'; 
 
-const API_URL = 'http://localhost:3333/usuarios'; 
-
-export class UsuarioService {
-  static async getAllUsers() {
+export class ClaseHabitacionService {
+  static async getAllClaseHabitaciones() {
     try {
       const token = localStorage.getItem('token');
       const response = await axios.get(`${API_URL}/`,{
@@ -13,15 +12,15 @@ export class UsuarioService {
       });
       return response.data;
     } catch (error) {
-      console.error('Error fetching users:', error);
+      console.error('Error fetching clase habitaciones:', error);
       throw error;
     }
   }
 
-  static async createUser(userData: { full_name: string; email: string; password: string; rol_id: number }) {
+  static async createClaseHabitacion(data: { nombre: string; }) {
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.post(`${API_URL}/store`, userData,{
+      const response = await axios.post(`${API_URL}/store`, data,{
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
@@ -29,70 +28,69 @@ export class UsuarioService {
       });
       return response.data;
     } catch (error) {
-      console.error('Error creating user:', error);
+      console.error('Error creating clase habitacion:', error);
       throw error;
     }
   }
 
-  static async getUserById(userId: number) {
+  static async getClaseHabitacionById(id: number) {
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.get(`${API_URL}/${userId}`,{
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
-      }
-      );
-      return response.data;
-    } catch (error) {
-      console.error(`Error fetching user with id ${userId}:`, error);
-      throw error;
-    }
-  }
-
-  static async updateUser(userId: number, userData: { full_name: string; email: string; rolId: number }) {
-    try {
-      const token = localStorage.getItem('token');
-      const response = await axios.put(`${API_URL}/update/${userId}`, userData,{
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        }
-      });
-      return response.data;
-    } catch (error) {
-      console.error(`Error updating user with id ${userId}:`, error);
-      throw error;
-    }
-  }
-
-  static async updateAnulado(userId: number, userData: { anulado: boolean }) {
-    try {
-      const token = localStorage.getItem('token');
-      const response = await axios.put(`${API_URL}/updateAnulado/${userId}`, userData,{
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        }
-      });
-      return response.data;
-    } catch (error) {
-      console.error(`Error updating user with id ${userId}:`, error);
-      throw error;
-    }
-  }
-
-  static async deleteUser(userId: number) {
-    try {
-      const token = localStorage.getItem('token');
-      const response = await axios.delete(`${API_URL}/${userId}`,{
+      const response = await axios.get(`${API_URL}/${id}`,{
         headers: {
           'Authorization': `Bearer ${token}`
         }
       });
       return response.data;
     } catch (error) {
-      console.error(`Error deleting user with id ${userId}:`, error);
+      console.error(`Error fetching clase habitacion with id ${id}:`, error);
+      throw error;
+    }
+  }
+
+  static async updateClaseHabitacion(id: number, data: { nombre?: string}) {
+    try {
+      const token = localStorage.getItem('token');
+      const response = await axios.put(`${API_URL}/update/${id}`, data,{
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      });
+      return response.data;
+    } catch (error) {
+      console.error(`Error updating clase habitacion with id ${id}:`, error);
+      throw error;
+    }
+  }
+
+  static async updateAnulado(id: number, data: { anulado: boolean }) {
+    try {
+      const token = localStorage.getItem('token');
+      const response = await axios.put(`${API_URL}/updateAnulado/${id}`, data,{
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      });
+      return response.data;
+    } catch (error) {
+      console.error(`Error updating anulado status for clase habitacion with id ${id}:`, error);
+      throw error;
+    }
+  }
+
+  static async deleteClaseHabitacion(id: number) {
+    try {
+      const token = localStorage.getItem('token');
+      const response = await axios.delete(`${API_URL}/${id}`,{
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+      return response.data;
+    } catch (error) {
+      console.error(`Error deleting clase habitacion with id ${id}:`, error);
       throw error;
     }
   }

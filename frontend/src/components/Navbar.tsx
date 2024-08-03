@@ -1,26 +1,41 @@
-import React, { useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Menubar } from 'primereact/menubar';
 import { Button } from 'primereact/button';
 import { Avatar } from 'primereact/avatar';
 import { Menu } from 'primereact/menu';
-// import logo from '../assets/logo_hotel_margarita.jpg';
+import { logout } from '../services/AuthService';
+import { Usuario } from '../types/types';
+
 interface NavbarProps {
   visible: boolean;
   setVisible: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-export const Navbar: React.FC<NavbarProps> = ({ visible, setVisible }) => {
+export const Navbar: React.FC<NavbarProps> = ({ setVisible }) => {
+  
   const navigate = useNavigate();
-  const [darkTheme, setDarkTheme] = React.useState(false);
+  const [darkTheme, setDarkTheme] = useState(false);
+  const [user, setUser] = useState<Usuario>({ id: 0, full_name: '', email: '', password: '', rol: { id: 0, nombre: '' } });
   const menu = useRef<Menu>(null);
+
   const toggleTheme = () => {
     setDarkTheme((prev) => !prev);
   };
-  const handleLogout = () => {
-    localStorage.removeItem('token');
+
+  const handleLogout = async () => {
+    await logout();
     navigate('/');
   };
+
+  useEffect(() => {
+    const user = localStorage.getItem('auth');
+    if (user) {
+      const userJson = JSON.parse(user);
+      const usuarioRecuperado: Usuario = { id: userJson.id, full_name: userJson.fullName, email: userJson.email, password: '', rol: { id: userJson.rol.id, nombre: userJson.rol.nombre } };
+      setUser(usuarioRecuperado);
+    }
+  }, []);
 
   const userMenuItems = [
     {
@@ -31,20 +46,14 @@ export const Navbar: React.FC<NavbarProps> = ({ visible, setVisible }) => {
   ];
 
   const start = (
-    <div className='flex place-items-center'> 
-      {/* <img
-        alt="logo"
-        src={logo}
-        className="logo"
-      /> */}
+    <div className='flex place-items-center'>
       <h1 className='text-lg text-gray-400 inline-block ml-4 mr-2 font-semibold'>HOTEL MARGARITA</h1>
       <Button
         icon="pi pi-bars"
         severity="secondary" text
-        // className="p-button-rounded p-button-outlined"
         onClick={() => setVisible(true)}
       />
-      </div>
+    </div>
   );
 
   const end = (
@@ -55,13 +64,13 @@ export const Navbar: React.FC<NavbarProps> = ({ visible, setVisible }) => {
         style={{ height: '2rem', width: '2rem' }}
         severity={darkTheme ? 'secondary' : 'help'}
         className="mr-3"
-        rounded 
-        text={darkTheme ? false: true}  
+        rounded
+        text={!darkTheme}
         onClick={toggleTheme}
       />
 
       <Avatar
-        label="U"
+        label={user ? user.full_name.substring(0, 1) : ''}
         shape="circle"
         className="mr-2"
         onClick={(e) => menu.current?.toggle(e)}

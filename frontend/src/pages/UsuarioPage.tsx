@@ -9,7 +9,7 @@ import { InputText } from 'primereact/inputtext';
 import { Button } from 'primereact/button';
 import { Usuario } from '../types/types';
 import { Toast } from 'primereact/toast';
-import FormUsuario from '../components/usuarios/FormUsuario'; // Asegúrate de ajustar la ruta según tu estructura de archivos
+import FormUsuario from '../components/usuarios/FormUsuario'; 
 import { ConfirmDialog, confirmDialog } from 'primereact/confirmdialog';
 
 export default function UsuarioPage() {
@@ -21,7 +21,8 @@ export default function UsuarioPage() {
   const [filters, setFilters] = useState<DataTableFilterMeta>({
     global: { value: null, matchMode: FilterMatchMode.CONTAINS },
     fullName: { value: null, matchMode: FilterMatchMode.STARTS_WITH },
-    email: { value: null, matchMode: FilterMatchMode.STARTS_WITH }
+    email: { value: null, matchMode: FilterMatchMode.STARTS_WITH },
+    rol: { value: null, matchMode: FilterMatchMode.STARTS_WITH }
   });
   const [dialogVisible, setDialogVisible] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
@@ -34,10 +35,11 @@ export default function UsuarioPage() {
   const onGlobalFilterChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     const _filters = { ...filters };
-
+    console.log('filters:', _filters);
     if ('value' in _filters['global']) {
       _filters['global'].value = value;
     }
+    console.log('filters:', _filters);
 
     setFilters(_filters);
     setGlobalFilterValue(value);
@@ -63,7 +65,7 @@ export default function UsuarioPage() {
 
   const header = renderHeader();
 
-  const handleEditCustomer = (user: Usuario) => {
+  const handleEditUsuario = (user: Usuario) => {
     setIsEditing(true);
     setEditingUserId(user.id);
     setDialogVisible(true);
@@ -74,17 +76,7 @@ export default function UsuarioPage() {
     setDialogVisible(true);
   };
 
-  // const handleDeleteCustomerClick = (user: Usuario) => {
-  //   console.log('Delete user:', user);
-  //   UsuarioService.updateAnulado(user.id, { anulado: true }).then(() => async () => {
-  //     const users = await UsuarioService.getAllUsers();
-  //     setUsuarios( await users);
-  //     mostrarToast('Usuario eliminado.', 'info');
-  //   }).catch((error) => {
-  //     console.error('Error deleting user:', error);
-  //     mostrarToast('Error al eliminar usuario.', 'error');
-  //   });
-  // };
+
   const handleDialogHide = () => {
     setDialogVisible(false);
     setEditingUserId(null);
@@ -92,17 +84,14 @@ export default function UsuarioPage() {
   const handleSaveUser = async (user: Usuario) => {
     try {
       if (isEditing && editingUserId !== null) {
-        console.log('Updating user:', editingUserId, user);
-        const response = await UsuarioService.updateUser(editingUserId, { full_name: user.full_name, email: user.email, password: user.password, rolId: user.rol.id });
+        const response = await UsuarioService.updateUser(editingUserId, { full_name: user.full_name, email: user.email, rolId: user.rol.id });
         if (response) {
           const users = await UsuarioService.getAllUsers();
           setUsuarios(users);
           mostrarToast('Usuario actualizado.', 'success');
         }
       } else {
-        console.log('Creating new user:', user);
         const response = await UsuarioService.createUser({ full_name: user.full_name, email: user.email, password: user.password, rol_id: user.rol.id });
-        console.log(response);
         if (response) {
           const users = await UsuarioService.getAllUsers();
           setUsuarios(users);
@@ -112,7 +101,7 @@ export default function UsuarioPage() {
       setDialogVisible(false);
       setEditingUserId(null);
     } catch (error) {
-      console.error('Error creating user:', error);
+      console.error('Error creando usuario:', error);
       mostrarToast('Error al crear usuario.', 'error');
     }
 
@@ -121,7 +110,7 @@ export default function UsuarioPage() {
   const actionBodyTemplate = (rowData: Usuario) => {
     return (
       <div className="flex align-items-center justify-content-end gap-2">
-        <Button type="button" icon="pi pi-pen-to-square" onClick={() => handleEditCustomer(rowData)}
+        <Button type="button" icon="pi pi-pen-to-square" onClick={() => handleEditUsuario(rowData)}
           severity='info' outlined rounded data-pr-tooltip="Editar" />
         <Button type="button"  outlined icon="pi pi-trash" severity="danger" onClick={() => confirmarAnulacion(rowData)} rounded data-pr-tooltip="Eliminar" />
       </div>
@@ -154,7 +143,7 @@ export default function UsuarioPage() {
       }
       
     }catch (error) {
-        console.error('Error deleting user:', error);
+        console.error('Error eliminando usuario:', error);
         mostrarToast('Error al eliminar usuario.', 'error');
     }
 }
@@ -181,9 +170,10 @@ const confirmarAnulacion = (usuario:Usuario) => {
       <DataTable dataKey="id" loading={loading} showGridlines size='small' value={usuarios} filters={filters}
         onSelectionChange={(e) => setSelectedUser(e.value)}
         selectionMode="single" selection={selectedUser!}
-        globalFilterFields={['fullName', 'email']} paginator rows={10} rowsPerPageOptions={[5, 10, 25, 50]} tableStyle={{ minWidth: '50rem' }} header={header} emptyMessage="No se encuentran usuarios.">
+        globalFilterFields={['fullName', 'email','rol']} paginator rows={10} rowsPerPageOptions={[5, 10, 25, 50]} tableStyle={{ minWidth: '50rem' }} header={header} emptyMessage="No se encuentran usuarios.">
         <Column field="fullName" sortable header="Nombre" style={{ width: '25%' }}></Column>
         <Column field="email" sortable header="Email" style={{ width: '25%' }}></Column>
+        <Column field="rol" sortable header="Rol" style={{ width: '25%' }}></Column>
         <Column body={actionBodyTemplate} header="Acciones" bodyStyle={{ width: '25%', textAlign: 'center' }} exportable={false}></Column>
       </DataTable>
 

@@ -13,11 +13,10 @@ const ClientesController = () => import('#controllers/clientes_controller')
 const AuthController = () => import('#controllers/auth_controller')
 const UsersController = () => import('#controllers/users_controller')
 const RolsController = () => import('#controllers/rols_controller')
-router.get('/', async () => {
-  return {
-    hello: 'world',
-  }
-})
+const NivelesController = () => import('#controllers/nivels_controller')
+const HabitacionsController = () => import('#controllers/habitacions_controller')
+const ReservacionsController = () => import('#controllers/reservacions_controller')
+const ClaseHabitacionsController = () => import('#controllers/clase_habitacions_controller')
 
 // Rutas de autenticación
 router
@@ -30,6 +29,7 @@ router
   })
   .prefix('auth')
 
+// Rutas de usuarios
 router
   .group(() => {
     router.get('/', [UsersController, 'index'])
@@ -39,6 +39,7 @@ router
     router.put('/updateAnulado/:id', [UsersController, 'updateAnulado'])
   })
   .prefix('usuarios')
+  .use(middleware.auth())
 
 // Rutas de clientes
 router
@@ -50,7 +51,9 @@ router
   })
   .prefix('clientes')
   .use(middleware.auth())
+  .use(middleware.auth())
 
+// Rutas de roles
 router
   .group(() => {
     router.get('/', [RolsController, 'index'])
@@ -59,3 +62,55 @@ router
     router.post('/update/:id', [RolsController, 'update'])
   })
   .prefix('roles')
+  .use(middleware.auth())
+
+// Rutas de niveles
+router
+  .group(() => {
+    router.get('/', [NivelesController, 'index'])
+    router.post('/store', [NivelesController, 'store'])
+    router.get('/:id', [NivelesController, 'show'])
+    router.put('/update/:id', [NivelesController, 'update'])
+    router.put('/updateAnulado/:id', [NivelesController, 'updateAnulado'])
+    router.delete('/:id', [NivelesController, 'destroy'])
+  })
+  .prefix('nivel')
+  .use(middleware.auth())
+
+// Rutas de reservaciones
+router
+  .group(() => {
+    router.get('/', [ReservacionsController, 'index'])
+    router.post('/store', [ReservacionsController, 'store'])
+    router.get('/:id', [ReservacionsController, 'show'])
+    router.put('/update/:id', [ReservacionsController, 'update'])
+    router.delete('/:id', [ReservacionsController, 'destroy'])
+  })
+  .prefix('reservaciones')
+  .use(middleware.auth())
+
+// Rutas de habitaciones
+router
+  .group(() => {
+    router.get('/', [ClaseHabitacionsController, 'index'])
+    router.post('/store', [ClaseHabitacionsController, 'store'])
+    router.get('/:id', [ClaseHabitacionsController, 'show'])
+    router.put('/update/:id', [ClaseHabitacionsController, 'update'])
+    router.put('/updateAnulado/:id', [ClaseHabitacionsController, 'updateAnulado'])
+    router.delete('/:id', [ClaseHabitacionsController, 'destroy'])
+  })
+  .prefix('claseHabitacion')
+  .use(middleware.auth())
+
+// Rutas de habitaciones
+router
+  .group(() => {
+    router.get('/', [HabitacionsController, 'index'])
+    router.post('/store', [HabitacionsController, 'store'])
+    router.get('/:id', [HabitacionsController, 'show'])
+    router.put('/update/:id', [HabitacionsController, 'update'])
+    router.put('/updateAnulado/:id', [HabitacionsController, 'updateAnulado'])
+    router.delete('/:id', [HabitacionsController, 'destroy'])
+  })
+  .prefix('habitaciones')
+  .use(middleware.auth())

@@ -3,6 +3,7 @@ import User from '#models/user'
 import type { BelongsTo, HasMany } from '@adonisjs/lucid/types/relations'
 import Reservacion from '#models/reservacion'
 export default class Cliente extends BaseModel {
+  static table = 'clientes'
   @column({ isPrimary: true })
   declare id: number
 

@@ -3,8 +3,13 @@ import User from '#models/user'
 import { registerValidator } from '#validators/auth'
 export default class UsersController {
   async index() {
-    const users = await User.query().where('anulado', false)
-    return users
+    const users = await User.query().where('anulado', false).preload('rol')
+    return users.map((user) => {
+      return {
+        ...user.toJSON(),
+        rol: user.rol.nombre,
+      }
+    })
   }
 
   async store({ request }: HttpContext) {
@@ -20,7 +25,7 @@ export default class UsersController {
 
   async update({ params, request }: HttpContext) {
     const user = await User.findOrFail(params.id)
-    const data = request.only(['full_name', 'email', 'password', 'rolId'])
+    const data = request.only(['full_name', 'email', 'rolId'])
     user.merge(data)
     await user.save()
     return user

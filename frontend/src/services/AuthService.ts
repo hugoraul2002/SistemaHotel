@@ -1,6 +1,7 @@
 import axios from 'axios';
 import { UsuarioCliente } from '../helpers/validators/Validadores';
-// const API_URL = process.env.REACT_APP_API_URL;
+import { Usuario } from '../types/types';
+
 const API_URL = 'http://localhost:3333/auth';
 
 interface RegisterData {
@@ -16,13 +17,14 @@ interface LoginData {
 
 interface AuthResponse {
   token: string;
+  user:Usuario;
 }
 
-interface MeResponse {
-  id: string;
-  username: string;
-  email: string;
-}
+// interface MeResponse {
+//   id: string;
+//   username: string;
+//   email: string;
+// }
 
 const register = async (data: RegisterData): Promise<AuthResponse> => {
   const response = await axios.post<AuthResponse>(`${API_URL}/register`, data);
@@ -33,7 +35,7 @@ const registerCliente = async (data: UsuarioCliente): Promise<AuthResponse> => {
   console.log(data);
   const response = await axios.post<AuthResponse>(`${API_URL}/registerCliente`, data);
   if (response.status === 200) {
-    localStorage.setItem('token', response.data.token);}
+    localStorage.setItem('token', response.data.token);}    
   return response.data;
 };
 
@@ -41,13 +43,15 @@ const login = async (data: LoginData): Promise<AuthResponse> => {
   const response = await axios.post<AuthResponse>(`${API_URL}/login`, data);
   if (response.status === 200) {
     localStorage.setItem('token', response.data.token);
+    console.log(response.data);
+    localStorage.setItem('auth', JSON.stringify(response.data.user));
   }
   return response.data;
 };
 
 const logout = async (): Promise<void> => {
   const token = localStorage.getItem('token');
-  if (!token) throw new Error('No token found');
+  if (!token) throw new Error('No se encontro token.');
 
   await axios.post(`${API_URL}/logout`, {}, {
     headers: {
@@ -55,13 +59,14 @@ const logout = async (): Promise<void> => {
     }
   });
   localStorage.removeItem('token');
+  localStorage.removeItem('auth');
 };
 
-const me = async (): Promise<MeResponse> => {
+const me = async (): Promise<Usuario> => {
   const token = localStorage.getItem('token');
-  if (!token) throw new Error('No token found');
+  if (!token) throw new Error('No se encontro token.');
 
-  const response = await axios.get<MeResponse>(`${API_URL}/me`, {
+  const response = await axios.get<Usuario>(`${API_URL}/me`, {
     headers: {
       'Authorization': `Bearer ${token}`
     }
