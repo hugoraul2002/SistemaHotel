@@ -15,21 +15,21 @@ export default class ReservacionesController {
   }
 
   async store({ request, response }: HttpContext) {
-    const data = request.only([
-      'habitacionId',
-      'clienteId',
-      'userId',
-      'total',
-      'estado',
-      'fechaInicio',
-      'fechaFin',
-      'fechaRegistro',
-      'observaciones',
-      'anulado',
-    ])
-
     try {
-      const reservacion = await Reservacion.create(data)
+      const reservacionData = request.only([
+        'habitacionId',
+        'clienteId',
+        'userId',
+        'total',
+        'estado',
+        'fechaInicio',
+        'fechaFin',
+        'fechaRegistro',
+        'observaciones',
+        'anulado',
+      ])
+
+      const reservacion = await Reservacion.create(reservacionData)
       await reservacion.load('habitacion')
       await reservacion.load('cliente')
       await reservacion.load('usuario')

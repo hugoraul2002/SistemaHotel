@@ -47,10 +47,10 @@ router
     router.get('/', [ClientesController, 'index'])
     router.post('/store', [ClientesController, 'store'])
     router.get('/:id', [ClientesController, 'show'])
-    router.post('/update/:id', [ClientesController, 'update'])
+    router.put('/update/:id', [ClientesController, 'update'])
+    router.put('/updateActivo/:id', [ClientesController, 'updateActivo'])
   })
   .prefix('clientes')
-  .use(middleware.auth())
   .use(middleware.auth())
 
 // Rutas de roles

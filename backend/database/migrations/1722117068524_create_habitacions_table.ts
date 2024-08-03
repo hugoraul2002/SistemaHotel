@@ -16,7 +16,7 @@ export default class extends BaseSchema {
         .inTable('clases_habitaciones')
         .notNullable()
       table.float('precio').notNullable()
-      table.string('estado', 255).notNullable()
+      table.enum('estado', ['D', 'R', 'O', 'S', 'L']).notNullable()
       table.boolean('anulado').defaultTo(false)
     })
   }

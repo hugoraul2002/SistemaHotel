@@ -6,6 +6,18 @@ export interface Usuario {
     password: string;    
   }
 
+  export interface UserCliente {
+  full_name: string;
+  email: string;
+    password: string;
+   nombre: string;
+    tipo_documento: string;
+    num_documento: string;
+    telefono: string;
+    direccion: string;
+
+  }
+
   export interface Rol {
     id: number;
     nombre: string;
@@ -33,9 +45,30 @@ export interface Usuario {
     claseHabitacion: ClaseHabitacion;
   }
 
+  export interface Cliente{
+    id: number;
+    nombre: string;
+    tipoDocumento: string;
+    numeroDocumento: string;
+    telefono: string;
+    direccion: string;
+    activo: boolean;
+    usuario: Usuario;
+  }
 
-
-
+  export interface Reservacion {
+    id: number;
+    habitacion: Habitacion;
+    cliente: Cliente;
+    usuario: Usuario;
+    total: number;
+    estado: string;
+    fechaInicio: Date;
+    fechaFin: Date;
+    fechaRegistro: Date;
+    observaciones: string;
+    anulado: boolean;
+  }
 
   //INTERFACES PARA PROPS DE COMPONENTES
   export interface HabitacionDialogProps {
@@ -70,6 +103,22 @@ export interface Usuario {
     onSave: (usuario: Usuario) => void;
   }
 
+  export interface ClienteDialogProps {
+    editar: boolean;
+    id: number;
+    onHide: () => void;
+    visible: boolean;
+    onSave: (cliente: Cliente) => void;
+  }
+
+  export interface CalendarEvent {
+    start: Date;
+    end: Date;
+    title: string;
+    style: {
+      backgroundColor: string;
+    };
+  }
 
   export type LayoutConfig = {
     theme: string;

@@ -5,7 +5,6 @@ import { login } from '../../services/AuthService';
 import { AxiosError } from 'axios';
 import { Toast } from 'primereact/toast';
 import { InputText } from 'primereact/inputtext';
-import { Password } from 'primereact/password';
 import { Button } from 'primereact/button';
 import { Card } from 'primereact/card';
 
@@ -80,16 +79,14 @@ const LoginComponent: React.FC = () => {
                             </div>
                         </div>
                         <div className="mt-4 w-full">
-                            {/*}<div className="flex justify-between">
-                                <label className="block text-sm font-bold mb-2">Contraseña</label>
-                                <Button label="¿Olvidó su contraseña?" className="p-button-link p-button-sm text-xs " />
-                            </div>*/}
-                            <Password
+
+                            <label className="block text-sm font-bold mb-2">Contraseña</label>
+
+                            <InputText
                                 className="w-full"
+                                type="password"
                                 value={password}
                                 onChange={(e) => setPassword(e.target.value)}
-                                feedback={false}  
-                                style={{ width: '100%' }}                              
                             />
                         </div>
                         <div className="mt-8">
@@ -97,7 +94,7 @@ const LoginComponent: React.FC = () => {
                         </div>
                         <div className="mt-4 flex items-center justify-between">
                             <span className="border-b w-1/5 md:w-1/4"></span>
-                            <Button label="o registrate" className="p-button-link p-button-sm text-xs uppercase" onClick={() => navigate('/register')} />
+                            <Button label="o registrate" className=" p-button-sm text-xs uppercase hover:bg-gray-500 hover:text-white" outlined severity='secondary' onClick={() => navigate('/register')} />
                             <span className="border-b w-1/5 md:w-1/4"></span>
                         </div>
                     </form>

@@ -1,6 +1,5 @@
 import axios from 'axios';
-import { UsuarioCliente } from '../helpers/validators/Validadores';
-import { Usuario } from '../types/types';
+import { UserCliente, Usuario } from '../types/types';
 
 const API_URL = 'http://localhost:3333/auth';
 
@@ -31,7 +30,7 @@ const register = async (data: RegisterData): Promise<AuthResponse> => {
   return response.data;
 };
 
-const registerCliente = async (data: UsuarioCliente): Promise<AuthResponse> => {
+const registerCliente = async (data: UserCliente): Promise<AuthResponse> => {
   console.log(data);
   const response = await axios.post<AuthResponse>(`${API_URL}/registerCliente`, data);
   if (response.status === 200) {

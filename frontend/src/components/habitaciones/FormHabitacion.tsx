@@ -57,8 +57,8 @@ const HabitacionDialog: React.FC<HabitacionDialogProps> = ({ editar, id, onHide,
           setValue('nombre', habitacion.nombre);
           setValue('precio', habitacion.precio);
           setEstado(habitacion.estado);
-          setNivel(nivelesData.find(n  => n.id === habitacion.nivelId ) );
-          setClase(clasesData.find(c => c.id === habitacion.claseHabitacionId) );
+          setNivel(nivelesData.find((n:Nivel)  => n.id === habitacion.nivelId ) );
+          setClase(clasesData.find((c:ClaseHabitacion) => c.id === habitacion.claseHabitacionId) );
         } else {
           reset(defaultValues);
         }

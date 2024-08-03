@@ -5,7 +5,7 @@ import { clienteValidator } from '#validators/cliente'
 export default class ClientesController {
   async index({ response }: HttpContext) {
     try {
-      const clientes = await Cliente.all()
+      const clientes = await Cliente.query().where('activo', true).preload('user')
       return response.ok(clientes)
     } catch (error) {
       return response.internalServerError({ message: 'Error fetching clients', error })
@@ -44,6 +44,17 @@ export default class ClientesController {
         'activo',
       ])
       cliente.merge(data)
+      await cliente.save()
+      return response.ok(cliente)
+    } catch (error) {
+      return response.internalServerError({ message: 'Error updating client', error })
+    }
+  }
+
+  async updateActivo({ params, response }: HttpContext) {
+    try {
+      const cliente = await Cliente.findOrFail(params.id)
+      cliente.activo = !cliente.activo
       await cliente.save()
       return response.ok(cliente)
     } catch (error) {

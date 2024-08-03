@@ -9,6 +9,7 @@ import { useState, useRef } from 'react';
 import { UsuarioClienteSchema, UsuarioCliente } from '../../helpers/validators/Validadores';
 import { registerCliente } from '../../services/AuthService';
 import { Password } from 'primereact/password';
+
 // import { useNavigate } from 'react-router-dom';
 
 const Register = () => {
@@ -28,7 +29,6 @@ const Register = () => {
       email: '',
       password: '',
       nombre: '',
-      tipo_documento: 'NIT',
       num_documento: '',
       telefono: '',
       direccion: '',
@@ -39,7 +39,8 @@ const Register = () => {
 
   const onSubmit: SubmitHandler<UsuarioCliente> = async (data) => {
     try {
-      const response = await registerCliente(data);
+      const dataUser = {full_name: data.full_name, email: data.email, password: data.password, nombre: data.nombre, tipo_documento: selectedTipoDocumento, num_documento: data.num_documento, telefono: data.telefono, direccion: data.direccion};
+      const response = await registerCliente(dataUser);
       showSuccess();
       // navigate('/Inicio');
       console.log(response);
@@ -53,7 +54,7 @@ const Register = () => {
     { label: 'CUI', value: 'CUI' },
     { label: 'IDE', value: 'IDE' }
   ];
-
+  
   return (
     <Card className="flex items-center justify-center">
       <form onSubmit={handleSubmit(onSubmit)} className='flex flex-col md:flex-row gap-3'>
@@ -110,14 +111,13 @@ const Register = () => {
                 <i className="pi pi-id-card"></i>
               </span>
               <Dropdown
-                {...register('tipo_documento')}
                 options={tiposDocumento}
                 value={selectedTipoDocumento}
                 onChange={(e: DropdownChangeEvent) => setSelectedTipoDocumento(e.value)}
                 placeholder="Tipo de documento"
               />
             </div>
-            {errors.tipo_documento && <div className="text-red-500 text-left text-xs">{errors.tipo_documento.message}</div>}
+          
             <div className="p-inputgroup w-full">
               <span className="p-inputgroup-addon">
                 <i className="pi pi-id-card"></i>

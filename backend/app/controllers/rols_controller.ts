@@ -1,5 +1,6 @@
 import type { HttpContext } from '@adonisjs/core/http'
 import Rol from '#models/rol'
+import { rolValidator } from '#validators/rol'
 
 export default class RolsController {
   async index({ response }: HttpContext) {
@@ -8,7 +9,7 @@ export default class RolsController {
   }
 
   async store({ request, response }: HttpContext) {
-    const data = request.only(['nombre'])
+    const data = await request.validateUsing(rolValidator)
     const rol = await Rol.create(data)
     return response.status(201).json(rol)
   }

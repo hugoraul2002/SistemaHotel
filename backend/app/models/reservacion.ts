@@ -4,7 +4,6 @@ import type { BelongsTo } from '@adonisjs/lucid/types/relations'
 import Habitacion from '#models/habitacion'
 import User from '#models/user'
 import Cliente from '#models/cliente'
-
 export default class Reservacion extends BaseModel {
   static table = 'reservaciones'
   @column({ isPrimary: true })
@@ -26,10 +25,10 @@ export default class Reservacion extends BaseModel {
   declare estado: string
 
   @column()
-  declare fechaInicio: Date
+  declare fechaInicio: DateTime
 
   @column()
-  declare fechaFin: Date
+  declare fechaFin: DateTime
 
   @column()
   declare fechaRegistro: DateTime

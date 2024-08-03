@@ -11,7 +11,7 @@ export default function Barra({ visible, setVisible }: { visible: boolean, setVi
     const customIcons = (
         <>
             <button className="p-sidebar-icon p-link mr-2">
-                <span className="pi pi-search" />
+                {/* <span className="pi pi-search" /> */}
             </button>
         </>
     );
@@ -28,8 +28,8 @@ export default function Barra({ visible, setVisible }: { visible: boolean, setVi
     }
 
     const items = [
-        { label: 'Clientes', icon: 'pi pi-users' },
-        { label: 'Reservaciones', icon: 'pi pi-calendar' },
+        { label: 'Clientes', icon: 'pi pi-users' , command: () => navegar('/clientes')},
+        { label: 'Reservaciones', icon: 'pi pi-calendar', command: () => navegar('/reservaciones') },
         {
             label: 'Mantenimientos', icon: 'pi pi-chart-line', items: [
                 { label: 'Niveles', icon: 'pi pi-file', command: () => navegar('/niveles') },

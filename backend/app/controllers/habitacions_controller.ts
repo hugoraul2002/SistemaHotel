@@ -1,5 +1,6 @@
 import type { HttpContext } from '@adonisjs/core/http'
 import Habitacion from '#models/habitacion'
+import { habitacionValidator } from '#validators/habitacion'
 
 export default class HabitacionController {
   async index({ response }: HttpContext) {
@@ -17,14 +18,7 @@ export default class HabitacionController {
 
   async store({ request, response }: HttpContext) {
     try {
-      const data = request.only([
-        'nombre',
-        'nivelId',
-        'claseHabitacionId',
-        'precio',
-        'estado',
-        'anulado',
-      ])
+      const data = await request.validateUsing(habitacionValidator)
       const habitacion = await Habitacion.create(data)
       response.status(201).json(habitacion)
     } catch (error) {
