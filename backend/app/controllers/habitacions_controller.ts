@@ -9,7 +9,6 @@ export default class HabitacionController {
         .where('anulado', false)
         .preload('nivel')
         .preload('claseHabitacion')
-        .preload('reservaciones')
       response.status(200).json(habitaciones)
     } catch (error) {
       response.status(500).json({ message: 'Error fetching habitaciones', error })
@@ -32,7 +31,6 @@ export default class HabitacionController {
         .where('id', params.id)
         .preload('nivel')
         .preload('claseHabitacion')
-        .preload('reservaciones')
         .firstOrFail()
       response.status(200).json(habitacion)
     } catch (error) {
@@ -48,6 +46,7 @@ export default class HabitacionController {
         'nivelId',
         'claseHabitacionId',
         'precio',
+        'tarifa',
         'estado',
         'anulado',
       ])

@@ -9,11 +9,11 @@ import { useState, useRef } from 'react';
 import { UsuarioClienteSchema, UsuarioCliente } from '../../helpers/validators/Validadores';
 import { registerCliente } from '../../services/AuthService';
 import { Password } from 'primereact/password';
+import { useNavigate } from 'react-router-dom';
 
-// import { useNavigate } from 'react-router-dom';
 
 const Register = () => {
-  // const navigate = useNavigate();
+  const navigate = useNavigate();
   const [password, setPassword] = useState('');
   const toast = useRef<Toast>(null);
   const showSuccess = () => {
@@ -40,10 +40,11 @@ const Register = () => {
   const onSubmit: SubmitHandler<UsuarioCliente> = async (data) => {
     try {
       const dataUser = {full_name: data.full_name, email: data.email, password: data.password, nombre: data.nombre, tipo_documento: selectedTipoDocumento, num_documento: data.num_documento, telefono: data.telefono, direccion: data.direccion};
-      const response = await registerCliente(dataUser);
+      await registerCliente(dataUser);
       showSuccess();
-      // navigate('/Inicio');
-      console.log(response);
+      setTimeout(() => {
+        navigate('/Inicio');
+    }, 1000);
     } catch (error) {
       setError('root', { message: "Error al registrar usuario." });
     }

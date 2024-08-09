@@ -10,8 +10,8 @@ import 'dayjs/locale/es';
 import { Toast } from 'primereact/toast';
 import { Button } from 'primereact/button';
 import { ReservacionDialog } from '../components/reservaciones/FormReservacion'; 
+import { ReservacionInfoDialog } from '../components/reservaciones/FrmReservacionInfo'; 
 import { CalendarEvent } from '../types/types';
-
 dayjs.locale('es');
 const localizer = dayjsLocalizer(dayjs);
 
@@ -20,6 +20,8 @@ const ReservacionesPage = () => {
   const [reservaciones, setReservaciones] = useState<Reservacion[]>([]);
   const [events, setEvents] = useState<CalendarEvent[]>([]);
   const [dialogVisible, setDialogVisible] = useState(false);
+  const [infoDialogVisible, setInfoDialogVisible] = useState(false);
+  const [selectedReservacion, setSelectedReservacion] = useState<Reservacion | null>(null);
   const [habitaciones, setHabitaciones] = useState([]);
   const [clientes, setClientes] = useState([]);
 
@@ -74,14 +76,15 @@ const ReservacionesPage = () => {
       }
     };
     
-    const mappedEvents = reservaciones.map((reservacion) => ({
-      start: new Date(dayjs(reservacion.fechaInicio).add(6, 'hours').toISOString()),
-      end: new Date(dayjs(reservacion.fechaFin).add(6, 'hours').toISOString()),
-      title: reservacion.cliente.nombre,
+    const mappedEvents = reservaciones.map((reservacion) => ({      
+      start: dayjs(reservacion.fechaInicio).add(6,'hour').toDate(),
+      end: dayjs(reservacion.fechaFin).add(6,'hour').toDate(),
+      title: dayjs(reservacion.fechaInicio).add(6,'hour').format('HH:mm') + "  " + reservacion.habitacion.nombre + " " + reservacion.cliente.nombre,
       style: {
         fontSize: '0.6rem',
         backgroundColor: mapEstadoToColor(reservacion.estado),
       },
+      reservacion
     }));
     setEvents(mappedEvents);
   }, [reservaciones]);
@@ -92,7 +95,6 @@ const ReservacionesPage = () => {
 
   const handleCreateReservacion = async (data: Reservacion) => {
     try {
-      console.log(data);
       await ReservacionService.create(data);
       mostrarToast('Reservación creada', 'success');
       fetchReservaciones();
@@ -100,6 +102,11 @@ const ReservacionesPage = () => {
     } catch (error) {
       console.error('Error creating reservacion:', error);
     }
+  };
+
+  const handleEventSelect = (event: CalendarEvent) => {
+    setSelectedReservacion(event.reservacion);
+    setInfoDialogVisible(true);
   };
 
   const eventStyleGetter = (event: CalendarEvent) => {
@@ -136,7 +143,7 @@ const ReservacionesPage = () => {
     <div className="flex flex-col items-center p-4 space-y-4">
       <Toast ref={toast} />
       <div className="flex flex-wrap space-x-4">
-      <Button size='small' label="Crear Reservación" severity='info' icon="pi pi-plus" onClick={() => setDialogVisible(true)} />
+        <Button size='small' label="Nueva" severity='info' icon="pi pi-plus" onClick={() => setDialogVisible(true)} />
         {colorLegend.map((legend) => (
           <div key={legend.label} className="flex items-center space-x-2">
             <div style={{ backgroundColor: legend.color }} className="w-4 h-4 rounded-full"></div>
@@ -144,7 +151,7 @@ const ReservacionesPage = () => {
           </div>
         ))}
       </div>
-      <div className="w-full md:w-3/4 lg:w-2/3" style={{ height: '80vh' }}>
+      <div className="w-full md:w-3/4 lg:w-2/3" style={{ height: '100vh', width:'100vw' }}>
         <Calendar
           events={events}
           startAccessor="start"
@@ -153,6 +160,7 @@ const ReservacionesPage = () => {
           messages={messages}
           eventPropGetter={eventStyleGetter}
           className="bg-white shadow rounded-lg p-4"
+          onSelectEvent={handleEventSelect}
         />
       </div>
       <ReservacionDialog
@@ -161,6 +169,11 @@ const ReservacionesPage = () => {
         onSave={handleCreateReservacion}
         habitaciones={habitaciones}
         clientes={clientes}
+      />
+      <ReservacionInfoDialog
+        visible={infoDialogVisible}
+        onHide={() => setInfoDialogVisible(false)}
+        reservacion={selectedReservacion}
       />
     </div>
   );

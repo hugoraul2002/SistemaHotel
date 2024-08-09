@@ -36,6 +36,7 @@ export class HabitacionService {
         const newData = {
             nombre: data.nombre,
             precio: data.precio,
+            tarifa: data.tarifa,
             estado: data.estado,
             nivelId: data.nivel.id,
             claseHabitacionId: data.claseHabitacion.id,
@@ -57,6 +58,7 @@ export class HabitacionService {
             const updateData = {
                 nombre: data.nombre,
                 precio: data.precio,
+                tarifa: data.tarifa,
                 estado: data.estado,
                 nivelId: data.nivel.id,
                 claseHabitacionId: data.claseHabitacion.id,

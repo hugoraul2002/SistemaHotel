@@ -21,6 +21,9 @@ export default class Habitacion extends BaseModel {
   declare precio: number
 
   @column()
+  declare tarifa: number
+
+  @column()
   declare estado: string
 
   @column()

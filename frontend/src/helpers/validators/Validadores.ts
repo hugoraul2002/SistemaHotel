@@ -12,7 +12,6 @@ export const UsuarioClienteSchema = z.object({
 
 export const ClienteSchema = z.object({
   nombre: z.string().min(1, { message: 'El nombre del cliente es obligatorio' }),
-  // tipo_documento: z.enum(['NIT', 'CUI', 'IDE'], { message: 'Tipo de documento no válido' }),
   num_documento: z.string().min(2, { message: 'El documento es obligatorio' }),
   telefono: z.string().min(8, { message: 'El teléfono debe tener al menos 8 caracteres' }),
   direccion: z.string().min(1, { message: 'La dirección es obligatoria' }),
@@ -54,6 +53,7 @@ export const ClaseHabitacionSchema = z.object({
 export const HabitacionSchema = z.object({
   nombre: z.string().min(1,{message:"El nombre no puede ser vacío."}),
   precio: z.number().positive({message:"El precio debe ser mayor a 0."}),
+  tarifa: z.number().positive({message:"La tarifa debe ser mayor a 0."}),
 });
 
 export const ReservacionSchema = z.object({

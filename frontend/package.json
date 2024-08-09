@@ -13,6 +13,7 @@
     "@hookform/resolvers": "^3.9.0",
     "@types/react-big-calendar": "^1.8.9",
     "axios": "^1.7.2",
+    "chart.js": "^4.4.3",
     "dayjs": "^1.11.12",
     "primeicons": "^7.0.0",
     "primereact": "^10.7.0",

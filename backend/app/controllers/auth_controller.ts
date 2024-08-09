@@ -39,7 +39,7 @@ export default class AuthController {
     }
     await Cliente.create(clienteData)
     const token = await User.accessTokens.create(user)
-
+    await user.load('rol')
     // Retorna el token y la información del usuario
     return {
       token: token.value!.release(),
@@ -47,9 +47,13 @@ export default class AuthController {
     }
   }
 
-  async login({ request }: HttpContext) {
+  async login({ request, response }: HttpContext) {
     const { email, password } = await request.validateUsing(loginValidator)
     const user = await User.verifyCredentials(email, password)
+
+    if (user.anulado) {
+      return response.unauthorized({ error: 'Usuario anulado' })
+    }
     await user.load('rol')
     const token = await User.accessTokens.create(user)
     return {

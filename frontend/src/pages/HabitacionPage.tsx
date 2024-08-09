@@ -24,7 +24,9 @@ export default function HabitacionPage() {
     nombre: { value: null, matchMode: FilterMatchMode.STARTS_WITH },
     estado: { value: null, matchMode: FilterMatchMode.STARTS_WITH },
     claseHabitacion: { value: null, matchMode: FilterMatchMode.STARTS_WITH },
-    nivel: { value: null, matchMode: FilterMatchMode.STARTS_WITH },    
+    nivel: { value: null, matchMode: FilterMatchMode.STARTS_WITH },   
+    precio: { value: null, matchMode: FilterMatchMode.STARTS_WITH },
+    tarifa: { value: null, matchMode: FilterMatchMode.STARTS_WITH }, 
   });
   const [dialogVisible, setDialogVisible] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
@@ -180,9 +182,10 @@ export default function HabitacionPage() {
       <DataTable dataKey="id" loading={loading} showGridlines size='small' value={habitaciones} filters={filters}
         onSelectionChange={(e) => setSelectedHabitacion(e.value)}
         selectionMode="single" selection={selectedHabitacion!}
-        globalFilterFields={['nombre','precio', 'estado', 'claseHabitacion.nombre', 'nivel.nombre']} paginator rows={10} rowsPerPageOptions={[5, 10, 25, 50]} tableStyle={{ minWidth: '50rem' }} header={header} emptyMessage="No se encuentran habitaciones.">
+        globalFilterFields={['nombre','precio', 'estado', 'claseHabitacion.nombre', 'nivel.nombre', 'tarifa']} paginator rows={10} rowsPerPageOptions={[5, 10, 25, 50]} tableStyle={{ minWidth: '50rem' }} header={header} emptyMessage="No se encuentran habitaciones.">
         <Column field="nombre" sortable header="Nombre" style={{ width: '20%' }}></Column>
         <Column field="precio" sortable header="Precio" style={{ width: '20%' }}></Column>
+        <Column field="tarifa" sortable header="Tarifa" style={{ width: '20%' }}></Column>
         <Column field="estado" body={(rowData) => getEstadoLabel(rowData.estado)} sortable header="Estado" style={{ width: '15%' }}></Column>
         <Column field="nivel.nombre" sortable header="Nivel" style={{ width: '15%' }}></Column>
         <Column field="claseHabitacion.nombre" sortable header="Clase" style={{ width: '15%' }}></Column>

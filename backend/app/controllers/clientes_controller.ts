@@ -1,6 +1,5 @@
 import { HttpContext } from '@adonisjs/core/http'
 import Cliente from '#models/cliente'
-import { clienteValidator } from '#validators/cliente'
 
 export default class ClientesController {
   async index({ response }: HttpContext) {
@@ -14,7 +13,14 @@ export default class ClientesController {
 
   async store({ request, response }: HttpContext) {
     try {
-      const data = await request.validateUsing(clienteValidator)
+      const data = request.only([
+        'tipo_documento',
+        'num_documento',
+        'nombre',
+        'telefono',
+        'direccion',
+        'activo',
+      ])
       const cliente = await Cliente.create(data)
       return response.created(cliente)
     } catch (error) {

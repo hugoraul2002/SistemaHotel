@@ -1,12 +1,15 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { Sidebar } from 'primereact/sidebar';
-import { Menu } from 'primereact/menu';
+import { PanelMenu } from 'primereact/panelmenu';
 import { useNavigate } from 'react-router-dom';
-import { Usuario } from '../types/types';
+
+import { MenuItem } from 'primereact/menuitem';
+import { useUser } from '../hooks/UserContext';
+
 
 export default function Barra({ visible, setVisible }: { visible: boolean, setVisible: React.Dispatch<React.SetStateAction<boolean>> }) {
     const navigate = useNavigate();
-    const [user, setUser] = React.useState<Usuario>({ id: 0, full_name: '', email: '', password: '', rol:{id:0, nombre:''} });
+    const { user } = useUser();
 
     const customIcons = (
         <>
@@ -25,34 +28,49 @@ export default function Barra({ visible, setVisible }: { visible: boolean, setVi
     const navegar = (ruta: string): void => {
         setVisible(false);
         navigate(ruta);
-    }
+    };
 
-    const items = [
-        { label: 'Clientes', icon: 'pi pi-users' , command: () => navegar('/clientes')},
-        { label: 'Reservaciones', icon: 'pi pi-calendar', command: () => navegar('/reservaciones') },
+    const itemRenderer = (item:MenuItem ) => (
+        <a className="flex align-items-center px-3 py-2 cursor-pointer" >
+            <span className={`${item.icon} text-sky-400`} />
+            <span className={`mx-2 ${item.items && 'font-semibold'}`}>{item.label}</span>
+            {/* {item.badge && <Badge className="ml-auto" value={item.badge} />}
+            {item.shortcut && <span className="ml-auto border-1 surface-border border-round surface-100 text-xs p-1">{item.shortcut}</span>} */}
+        </a>
+    );
+
+    const items: MenuItem[] = [
         {
-            label: 'Mantenimientos', icon: 'pi pi-chart-line', items: [
-                { label: 'Niveles', icon: 'pi pi-file', command: () => navegar('/niveles') },
-                { label: 'Clases de habitación', icon: 'pi pi-file', command: () => navegar('/claseshabitacion') },
-                { label: 'Habitaciones', icon: 'pi pi-file', command: () => navegar('/habitaciones') }
+            label: 'Reservaciones', 
+            icon: 'pi pi-calendar', 
+            template: itemRenderer,
+            items: [
+                { label: 'Clientes', icon: 'pi pi-users', command: () => navegar('/clientes'), template: itemRenderer },
+                { label: 'Reservaciones', icon: 'pi pi-calendar', command: () => navegar('/reservaciones'), template: itemRenderer }
             ]
         },
-        { label: 'Usuarios', icon: 'pi pi-user', command: () => navegar('/usuarios') },
-        { label: 'Salir', icon: 'pi pi-sign-out', command: () => setVisible(false) }
+        {
+            label: 'Catálogos', 
+            icon: 'pi pi-chart-line', 
+            template: itemRenderer,
+            items: [
+                { label: 'Niveles', icon: 'pi pi-file', command: () => navegar('/niveles'), template: itemRenderer },
+                { label: 'Clases de habitación', icon: 'pi pi-file', command: () => navegar('/claseshabitacion'), template: itemRenderer },
+                { label: 'Habitaciones', icon: 'pi pi-file', command: () => navegar('/habitaciones'), template: itemRenderer }
+            ]
+        },
+        { 
+            label: 'Usuarios', 
+            icon: 'pi pi-user', 
+            command: () => navegar('/usuarios'), 
+            template: itemRenderer 
+        }
     ];
 
-    useEffect(() => {
-        const user = localStorage.getItem('auth');
-        if (user) {
-            const userJson = JSON.parse(user);
-            const usuarioRecuperado: Usuario = { id: userJson.id, full_name: userJson.fullName, email: userJson.email, password: '', rol: { id: userJson.rol.id, nombre: userJson.rol.nombre } };
-            setUser(usuarioRecuperado);
-        }
-    }, []);
 
     const filteredItems = items.filter(item => {
-        if (item.label === 'Usuarios' || item.label === 'Mantenimientos') {
-            return user.rol.nombre === 'ADMIN';
+        if (item.label === 'Usuarios' || item.label === 'Mantenimientos' || item.label === 'Reservaciones' || item.label === 'Clientes') {
+            return user?.rol.nombre === 'ADMIN';
         }
         return true;
     });
@@ -60,7 +78,7 @@ export default function Barra({ visible, setVisible }: { visible: boolean, setVi
     return (
         <div className="card flex justify-content-center">
             <Sidebar header={customHeader} visible={visible} onHide={() => setVisible(false)} icons={customIcons}>
-                <Menu model={filteredItems} className='w-full md:w-15rem h-full' />
+                <PanelMenu model={filteredItems} className='w-full md:w-15rem h-full' />
             </Sidebar>
         </div>
     );

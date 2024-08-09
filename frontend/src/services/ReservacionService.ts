@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { Reservacion } from '../types/types';
-
+import dayjs from 'dayjs';
 const API_URL = 'http://localhost:3333/reservaciones'; 
 
 export class ReservacionService {
@@ -45,9 +45,9 @@ export class ReservacionService {
             userId: user.id,
             total: data.total,
             estado: data.estado,
-            fechaInicio: formatDateTime(data.fechaInicio),
-            fechaFin: formatDateTime(data.fechaFin),
-            fechaRegistro: formatDateTime(new Date()),
+            fechaInicio: formatDateTime(dayjs(data.fechaInicio).subtract(6,'hours').toDate()),
+            fechaFin: formatDateTime(dayjs(data.fechaFin).subtract(6,'hours').toDate()),
+            fechaRegistro: formatDateTime(dayjs().subtract(6,'hours').toDate()),
             observaciones: data.observaciones,
             anulado: false
           };

@@ -19,12 +19,6 @@ interface AuthResponse {
   user:Usuario;
 }
 
-// interface MeResponse {
-//   id: string;
-//   username: string;
-//   email: string;
-// }
-
 const register = async (data: RegisterData): Promise<AuthResponse> => {
   const response = await axios.post<AuthResponse>(`${API_URL}/register`, data);
   return response.data;
@@ -35,6 +29,7 @@ const registerCliente = async (data: UserCliente): Promise<AuthResponse> => {
   const response = await axios.post<AuthResponse>(`${API_URL}/registerCliente`, data);
   if (response.status === 200) {
     localStorage.setItem('token', response.data.token);}    
+    localStorage.setItem('auth', JSON.stringify(response.data.user));
   return response.data;
 };
 
@@ -65,12 +60,15 @@ const me = async (): Promise<Usuario> => {
   const token = localStorage.getItem('token');
   if (!token) throw new Error('No se encontro token.');
 
-  const response = await axios.get<Usuario>(`${API_URL}/me`, {
+  const response = await axios.get(`${API_URL}/me`, {
     headers: {
       'Authorization': `Bearer ${token}`
     }
   });
-  return response.data;
+  console.log(response);
+  if (response.status !== 200) throw new Error('No se pudo obtener el usuario.');
+  const user :Usuario = { id: response.data.user.id, full_name: response.data.user.fullName, email: response.data.user.email, password: '', rol: { id: response.data.user.rol.id, nombre: response.data.user.rol.nombre } };
+  return user;
 };
 
 export { register, login, logout, me , registerCliente};

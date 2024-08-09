@@ -35,8 +35,8 @@ export class ClienteService {
         const token = localStorage.getItem('token');
         const newData = {
             nombre: data.nombre,
-            tipoDocumento: data.tipoDocumento,
-            numeroDocumento: data.numeroDocumento,
+            tipo_documento: data.tipoDocumento,
+            num_documento: data.numeroDocumento,
             telefono: data.telefono,
             direccion: data.direccion,
             activo:true
@@ -76,8 +76,10 @@ export class ClienteService {
     static async updateActivo(id: number) {
         try {
             const token = localStorage.getItem('token');
-            const response = await axios.put(`${API_URL}/updateActivo/${id}`,{
-                headers: { 'Authorization': `Bearer ${token}` } 
+            const response = await axios.put(`${API_URL}/updateActivo/${id}`,{},{
+                headers: { 'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            } 
             });
             return response.data;
         } catch (error) {

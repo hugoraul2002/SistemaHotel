@@ -11,6 +11,7 @@ import { Cliente } from '../types/types';
 import { Toast } from 'primereact/toast';
 // import ClienteDialog from '../components/clientes/FormCliente';
 import { ConfirmDialog, confirmDialog } from 'primereact/confirmdialog';
+import ClienteDialog from '../components/clientes/ClienteDialog';
 
 export default function ClientePage() {
   const toast = useRef<Toast>(null);
@@ -18,6 +19,7 @@ export default function ClientePage() {
   const [loading, setLoading] = useState<boolean>(true);
   const [globalFilterValue, setGlobalFilterValue] = useState<string>('');
   const [selectedCliente, setSelectedCliente] = useState<Cliente | null>(null);
+
   const [filters, setFilters] = useState<DataTableFilterMeta>({
     global: { value: null, matchMode: FilterMatchMode.CONTAINS },
     nombre: { value: null, matchMode: FilterMatchMode.STARTS_WITH },
@@ -67,8 +69,8 @@ export default function ClientePage() {
 
   const handleEditCliente = (cliente: Cliente) => {
     console.log(cliente);
-    setIsEditing(true);
     setEditingClienteId(cliente.id);
+    setIsEditing(true);
     setDialogVisible(true);
   };
 
@@ -188,6 +190,14 @@ export default function ClientePage() {
         visible={dialogVisible}
         onSave={handleSaveCliente}
       /> */}
+      <ClienteDialog
+        editar={isEditing}
+        id={editingClienteId!}
+        visible={dialogVisible}
+        onHide={handleDialogHide}
+        onSave={handleSaveCliente}
+        
+      />
     </div>
   );
 }

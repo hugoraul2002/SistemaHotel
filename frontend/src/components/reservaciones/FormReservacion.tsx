@@ -1,5 +1,4 @@
-import React, { useState } from 'react';
-import { Dialog } from 'primereact/dialog';
+import React, { useEffect, useState } from 'react';
 import { Button } from 'primereact/button';
 import { Dropdown } from 'primereact/dropdown';
 import { InputText } from 'primereact/inputtext';
@@ -8,6 +7,7 @@ import { Reservacion, Habitacion, Cliente } from '../../types/types';
 import { addLocale } from 'primereact/api';
 import { Nullable } from 'primereact/ts-helpers';
 import { Usuario } from '../../types/types';
+import { Sidebar } from 'primereact/sidebar';
 interface ReservacionDialogProps {
   visible: boolean;
   onHide: () => void;
@@ -21,7 +21,7 @@ export const ReservacionDialog: React.FC<ReservacionDialogProps> = ({ visible, o
   const [selectedClient, setSelectedClient] = useState<Cliente | null>(null);
   const [fechaInicio, setFechaInicio] = useState<Nullable<Date>>(null);
   const [fechaFin, setFechaFin] = useState<Nullable<Date>>(null);
-
+  const [total, setTotal] = useState<number>(0);
   const [observaciones, setObservaciones] = useState<string>('');
 
   addLocale('es', {
@@ -37,7 +37,7 @@ export const ReservacionDialog: React.FC<ReservacionDialogProps> = ({ visible, o
 
 
   const handleSave = () => {
-    if (!selectedHabitacion || !selectedClient || !fechaInicio || !fechaFin) {
+    if (!selectedHabitacion || !selectedClient || !fechaInicio || !fechaFin || !total) {
       alert('Todos los campos son obligatorios');
       return;
     }
@@ -47,7 +47,7 @@ export const ReservacionDialog: React.FC<ReservacionDialogProps> = ({ visible, o
       habitacion: selectedHabitacion,
       cliente: selectedClient,
       usuario: {} as Usuario,
-      total: selectedHabitacion.precio,
+      total: total,
       estado: 'creada',
       fechaInicio,
       fechaFin,
@@ -60,27 +60,45 @@ export const ReservacionDialog: React.FC<ReservacionDialogProps> = ({ visible, o
     onHide();
   };
 
+  useEffect(() => {
+    setSelectedHabitacion(null);
+    setSelectedClient(null);
+    setFechaInicio(null);
+    setFechaFin(null);
+    setObservaciones('');
+  }, [visible]);
+
   return (
-    <Dialog visible={visible} style={{ width: '50vw' }} header="Nueva Reservación" modal onHide={onHide}>
+
+    <Sidebar visible={visible} position="right" header="Nueva Reservación" modal onHide={onHide}>
       <div className="p-fluid">
         <div className="field">
           <label htmlFor="habitacion">Habitación</label>
           <Dropdown
+            filter
             id="habitacion"
             value={selectedHabitacion}
             options={habitaciones}
-            onChange={(e) => setSelectedHabitacion(e.value)}
+            onChange={(e) => {setSelectedHabitacion(e.value);setTotal(e.value.precio)}}
             optionLabel="nombre"
             placeholder="Seleccione una habitación"
           />
           {selectedHabitacion && (
-            <label htmlFor="precio" className="mt-2">Precio: Q. {selectedHabitacion.precio}</label>
+            // <label htmlFor="precio" className="mt-2">Precio: Q. {selectedHabitacion.precio}</label>
+            <div className="field">
+              <label htmlFor="precio">Tarifa - Total</label>
+              <div className="flex">
+              <InputText id="tarifa" value={selectedHabitacion.tarifa.toString() + " h"} disabled  />
+              <InputText id="precio" type='number' value={total.toString()}  onChange={(e) => setTotal(parseFloat(e.target.value))} />
+              </div>
+            </div>
           )}
         </div>
 
         <div className="field">
           <label htmlFor="cliente">Cliente</label>
           <Dropdown
+            filter
             id="cliente"
             value={selectedClient}
             options={clientes}
@@ -117,7 +135,7 @@ export const ReservacionDialog: React.FC<ReservacionDialogProps> = ({ visible, o
           <Button label="Guardar" icon="pi pi-check" onClick={handleSave} />
         </div>
       </div>
-    </Dialog>
+    </Sidebar>
   );
 };
 

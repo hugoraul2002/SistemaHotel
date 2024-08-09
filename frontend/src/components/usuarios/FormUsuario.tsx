@@ -138,6 +138,7 @@ const UsuarioDialog: React.FC<UsuarioDialogProps> = ({ editar, id, onHide, visib
                 weakLabel="Débil"
                 mediumLabel="Medio"
                 strongLabel="Fuerte"
+                placeholder='Contraseña'
               />
             </div>
           }

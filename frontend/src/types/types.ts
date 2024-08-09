@@ -39,6 +39,7 @@ export interface Usuario {
     id: number;
     nombre: string;
     precio: number;
+    tarifa: number;
     estado: string;
     anulado: boolean;
     nivel: Nivel;
@@ -118,6 +119,7 @@ export interface Usuario {
     style: {
       backgroundColor: string;
     };
+    reservacion: Reservacion;
   }
 
   export type LayoutConfig = {

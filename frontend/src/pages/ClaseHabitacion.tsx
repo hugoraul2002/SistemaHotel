@@ -23,7 +23,6 @@ export default function ClaseHabitacionPage() {
   const [filters, setFilters] = useState<DataTableFilterMeta>({
     global: { value: null, matchMode: FilterMatchMode.CONTAINS },
     nombre: { value: null, matchMode: FilterMatchMode.STARTS_WITH },
-    descripcion: { value: null, matchMode: FilterMatchMode.STARTS_WITH }
   });
 
   const mostrarToast = (detalle: string, tipo: "success" | "info" | "warn" | "error") => {
@@ -169,9 +168,8 @@ export default function ClaseHabitacionPage() {
       <Toast ref={toast} />
       <ConfirmDialog />
       <DataTable dataKey="id" loading={loading} showGridlines size='small' value={claseHabitaciones} filters={filters}
-        globalFilterFields={['nombre', 'descripcion']} paginator rows={10} rowsPerPageOptions={[5, 10, 25, 50]} tableStyle={{ minWidth: '50rem' }} header={header} emptyMessage="No se encuentran clases de habitación.">
+        globalFilterFields={['nombre', ]} paginator rows={10} rowsPerPageOptions={[5, 10, 25, 50]} tableStyle={{ minWidth: '50rem' }} header={header} emptyMessage="No se encuentran clases de habitación.">
         <Column field="nombre" sortable header="Nombre" style={{ width: '25%' }}></Column>
-        <Column field="descripcion" sortable header="Descripción" style={{ width: '25%' }}></Column>
         <Column body={actionBodyTemplate} header="Acciones" bodyStyle={{ width: '25%', textAlign: 'center' }} exportable={false}></Column>
       </DataTable>
       <FormClaseHabitacion

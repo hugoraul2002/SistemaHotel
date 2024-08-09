@@ -1,0 +1,14 @@
+/* custom-calendar.css */
+
+.rbc-month-view .rbc-row-segment {
+    max-height: none !important; /* Quita la restricción de altura máxima */
+  }
+  
+  .rbc-event {
+    white-space: normal !important; /* Permite el salto de línea en los títulos de los eventos */
+  }
+  
+  .rbc-show-more {
+    display: none !important; /* Oculta el botón "+X más" */
+  }
+  
