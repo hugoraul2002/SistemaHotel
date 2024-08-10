@@ -12,6 +12,7 @@ import { Button } from 'primereact/button';
 import { ReservacionDialog } from '../components/reservaciones/FormReservacion'; 
 import { ReservacionInfoDialog } from '../components/reservaciones/FrmReservacionInfo'; 
 import { CalendarEvent } from '../types/types';
+import { AxiosError } from 'axios';
 dayjs.locale('es');
 const localizer = dayjsLocalizer(dayjs);
 
@@ -79,7 +80,7 @@ const ReservacionesPage = () => {
     const mappedEvents = reservaciones.map((reservacion) => ({      
       start: dayjs(reservacion.fechaInicio).add(6,'hour').toDate(),
       end: dayjs(reservacion.fechaFin).add(6,'hour').toDate(),
-      title: dayjs(reservacion.fechaInicio).add(6,'hour').format('HH:mm') + "  " + reservacion.habitacion.nombre + " " + reservacion.cliente.nombre,
+      title: dayjs(reservacion.fechaInicio).add(6,'hour').format('HH:mm') + "  " + reservacion.habitacion.nombre + " "  + reservacion.habitacion.claseHabitacion.nombre + "  " + reservacion.cliente.nombre,
       style: {
         fontSize: '0.6rem',
         backgroundColor: mapEstadoToColor(reservacion.estado),
@@ -99,13 +100,19 @@ const ReservacionesPage = () => {
       mostrarToast('Reservación creada', 'success');
       fetchReservaciones();
       setDialogVisible(false);
-    } catch (error) {
-      console.error('Error creating reservacion:', error);
+    } catch (err) {
+      const error = err as AxiosError;
+      if (error.response && error.response.status === 409) {
+        mostrarToast('Ya existe una reservación en esas fechas, intentelo nuevamente.', 'warn');
+      } else {
+        mostrarToast('Error creando reservación', 'error');
+        }
     }
   };
 
   const handleEventSelect = (event: CalendarEvent) => {
     setSelectedReservacion(event.reservacion);
+    console.log(event.reservacion);
     setInfoDialogVisible(true);
   };
 
@@ -141,7 +148,7 @@ const ReservacionesPage = () => {
 
   return (
     <div className="flex flex-col items-center p-4 space-y-4">
-      <Toast ref={toast} />
+      <Toast ref={toast} position="top-left"/>
       <div className="flex flex-wrap space-x-4">
         <Button size='small' label="Nueva" severity='info' icon="pi pi-plus" onClick={() => setDialogVisible(true)} />
         {colorLegend.map((legend) => (
@@ -151,8 +158,9 @@ const ReservacionesPage = () => {
           </div>
         ))}
       </div>
-      <div className="w-full md:w-3/4 lg:w-2/3" style={{ height: '100vh', width:'100vw' }}>
+      <div className="w-full md:w-3/4 lg:w-2/3" style={{ height: '100vh', width:'90vw' }}>
         <Calendar
+        
           events={events}
           startAccessor="start"
           endAccessor="end"
@@ -169,6 +177,7 @@ const ReservacionesPage = () => {
         onSave={handleCreateReservacion}
         habitaciones={habitaciones}
         clientes={clientes}
+        mostrarToast={mostrarToast}
       />
       <ReservacionInfoDialog
         visible={infoDialogVisible}

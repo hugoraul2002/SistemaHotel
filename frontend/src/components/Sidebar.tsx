@@ -21,7 +21,7 @@ export default function Barra({ visible, setVisible }: { visible: boolean, setVi
 
     const customHeader = (
         <div className="flex align-items-center gap-2">
-            <span className="font-bold">Bienvenido {user && user.full_name.split(' ')[0]}</span>
+            <span className="font-bold">{user ? `Bienvenido ${user.full_name.split(' ')[0]}` : 'Bienvenido'}</span>
         </div>
     );
 
@@ -70,7 +70,7 @@ export default function Barra({ visible, setVisible }: { visible: boolean, setVi
 
     const filteredItems = items.filter(item => {
         if (item.label === 'Usuarios' || item.label === 'Mantenimientos' || item.label === 'Reservaciones' || item.label === 'Clientes') {
-            return user?.rol.nombre === 'ADMIN';
+            return user?.rol.nombre != 'CLIENTE';
         }
         return true;
     });

@@ -11,8 +11,10 @@ import { Usuario } from '../types/types';
 import { Toast } from 'primereact/toast';
 import FormUsuario from '../components/usuarios/FormUsuario'; 
 import { ConfirmDialog, confirmDialog } from 'primereact/confirmdialog';
+import { useUser } from '../hooks/UserContext';
 
 export default function UsuarioPage() {
+  const { user } = useUser();
   const toast = useRef<Toast>(null);
   const [usuarios, setUsuarios] = useState<Usuario[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
@@ -112,7 +114,7 @@ export default function UsuarioPage() {
       <div className="flex align-items-center justify-content-end gap-2">
         <Button type="button" icon="pi pi-pen-to-square" onClick={() => handleEditUsuario(rowData)}
           severity='info' outlined rounded data-pr-tooltip="Editar" />
-        <Button type="button"  outlined icon="pi pi-trash" severity="danger" onClick={() => confirmarAnulacion(rowData)} rounded data-pr-tooltip="Eliminar" />
+        {user?.rol.nombre==="ADMIN" && <Button type="button"  outlined icon="pi pi-trash" severity="danger" onClick={() => confirmarAnulacion(rowData)} rounded data-pr-tooltip="Eliminar" />}
       </div>
     );
   };
@@ -123,7 +125,6 @@ export default function UsuarioPage() {
         const users = await UsuarioService.getAllUsers();
         setUsuarios(users);
         setLoading(false);
-        console.log(users);
       } catch (error) {
         console.error('Error fetching users:', error);
       }

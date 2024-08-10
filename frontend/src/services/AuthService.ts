@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { UserCliente, Usuario } from '../types/types';
+import { Usuario, UserCliente } from '../types/types';
 
 const API_URL = 'http://localhost:3333/auth';
 
@@ -16,7 +16,7 @@ interface LoginData {
 
 interface AuthResponse {
   token: string;
-  user:Usuario;
+  user: Usuario;
 }
 
 const register = async (data: RegisterData): Promise<AuthResponse> => {
@@ -25,11 +25,11 @@ const register = async (data: RegisterData): Promise<AuthResponse> => {
 };
 
 const registerCliente = async (data: UserCliente): Promise<AuthResponse> => {
-  console.log(data);
   const response = await axios.post<AuthResponse>(`${API_URL}/registerCliente`, data);
   if (response.status === 200) {
-    localStorage.setItem('token', response.data.token);}    
+    localStorage.setItem('token', response.data.token);
     localStorage.setItem('auth', JSON.stringify(response.data.user));
+  }
   return response.data;
 };
 
@@ -37,8 +37,8 @@ const login = async (data: LoginData): Promise<AuthResponse> => {
   const response = await axios.post<AuthResponse>(`${API_URL}/login`, data);
   if (response.status === 200) {
     localStorage.setItem('token', response.data.token);
-    console.log(response.data);
     localStorage.setItem('auth', JSON.stringify(response.data.user));
+    window.dispatchEvent(new Event('storage'));  // Notificar el cambio en el token
   }
   return response.data;
 };
@@ -54,6 +54,7 @@ const logout = async (): Promise<void> => {
   });
   localStorage.removeItem('token');
   localStorage.removeItem('auth');
+  window.dispatchEvent(new Event('storage'));  // Notificar el cambio en el token
 };
 
 const me = async (): Promise<Usuario> => {
@@ -65,10 +66,18 @@ const me = async (): Promise<Usuario> => {
       'Authorization': `Bearer ${token}`
     }
   });
-  console.log(response);
   if (response.status !== 200) throw new Error('No se pudo obtener el usuario.');
-  const user :Usuario = { id: response.data.user.id, full_name: response.data.user.fullName, email: response.data.user.email, password: '', rol: { id: response.data.user.rol.id, nombre: response.data.user.rol.nombre } };
+  const user: Usuario = {
+    id: response.data.user.id,
+    full_name: response.data.user.fullName,
+    email: response.data.user.email,
+    password: '',
+    rol: {
+      id: response.data.user.rol.id,
+      nombre: response.data.user.rol.nombre
+    }
+  };
   return user;
 };
 
-export { register, login, logout, me , registerCliente};
+export { register, login, logout, me, registerCliente };

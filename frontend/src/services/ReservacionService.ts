@@ -1,4 +1,4 @@
-import axios from 'axios';
+import axios, { AxiosError } from 'axios';
 import { Reservacion } from '../types/types';
 import dayjs from 'dayjs';
 const API_URL = 'http://localhost:3333/reservaciones'; 
@@ -51,9 +51,7 @@ export class ReservacionService {
             observaciones: data.observaciones,
             anulado: false
           };
-      
-          console.log(newData);
-      
+
           const response = await axios.post(`${API_URL}/store`, newData, {
             headers: { 
               'Authorization': `Bearer ${token}`,
@@ -62,9 +60,14 @@ export class ReservacionService {
           });
       
           return response.data;
-        } catch (error) {
+        } catch (err) {
+            const error = err as AxiosError;
+            if (error.response && error.response.status === 409) {
+              console.error('Error creating reservation:', (error.response.data as any).message);
+            } 
           console.error('Error creating reservation:', error);
           throw error;
+            
         }
       }
       

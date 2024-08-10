@@ -38,7 +38,7 @@ export const ReservacionInfoDialog: React.FC<ReservacionInfoDialogProps> = ({ vi
       <div className="p-fluid">
         <div className="field">
           <label htmlFor="habitacion">Habitación</label>
-          <InputText id="habitacion" value={reservacion.habitacion.nombre} disabled className="w-full" />
+          <InputText id="habitacion" value={reservacion.habitacion.nombre + " | " + reservacion.habitacion.claseHabitacion.nombre} disabled className="w-full" />
         </div>
 
         <div className="field">
@@ -58,12 +58,12 @@ export const ReservacionInfoDialog: React.FC<ReservacionInfoDialogProps> = ({ vi
 
         <div className="field">
           <label htmlFor="fechaInicio">Fecha y Hora de Inicio</label>
-          <Calendar id="fechaInicio" value={dayjs(reservacion.fechaInicio).add(6,'hour').toDate()} showTime hourFormat="24" locale='es' disabled className="w-full" />
+          <Calendar id="fechaInicio" value={dayjs(reservacion.fechaInicio).add(6,'hour').toDate()} showTime hourFormat="24" locale='es' dateFormat="dd/mm/yy" disabled className="w-full" />
         </div>
 
         <div className="field">
           <label htmlFor="fechaFin">Fecha y Hora de Fin</label>
-          <Calendar id="fechaFin" value={dayjs(reservacion.fechaFin).add(6,'hour').toDate()} showTime hourFormat="24" locale='es' disabled className="w-full" />
+          <Calendar id="fechaFin" value={dayjs(reservacion.fechaFin).add(6,'hour').toDate()} showTime hourFormat="24" locale='es' disabled dateFormat="dd/mm/yy" className="w-full" />
         </div>
 
         <div className="field">

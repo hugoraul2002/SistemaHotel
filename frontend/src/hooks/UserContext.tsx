@@ -17,7 +17,7 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        const userData : Usuario = await me();
+        const userData: Usuario = await me();
         setUser(userData);
       } catch (error) {
         console.error('Failed to fetch user', error);
@@ -26,7 +26,23 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children
       }
     };
 
+    // Fetch user on initial load
     fetchUser();
+
+    // Watch for changes in the token
+    const handleStorageChange = () => {
+      const token = localStorage.getItem('token');
+      if (token) {
+        fetchUser();
+      } else {
+        setUser(null);
+      }
+    };
+
+    window.addEventListener('storage', handleStorageChange);
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+    };
   }, []);
 
   return (

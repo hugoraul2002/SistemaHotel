@@ -16,7 +16,7 @@ const LoginComponent: React.FC = () => {
     const toast = useRef<Toast>(null);
 
     const showSuccess = () => {
-        toast.current?.show({ severity: 'success', summary: 'Éxito', detail: 'Usuario registrado.', life: 3000 });
+        toast.current?.show({ severity: 'success', summary: 'Éxito', detail: 'Inicio de sesión exitoso.', life: 3000 });
     }
 
     const validateUsername = (value: string) => {
@@ -39,7 +39,9 @@ const LoginComponent: React.FC = () => {
             const response = await login({ email, password });
             if (response.token) {
                 showSuccess();
-                navigate('/Inicio');
+                setTimeout(() => {
+                    navigate('/inicio');
+                }, 1000);
             }
         } catch (err) {
             const error = err as AxiosError;

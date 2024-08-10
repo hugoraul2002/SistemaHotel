@@ -8,15 +8,17 @@ import { addLocale } from 'primereact/api';
 import { Nullable } from 'primereact/ts-helpers';
 import { Usuario } from '../../types/types';
 import { Sidebar } from 'primereact/sidebar';
+import dayjs from 'dayjs';
 interface ReservacionDialogProps {
   visible: boolean;
   onHide: () => void;
   onSave: (data: Reservacion) => void;
   habitaciones: Habitacion[];
   clientes: Cliente[];
+  mostrarToast: (detalle: string, tipo: "success" | "info" | "warn" | "error") => void;
 }
 
-export const ReservacionDialog: React.FC<ReservacionDialogProps> = ({ visible, onHide, onSave, habitaciones, clientes }) => {
+export const ReservacionDialog: React.FC<ReservacionDialogProps> = ({ visible, onHide, onSave, habitaciones, clientes, mostrarToast }) => {
   const [selectedHabitacion, setSelectedHabitacion] = useState<Habitacion | null>(null);
   const [selectedClient, setSelectedClient] = useState<Cliente | null>(null);
   const [fechaInicio, setFechaInicio] = useState<Nullable<Date>>(null);
@@ -37,8 +39,8 @@ export const ReservacionDialog: React.FC<ReservacionDialogProps> = ({ visible, o
 
 
   const handleSave = () => {
-    if (!selectedHabitacion || !selectedClient || !fechaInicio || !fechaFin || !total) {
-      alert('Todos los campos son obligatorios');
+    if (!selectedHabitacion || !selectedClient || fechaInicio==null || fechaFin==null || !total ) {
+      mostrarToast('Todos los campos son obligatorios', 'warn');
       return;
     }
 
@@ -57,7 +59,6 @@ export const ReservacionDialog: React.FC<ReservacionDialogProps> = ({ visible, o
     };
 
     onSave(nuevaReservacion);
-    onHide();
   };
 
   useEffect(() => {
@@ -110,13 +111,13 @@ export const ReservacionDialog: React.FC<ReservacionDialogProps> = ({ visible, o
 
         <div className="field">
           <label htmlFor="fechaInicio">Fecha y Hora de Inicio</label>
-          <Calendar id="fechaInicio" value={fechaInicio} onChange={(e) => setFechaInicio(e.value)} showTime hourFormat="24" locale='es' placeholder="Seleccione fecha y hora de inicio" />
+          <Calendar showIcon  id="fechaInicio" value={fechaInicio} onChange={(e) => {setFechaInicio(e.value); setFechaFin(dayjs(e.value).add(selectedHabitacion?.tarifa ?? 4,'hours').toDate())}} showTime hourFormat="24"  dateFormat="dd/mm/yy"  locale='es' placeholder="Seleccione fecha y hora de inicio" minDate={dayjs().toDate()} maxDate={dayjs().add(31,'days').toDate()} touchUI  />
           {!fechaInicio && <small className="p-error">Seleccione una fecha</small>}
         </div>
 
         <div className="field">
           <label htmlFor="fechaFin">Fecha y Hora de Fin</label>
-          <Calendar id="fechaFin" value={fechaFin} onChange={(e) => setFechaFin(e.value)} showTime hourFormat="24" locale='es' />
+          <Calendar showIcon  id="fechaFin" value={fechaFin} onChange={(e) =>{ setFechaFin(e.value)}} showTime hourFormat="24" locale='es'  dateFormat="dd/mm/yy" minDate={dayjs(fechaInicio).add(selectedHabitacion?.tarifa ?? 4,'hours').toDate() ?? dayjs().toDate()} maxDate={dayjs().add(31,'days').toDate()} touchUI />
           {!fechaFin && <small className="p-error">Seleccione una fecha</small>}
         </div>
 

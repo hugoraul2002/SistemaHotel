@@ -5,16 +5,18 @@ export default class ReservacionesController {
   async index({ response }: HttpContext) {
     try {
       const reservaciones = await Reservacion.query()
-        .preload('habitacion')
+        .preload('habitacion', (habitacionQuery) => {
+          habitacionQuery.preload('claseHabitacion')
+        })
         .preload('cliente')
         .preload('usuario')
       return response.ok(reservaciones)
     } catch (error) {
-      return response.internalServerError({ message: 'Error fetching reservations', error })
+      return response.internalServerError({ message: 'Error get reservaciones.', error })
     }
   }
 
-  async store({ request, response }: HttpContext) {
+  async create({ request, response }: HttpContext) {
     try {
       const reservacionData = request.only([
         'habitacionId',
@@ -33,6 +35,53 @@ export default class ReservacionesController {
       await reservacion.load('habitacion')
       await reservacion.load('cliente')
       await reservacion.load('usuario')
+      return response.created(reservacion)
+    } catch (error) {
+      return response.internalServerError({ message: 'Error creating reservation', error })
+    }
+  }
+
+  async store({ request, response }: HttpContext) {
+    try {
+      const reservacionData = request.only([
+        'habitacionId',
+        'clienteId',
+        'userId',
+        'total',
+        'estado',
+        'fechaInicio',
+        'fechaFin',
+        'fechaRegistro',
+        'observaciones',
+        'anulado',
+      ])
+
+      const existeConflicto = await Reservacion.query()
+        .where('habitacionId', reservacionData.habitacionId)
+        .where((query) => {
+          query
+            .whereBetween('fechaInicio', [reservacionData.fechaInicio, reservacionData.fechaFin])
+            .orWhereBetween('fechaFin', [reservacionData.fechaInicio, reservacionData.fechaFin])
+            .orWhere((subquery) => {
+              subquery
+                .where('fechaInicio', '<=', reservacionData.fechaInicio)
+                .where('fechaFin', '>=', reservacionData.fechaFin)
+            })
+        })
+        .first()
+
+      if (existeConflicto) {
+        return response.conflict({
+          message: 'La habitación está ocupada en el rango de fechas seleccionado.',
+        })
+      }
+
+      // Si no hay conflicto, crear la reservación
+      const reservacion = await Reservacion.create(reservacionData)
+      await reservacion.load('habitacion')
+      await reservacion.load('cliente')
+      await reservacion.load('usuario')
+
       return response.created(reservacion)
     } catch (error) {
       return response.internalServerError({ message: 'Error creating reservation', error })
@@ -75,6 +124,22 @@ export default class ReservacionesController {
       return response.ok(reservacion)
     } catch (error) {
       return response.internalServerError({ message: 'Error updating reservation', error })
+    }
+  }
+
+  async updateEstado({ params, request, response }: HttpContext) {
+    const data = request.only(['estado'])
+
+    try {
+      const reservacion = await Reservacion.findOrFail(params.id)
+      reservacion.merge(data)
+      await reservacion.save()
+      await reservacion.load('habitacion')
+      await reservacion.load('cliente')
+      await reservacion.load('usuario')
+      return response.ok(reservacion)
+    } catch (error) {
+      return response.internalServerError({ message: 'Error updating reservation state', error })
     }
   }
 

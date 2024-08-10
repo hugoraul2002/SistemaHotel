@@ -13,8 +13,7 @@ interface NavbarProps {
 }
 
 export const Navbar: React.FC<NavbarProps> = ({ setVisible }) => {
-  
-  const navigate = useNavigate();
+const navigate = useNavigate();
   const [darkTheme, setDarkTheme] = useState(false);
   const [user, setUser] = useState<Usuario>({ id: 0, full_name: '', email: '', password: '', rol: { id: 0, nombre: '' } });
   const menu = useRef<Menu>(null);

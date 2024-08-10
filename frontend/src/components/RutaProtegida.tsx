@@ -1,15 +1,37 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Navigate, Outlet } from 'react-router-dom';
-import { useUser } from '../hooks/UserContext';
+import { me } from '../services/AuthService';
 
 const PrivateRoute: React.FC = () => {
-  const { user, loading } = useUser();
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
 
-  if (loading) {
+  useEffect(() => {
+    const validateToken = async () => {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        setIsAuthenticated(false);
+        return;
+      }
+
+      try {
+        const response = await me();
+        if (response) {
+          setIsAuthenticated(true);
+        }
+      } catch (error) {
+        console.error('Token validation failed', error);
+        setIsAuthenticated(false);
+      }
+    };
+
+    validateToken();
+  }, []);
+
+  if (isAuthenticated === null) {
     return <div>Cargando...</div>;
   }
 
-  return user ? <Outlet /> : <Navigate to="/" />;
+  return isAuthenticated ? <Outlet /> : <Navigate to="/" />;
 };
 
 export default PrivateRoute;
