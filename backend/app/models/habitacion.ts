@@ -27,6 +27,9 @@ export default class Habitacion extends BaseModel {
   declare estado: string
 
   @column()
+  declare numeroPersonas: number
+
+  @column()
   declare anulado: boolean
 
   @belongsTo(() => Nivel, {

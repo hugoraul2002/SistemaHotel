@@ -11,9 +11,11 @@ import { Toast } from 'primereact/toast';
 import { ClaseHabitacion } from '../types/types';
 import FormClaseHabitacion from '../components/clases_habitacion/FormClaseHabitacion';
 import { ConfirmDialog, confirmDialog } from 'primereact/confirmdialog';
+import { useUser } from '../hooks/UserContext';
 
 export default function ClaseHabitacionPage() {
   const toast = useRef<Toast>(null);
+  const { user } = useUser();
   const [dialogVisible, setDialogVisible] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [editingClaseHabitacionId, setEditingClaseHabitacionId] = useState<number | null>(null);
@@ -49,19 +51,22 @@ export default function ClaseHabitacionPage() {
 
   const renderHeader = () => {
     return (
-      <div className="flex place-content-between gap-2">
-        <div>
-          <IconField iconPosition="left">
-            <InputIcon className="pi pi-search" />
-            <InputText value={globalFilterValue} onChange={onGlobalFilterChange} placeholder="Búsqueda" />
-          </IconField>
+      <>
+        <h1 className='font-semibold text-lg mb-4'>Listado de clases de habitaciones</h1>
+        <div className="flex place-content-between gap-2">
+          <div>
+            <IconField iconPosition="left">
+              <InputIcon className="pi pi-search" />
+              <InputText value={globalFilterValue} onChange={onGlobalFilterChange} placeholder="Búsqueda" />
+            </IconField>
+          </div>
+          <div className="flex gap-2">
+            <Button type="button" icon="pi pi-plus" rounded data-pr-tooltip="Nuevo" onClick={handleNuevo} />
+            <Button type="button" icon="pi pi-file-excel" severity="success" rounded data-pr-tooltip="XLS" />
+            <Button type="button" icon="pi pi-file-pdf" severity="warning" rounded data-pr-tooltip="PDF" />
+          </div>
         </div>
-        <div className="flex gap-2">
-          <Button type="button" icon="pi pi-plus" rounded data-pr-tooltip="Nuevo" onClick={handleNuevo} />
-          <Button type="button" icon="pi pi-file-excel" severity="success" rounded data-pr-tooltip="XLS" />
-          <Button type="button" icon="pi pi-file-pdf" severity="warning" rounded data-pr-tooltip="PDF" />
-        </div>
-      </div>
+      </>
     );
   };
 
@@ -72,7 +77,7 @@ export default function ClaseHabitacionPage() {
       <div className="flex align-items-center justify-content-end gap-2">
         <Button type="button" icon="pi pi-pen-to-square" onClick={() => handleEditClaseHabitacion(rowData)}
           severity='info' outlined rounded data-pr-tooltip="Editar" />
-        <Button type="button" outlined icon="pi pi-trash" severity="danger" onClick={() => confirmarAnulacion(rowData)} rounded data-pr-tooltip="Eliminar" />
+        {user?.rol.nombre === "ADMIN" && <Button type="button" outlined icon="pi pi-trash" severity="danger" onClick={() => confirmarAnulacion(rowData)} rounded data-pr-tooltip="Eliminar" />}
       </div>
     );
   };
@@ -168,7 +173,7 @@ export default function ClaseHabitacionPage() {
       <Toast ref={toast} />
       <ConfirmDialog />
       <DataTable dataKey="id" loading={loading} showGridlines size='small' value={claseHabitaciones} filters={filters}
-        globalFilterFields={['nombre', ]} paginator rows={10} rowsPerPageOptions={[5, 10, 25, 50]} tableStyle={{ minWidth: '50rem' }} header={header} emptyMessage="No se encuentran clases de habitación.">
+        globalFilterFields={['nombre',]} paginator rows={10} rowsPerPageOptions={[5, 10, 25, 50]} tableStyle={{ minWidth: '50rem' }} header={header} emptyMessage="No se encuentran clases de habitación.">
         <Column field="nombre" sortable header="Nombre" style={{ width: '25%' }}></Column>
         <Column body={actionBodyTemplate} header="Acciones" bodyStyle={{ width: '25%', textAlign: 'center' }} exportable={false}></Column>
       </DataTable>

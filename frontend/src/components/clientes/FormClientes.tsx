@@ -4,7 +4,6 @@ import { InputText } from 'primereact/inputtext';
 import { Dropdown } from 'primereact/dropdown';
 import { Button } from 'primereact/button';
 import { Cliente, Usuario } from '../../types/types';
-import { useUser } from '../../hooks/UserContext';
 interface ClienteDialogProps {
   visible: boolean;
   onHide: () => void;
@@ -13,7 +12,6 @@ interface ClienteDialogProps {
 }
 
 const ClienteDialog: React.FC<ClienteDialogProps> = ({ visible, onHide, onSave, cliente }) => {
-  const { user } = useUser();
   const [nombre, setNombre] = useState(cliente ? cliente.nombre : '');
   const [tipoDocumento, setTipoDocumento] = useState(cliente ? cliente.tipoDocumento : '');
   const [numeroDocumento, setNumeroDocumento] = useState(cliente ? cliente.numeroDocumento : '');

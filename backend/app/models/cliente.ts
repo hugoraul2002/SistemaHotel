@@ -2,6 +2,7 @@ import { BaseModel, belongsTo, column, hasMany } from '@adonisjs/lucid/orm'
 import User from '#models/user'
 import type { BelongsTo, HasMany } from '@adonisjs/lucid/types/relations'
 import Reservacion from '#models/reservacion'
+import Hospedaje from '#models/hospedaje'
 export default class Cliente extends BaseModel {
   static table = 'clientes'
   @column({ isPrimary: true })
@@ -37,4 +38,9 @@ export default class Cliente extends BaseModel {
     foreignKey: 'clienteId',
   })
   declare reservaciones: HasMany<typeof Reservacion>
+
+  @hasMany(() => Hospedaje, {
+    foreignKey: 'clienteId',
+  })
+  declare hospedajes: HasMany<typeof Hospedaje>
 }

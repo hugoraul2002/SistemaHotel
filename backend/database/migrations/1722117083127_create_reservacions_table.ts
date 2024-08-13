@@ -20,6 +20,8 @@ export default class extends BaseSchema {
       table.datetime('fecha_inicio').notNullable()
       table.datetime('fecha_fin').notNullable()
       table.dateTime('fecha_registro').notNullable()
+      table.integer('numero_adultos').notNullable()
+      table.integer('numero_ninos').notNullable()
       table.string('observaciones').nullable()
       table.boolean('anulado').defaultTo(false)
     })

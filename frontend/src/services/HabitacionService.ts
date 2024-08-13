@@ -40,6 +40,7 @@ export class HabitacionService {
             estado: data.estado,
             nivelId: data.nivel.id,
             claseHabitacionId: data.claseHabitacion.id,
+            numeroPersonas: data.numeroPersonas,
             anulado:false
         }
         const response = await axios.post(`${API_URL}/store`, newData,{
@@ -62,6 +63,7 @@ export class HabitacionService {
                 estado: data.estado,
                 nivelId: data.nivel.id,
                 claseHabitacionId: data.claseHabitacion.id,
+                numeroPersonas: data.numeroPersonas,
                 anulado:false
             }
             console.log(updateData);

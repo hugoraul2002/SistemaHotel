@@ -1,4 +1,95 @@
-// import type { HttpContext } from '@adonisjs/core/http'
-
+import type { HttpContext } from '@adonisjs/core/http'
+import Hospedaje from '#models/hospedaje'
 export default class HospedajesController {
+  async index({ response }: HttpContext) {
+    try {
+      const hospedajes = await Hospedaje.query()
+        .preload('habitacion')
+        .preload('cliente')
+        .preload('usuario')
+        .preload('reservacion')
+      return response.ok(hospedajes)
+    } catch (error) {
+      return response.internalServerError({ message: 'Error fetching lodgings', error })
+    }
+  }
+
+  async store({ request, response }: HttpContext) {
+    const data = request.only([
+      'habitacionId',
+      'clienteId',
+      'userId',
+      'reservacionId',
+      'fechaInicio',
+      'fechaFin',
+      'fechaRegistro',
+      'total',
+      'montoPenalidad',
+      'montoDescuento',
+      'anulado',
+    ])
+    try {
+      const hospedaje = await Hospedaje.create(data)
+      return response.created(hospedaje)
+    } catch (error) {
+      return response.internalServerError({ message: 'Error creating lodging', error })
+    }
+  }
+
+  async show({ params, response }: HttpContext) {
+    const { id } = params
+    try {
+      const hospedaje = await Hospedaje.findOrFail(id)
+      return response.ok(hospedaje)
+    } catch (error) {
+      return response.internalServerError({ message: 'Error fetching lodging', error })
+    }
+  }
+
+  async update({ params, request, response }: HttpContext) {
+    const { id } = params
+    const data = request.only([
+      'habitacionId',
+      'clienteId',
+      'userId',
+      'reservacionId',
+      'fechaInicio',
+      'fechaFin',
+      'fechaRegistro',
+      'total',
+      'montoPenalidad',
+      'montoDescuento',
+      'anulado',
+    ])
+    try {
+      const hospedaje = await Hospedaje.findOrFail(id)
+      hospedaje.merge(data)
+      await hospedaje.save()
+      return response.ok(hospedaje)
+    } catch (error) {
+      return response.internalServerError({ message: 'Error updating lodging', error })
+    }
+  }
+
+  async destroy({ params, response }: HttpContext) {
+    const { id } = params
+    try {
+      const hospedaje = await Hospedaje.findOrFail(id)
+      await hospedaje.delete()
+      return response.ok({ message: 'Lodging deleted' })
+    } catch (error) {
+      return response.internalServerError({ message: 'Error deleting lodging', error })
+    }
+  }
+  async updateAnulado({ params, response }: HttpContext) {
+    const { id } = params
+    try {
+      const hospedaje = await Hospedaje.findOrFail(id)
+      hospedaje.anulado = !hospedaje.anulado
+      await hospedaje.save()
+      return response.ok(hospedaje)
+    } catch (error) {
+      return response.internalServerError({ message: 'Error updating lodging', error })
+    }
+  }
 }

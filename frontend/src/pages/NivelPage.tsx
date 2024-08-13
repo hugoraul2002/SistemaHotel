@@ -11,8 +11,10 @@ import { Toast } from 'primereact/toast';
 import { Nivel } from '../types/types';
 import NivelDialog from '../components/niveles/FormNivel'
 import { ConfirmDialog, confirmDialog } from 'primereact/confirmdialog';
+import { useUser } from '../hooks/UserContext';
 export default function NivelPage() {
   const toast = useRef<Toast>(null);
+  const { user } = useUser();
   const [dialogVisible, setDialogVisible] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [editingNivelId, setEditingNivelId] = useState<number | null>(null);
@@ -49,6 +51,8 @@ export default function NivelPage() {
 
   const renderHeader = () => {
     return (
+      <>
+      <h1 className='font-semibold text-lg mb-4'>Listado de niveles</h1>  
       <div className="flex place-content-between gap-2">
         <div>
           <IconField iconPosition="left">
@@ -62,6 +66,7 @@ export default function NivelPage() {
           <Button type="button" icon="pi pi-file-pdf" severity="warning" rounded data-pr-tooltip="PDF" />
         </div>
       </div>
+      </>
     );
   };
 
@@ -72,7 +77,7 @@ export default function NivelPage() {
       <div className="flex align-items-center justify-content-end gap-2">
         <Button type="button" icon="pi pi-pen-to-square" onClick={() => handleEditNivel(rowData)}
           severity='info' outlined rounded data-pr-tooltip="Editar" />
-        <Button type="button" outlined icon="pi pi-trash" severity="danger" onClick={() => confirmarAnulacion(rowData)} rounded data-pr-tooltip="Eliminar" />
+        {user?.rol.nombre==="ADMIN" &&  <Button type="button" outlined icon="pi pi-trash" severity="danger" onClick={() => confirmarAnulacion(rowData)} rounded data-pr-tooltip="Eliminar" />}
       </div>
     );
   };

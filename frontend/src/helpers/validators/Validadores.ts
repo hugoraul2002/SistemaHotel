@@ -54,6 +54,7 @@ export const HabitacionSchema = z.object({
   nombre: z.string().min(1,{message:"El nombre no puede ser vacío."}),
   precio: z.number().positive({message:"El precio debe ser mayor a 0."}),
   tarifa: z.number().positive({message:"La tarifa debe ser mayor a 0."}),
+  numeroPersonas: z.number().positive({message:"El número de personas debe ser mayor a 0."}),
 });
 
 export const ReservacionSchema = z.object({
@@ -61,8 +62,19 @@ export const ReservacionSchema = z.object({
   fechaFin: z.date(),
   precio: z.number().positive({ message: 'El precio debe ser mayor a 0' }),
   estado: z.string().min(1, { message: 'El estado es obligatorio' }),
+  numeroAdultos: z.number().positive({ message: 'El número de adultos debe ser mayor a 0' }),
+  numeroNinos: z.number().positive({ message: 'El número de adultos debe ser mayor a 0' }),
   observaciones: z.string().optional(),
   anulado: z.boolean(),
+});
+
+export const ProductoSchema = z.object({
+  codigo: z.string().min(1, { message: 'El código es obligatorio' }),
+  nombre: z.string().min(1, { message: 'El nombre es obligatorio' }),
+  costo: z.number().positive({ message: 'El costo debe ser mayor a 0' }),
+  precioVenta: z.number().positive({ message: 'El precio de venta debe ser mayor a 0' }),
+  existencia: z.number().positive({ message: 'La existencia debe ser mayor a 0' }),
+  esServicio: z.boolean(),
 });
 
 export type UsuarioCliente = z.infer<typeof UsuarioClienteSchema>;
@@ -73,3 +85,4 @@ export type ClienteValidador = z.infer<typeof ClienteSchema>;
 export type NivelValidador = z.infer<typeof NivelSchema>;
 export type ClaseHabitacionValidador = z.infer<typeof NivelSchema>;
 export type ReservacionValidador = z.infer<typeof ReservacionSchema>;
+export type ProductoValidador = z.infer<typeof ProductoSchema>;

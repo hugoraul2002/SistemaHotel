@@ -67,11 +67,11 @@ const ReservacionesPage = () => {
         case 'confirmada':
           return '#56AB9E'; 
         case 'recepcionada':
-          return '#1E1B72'; 
+          return 'lightgreen'; 
         case 'ausente':
           return '#C69853'; 
         case 'anulada':
-          return '#AB1B1B'; 
+          return '#F93636'; 
         default:
           return '#E2E3E5'; 
       }
@@ -140,10 +140,10 @@ const ReservacionesPage = () => {
 
   const colorLegend = [
     { color: '#575757', label: 'Creada' },
-    { color: '#56AB9E', label: 'Confirmada' },
-    { color: '#1E1B72', label: 'Recepcionada' },
-    { color: '#C69853', label: 'Ausente' },
-    { color: '#AB1B1B', label: 'Anulada' }
+    // { color: '#56AB9E', label: 'Confirmada' },
+    { color: 'lightgreen', label: 'Recepcionada' },
+    // { color: 'coral', label: 'Ausente' },
+    { color: '#F93636', label: 'Anulada' }
   ];
 
   return (

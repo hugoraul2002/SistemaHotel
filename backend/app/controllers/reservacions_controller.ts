@@ -27,6 +27,8 @@ export default class ReservacionesController {
         'fechaInicio',
         'fechaFin',
         'fechaRegistro',
+        'numeroAdultos',
+        'numeroNinos',
         'observaciones',
         'anulado',
       ])
@@ -52,6 +54,8 @@ export default class ReservacionesController {
         'fechaInicio',
         'fechaFin',
         'fechaRegistro',
+        'numeroAdultos',
+        'numeroNinos',
         'observaciones',
         'anulado',
       ])
@@ -110,6 +114,8 @@ export default class ReservacionesController {
       'fechaInicio',
       'fechaFin',
       'fechaRegistro',
+      'numeroAdultos',
+      'numeroNinos',
       'observaciones',
       'anulado',
     ])

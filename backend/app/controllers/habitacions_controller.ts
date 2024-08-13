@@ -48,6 +48,7 @@ export default class HabitacionController {
         'precio',
         'tarifa',
         'estado',
+        'numeroPersonas',
         'anulado',
       ])
       habitacion.merge(data)

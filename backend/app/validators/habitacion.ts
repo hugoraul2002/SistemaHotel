@@ -8,6 +8,7 @@ export const habitacionValidator = vine.compile(
     precio: vine.number().positive(),
     tarifa: vine.number().positive(),
     estado: vine.string().minLength(1),
+    numeroPersonas: vine.number().positive(),
     anulado: vine.boolean(),
   })
 )

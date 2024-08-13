@@ -12,9 +12,11 @@ import { Toast } from 'primereact/toast';
 // import ClienteDialog from '../components/clientes/FormCliente';
 import { ConfirmDialog, confirmDialog } from 'primereact/confirmdialog';
 import ClienteDialog from '../components/clientes/ClienteDialog';
+import { useUser } from '../hooks/UserContext';
 
 export default function ClientePage() {
   const toast = useRef<Toast>(null);
+  const { user } = useUser();
   const [clientes, setClientes] = useState<Cliente[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [globalFilterValue, setGlobalFilterValue] = useState<string>('');
@@ -49,19 +51,22 @@ export default function ClientePage() {
 
   const renderHeader = () => {
     return (
-      <div className="flex place-content-between gap-2">
-        <div>
-          <IconField iconPosition="left">
-            <InputIcon className="pi pi-search" />
-            <InputText value={globalFilterValue} onChange={onGlobalFilterChange} placeholder="Búsqueda" />
-          </IconField>
+      <>
+        <h1 className='font-semibold text-lg mb-4'>Listado de clientes</h1>
+        <div className="flex place-content-between gap-2">
+          <div>
+            <IconField iconPosition="left">
+              <InputIcon className="pi pi-search" />
+              <InputText value={globalFilterValue} onChange={onGlobalFilterChange} placeholder="Búsqueda" />
+            </IconField>
+          </div>
+          <div className="flex gap-2">
+            <Button type="button" icon="pi pi-plus" rounded data-pr-tooltip="Nuevo" onClick={() => handleNuevo()} />
+            {/* <Button type="button" icon="pi pi-file-excel" severity="success" rounded data-pr-tooltip="XLS" onClick={exportToExcel} /> */}
+            <Button type="button" icon="pi pi-file-pdf" severity="warning" rounded data-pr-tooltip="PDF" />
+          </div>
         </div>
-        <div className="flex gap-2">
-          <Button type="button" icon="pi pi-plus" rounded data-pr-tooltip="Nuevo" onClick={() => handleNuevo()} />
-          {/* <Button type="button" icon="pi pi-file-excel" severity="success" rounded data-pr-tooltip="XLS" onClick={exportToExcel} /> */}
-          <Button type="button" icon="pi pi-file-pdf" severity="warning" rounded data-pr-tooltip="PDF" />
-        </div>
-      </div>
+      </>
     );
   };
 
@@ -116,7 +121,7 @@ export default function ClientePage() {
       <div className="flex align-items-center justify-content-end gap-2">
         <Button type="button" icon="pi pi-pen-to-square" onClick={() => handleEditCliente(rowData)}
           severity='info' outlined rounded data-pr-tooltip="Editar" />
-        <Button type="button" outlined icon="pi pi-trash" severity="danger" onClick={() => confirmarAnulacion(rowData)} rounded data-pr-tooltip="Eliminar" />
+        {user?.rol.nombre === "ADMIN" && <Button type="button" outlined icon="pi pi-trash" severity="danger" onClick={() => confirmarAnulacion(rowData)} rounded data-pr-tooltip="Eliminar" />}
       </div>
     );
   };
@@ -172,7 +177,7 @@ export default function ClientePage() {
       <DataTable dataKey="id" loading={loading} showGridlines size='small' value={clientes} filters={filters}
         onSelectionChange={(e) => setSelectedCliente(e.value)}
         selectionMode="single" selection={selectedCliente!}
-        globalFilterFields={['nombre','user.fullName', 'tipoDocumento', 'numDocumento', 'telefono', 'direccion']} paginator rows={10} rowsPerPageOptions={[5, 10, 25, 50]} tableStyle={{ minWidth: '50rem' }} header={header} emptyMessage="No se encuentran clientes.">
+        globalFilterFields={['nombre', 'user.fullName', 'tipoDocumento', 'numDocumento', 'telefono', 'direccion']} paginator rows={10} rowsPerPageOptions={[5, 10, 25, 50]} tableStyle={{ minWidth: '50rem' }} header={header} emptyMessage="No se encuentran clientes.">
         <Column field="nombre" sortable header="Nombre" style={{ width: '20%' }}></Column>
         <Column field="tipoDocumento" sortable header="Tipo Documento" style={{ width: '15%' }}></Column>
         <Column field="numDocumento" sortable header="Número Documento" style={{ width: '20%' }}></Column>
@@ -196,7 +201,7 @@ export default function ClientePage() {
         visible={dialogVisible}
         onHide={handleDialogHide}
         onSave={handleSaveCliente}
-        
+
       />
     </div>
   );

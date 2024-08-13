@@ -9,7 +9,7 @@ import { InputText } from 'primereact/inputtext';
 import { Button } from 'primereact/button';
 import { Usuario } from '../types/types';
 import { Toast } from 'primereact/toast';
-import FormUsuario from '../components/usuarios/FormUsuario'; 
+import FormUsuario from '../components/usuarios/FormUsuario';
 import { ConfirmDialog, confirmDialog } from 'primereact/confirmdialog';
 import { useUser } from '../hooks/UserContext';
 
@@ -49,19 +49,22 @@ export default function UsuarioPage() {
 
   const renderHeader = () => {
     return (
-      <div className="flex place-content-between gap-2">
-        <div>
-          <IconField iconPosition="left">
-            <InputIcon className="pi pi-search" />
-            <InputText value={globalFilterValue} onChange={onGlobalFilterChange} placeholder="Búsqueda" />
-          </IconField>
+      <>
+        <h1 className='font-semibold text-lg mb-4'>Listado de usuarios</h1>
+        <div className="flex place-content-between gap-2">
+          <div>
+            <IconField iconPosition="left">
+              <InputIcon className="pi pi-search" />
+              <InputText value={globalFilterValue} onChange={onGlobalFilterChange} placeholder="Búsqueda" />
+            </IconField>
+          </div>
+          <div className="flex gap-2">
+            <Button type="button" icon="pi pi-plus" rounded data-pr-tooltip="Nuevo" onClick={() => handleNuevo()} />
+            <Button type="button" icon="pi pi-file-excel" severity="success" rounded data-pr-tooltip="XLS" />
+            <Button type="button" icon="pi pi-file-pdf" severity="warning" rounded data-pr-tooltip="PDF" />
+          </div>
         </div>
-        <div className="flex gap-2">
-          <Button type="button" icon="pi pi-plus" rounded data-pr-tooltip="Nuevo" onClick={() => handleNuevo()} />
-          <Button type="button" icon="pi pi-file-excel" severity="success" rounded data-pr-tooltip="XLS" />
-          <Button type="button" icon="pi pi-file-pdf" severity="warning" rounded data-pr-tooltip="PDF" />
-        </div>
-      </div>
+      </>
     );
   };
 
@@ -114,7 +117,7 @@ export default function UsuarioPage() {
       <div className="flex align-items-center justify-content-end gap-2">
         <Button type="button" icon="pi pi-pen-to-square" onClick={() => handleEditUsuario(rowData)}
           severity='info' outlined rounded data-pr-tooltip="Editar" />
-        {user?.rol.nombre==="ADMIN" && <Button type="button"  outlined icon="pi pi-trash" severity="danger" onClick={() => confirmarAnulacion(rowData)} rounded data-pr-tooltip="Eliminar" />}
+        {user?.rol.nombre === "ADMIN" && <Button type="button" outlined icon="pi pi-trash" severity="danger" onClick={() => confirmarAnulacion(rowData)} rounded data-pr-tooltip="Eliminar" />}
       </div>
     );
   };
@@ -133,7 +136,7 @@ export default function UsuarioPage() {
     fetchUsuarios();
   }, []);
 
-  const acceptarAnular = async (usuario:Usuario) => {
+  const acceptarAnular = async (usuario: Usuario) => {
     try {
       const response = await UsuarioService.updateAnulado(usuario.id, { anulado: true });
       console.log('response:', response);
@@ -142,36 +145,36 @@ export default function UsuarioPage() {
         setUsuarios(users);
         mostrarToast('Usuario eliminado.', 'success');
       }
-      
-    }catch (error) {
-        console.error('Error eliminando usuario:', error);
-        mostrarToast('Error al eliminar usuario.', 'error');
-    }
-}
 
-const confirmarAnulacion = (usuario:Usuario) => {
+    } catch (error) {
+      console.error('Error eliminando usuario:', error);
+      mostrarToast('Error al eliminar usuario.', 'error');
+    }
+  }
+
+  const confirmarAnulacion = (usuario: Usuario) => {
     confirmDialog({
-        message: '¿Estás seguro de eliminar?',
-        header: 'Confirmación',
-        icon: 'pi pi-exclamation-triangle',
-        defaultFocus: 'accept',
-        accept:()=>  acceptarAnular(usuario),
-        reject: () => mostrarToast('Se cancelo la anulación.', 'info'),
-        acceptLabel:'Sí',
-        rejectLabel:'No',
-        acceptClassName:'p-button-info',
-        rejectClassName:'p-button-danger'
+      message: '¿Estás seguro de eliminar?',
+      header: 'Confirmación',
+      icon: 'pi pi-exclamation-triangle',
+      defaultFocus: 'accept',
+      accept: () => acceptarAnular(usuario),
+      reject: () => mostrarToast('Se cancelo la anulación.', 'info'),
+      acceptLabel: 'Sí',
+      rejectLabel: 'No',
+      acceptClassName: 'p-button-info',
+      rejectClassName: 'p-button-danger'
     });
-};
+  };
 
   return (
     <div className="card md:mx-4">
       <Toast ref={toast} />
-      <ConfirmDialog/>
+      <ConfirmDialog />
       <DataTable dataKey="id" loading={loading} showGridlines size='small' value={usuarios} filters={filters}
         onSelectionChange={(e) => setSelectedUser(e.value)}
         selectionMode="single" selection={selectedUser!}
-        globalFilterFields={['fullName', 'email','rol']} paginator rows={10} rowsPerPageOptions={[5, 10, 25, 50]} tableStyle={{ minWidth: '50rem' }} header={header} emptyMessage="No se encuentran usuarios.">
+        globalFilterFields={['fullName', 'email', 'rol']} paginator rows={10} rowsPerPageOptions={[5, 10, 25, 50]} tableStyle={{ minWidth: '50rem' }} header={header} emptyMessage="No se encuentran usuarios.">
         <Column field="fullName" sortable header="Nombre" style={{ width: '25%' }}></Column>
         <Column field="email" sortable header="Email" style={{ width: '25%' }}></Column>
         <Column field="rol" sortable header="Rol" style={{ width: '25%' }}></Column>

@@ -11,10 +11,11 @@ import { Habitacion } from '../types/types';
 import { Toast } from 'primereact/toast';
 import HabitacionDialog from '../components/habitaciones/FormHabitacion';
 import { ConfirmDialog, confirmDialog } from 'primereact/confirmdialog';
-
+import { useUser } from '../hooks/UserContext';
 
 export default function HabitacionPage() {
   const toast = useRef<Toast>(null);
+  const { user } = useUser();
   const [habitaciones, setHabitaciones] = useState<Habitacion[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [globalFilterValue, setGlobalFilterValue] = useState<string>('');
@@ -27,6 +28,7 @@ export default function HabitacionPage() {
     nivel: { value: null, matchMode: FilterMatchMode.STARTS_WITH },   
     precio: { value: null, matchMode: FilterMatchMode.STARTS_WITH },
     tarifa: { value: null, matchMode: FilterMatchMode.STARTS_WITH }, 
+    numeroPersonas: { value: null, matchMode: FilterMatchMode.STARTS_WITH },
   });
   const [dialogVisible, setDialogVisible] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
@@ -47,7 +49,9 @@ export default function HabitacionPage() {
   };
   const renderHeader = () => {
     return (
-      <div className="flex place-content-between gap-2">
+      <>
+      <h1 className='font-semibold text-lg mb-4'>Listado de habitaciones</h1>  
+      <div className="flex place-content-between gap-2">      
         <div>
           <IconField iconPosition="left">
             <InputIcon className="pi pi-search" />
@@ -60,6 +64,7 @@ export default function HabitacionPage() {
           <Button type="button" icon="pi pi-file-pdf" severity="warning" rounded data-pr-tooltip="PDF" />
         </div>
       </div>
+      </>
     );
   };
 
@@ -114,7 +119,7 @@ export default function HabitacionPage() {
       <div className="flex align-items-center justify-content-end gap-2">
         <Button type="button" icon="pi pi-pen-to-square" onClick={() => handleEditHabitacion(rowData)}
           severity='info' outlined rounded data-pr-tooltip="Editar" />
-        <Button type="button" outlined icon="pi pi-trash" severity="danger" onClick={() => confirmarAnulacion(rowData)} rounded data-pr-tooltip="Eliminar" />
+        {user?.rol.nombre==="ADMIN" && <Button type="button" outlined icon="pi pi-trash" severity="danger" onClick={() => confirmarAnulacion(rowData)} rounded data-pr-tooltip="Eliminar" />}
       </div>
     );
   };
@@ -179,13 +184,15 @@ export default function HabitacionPage() {
     <div className="card md:mx-4">
       <Toast ref={toast} />
       <ConfirmDialog />
+      
       <DataTable dataKey="id" loading={loading} showGridlines size='small' value={habitaciones} filters={filters}
         onSelectionChange={(e) => setSelectedHabitacion(e.value)}
         selectionMode="single" selection={selectedHabitacion!}
-        globalFilterFields={['nombre','precio', 'estado', 'claseHabitacion.nombre', 'nivel.nombre', 'tarifa']} paginator rows={10} rowsPerPageOptions={[5, 10, 25, 50]} tableStyle={{ minWidth: '50rem' }} header={header} emptyMessage="No se encuentran habitaciones.">
+        globalFilterFields={['nombre','precio', 'estado', 'claseHabitacion.nombre', 'nivel.nombre', 'tarifa', 'numeroPersonas']} paginator rows={10} rowsPerPageOptions={[5, 10, 25, 50]} tableStyle={{ minWidth: '50rem' }} header={header} emptyMessage="No se encuentran habitaciones.">
         <Column field="nombre" sortable header="Nombre" style={{ width: '20%' }}></Column>
         <Column field="precio" sortable header="Precio" style={{ width: '20%' }}></Column>
         <Column field="tarifa" sortable header="Tarifa" style={{ width: '20%' }}></Column>
+        <Column field="numeroPersonas" sortable header="Personas" style={{ width: '20%' }}></Column>
         <Column field="estado" body={(rowData) => getEstadoLabel(rowData.estado)} sortable header="Estado" style={{ width: '15%' }}></Column>
         <Column field="nivel.nombre" sortable header="Nivel" style={{ width: '15%' }}></Column>
         <Column field="claseHabitacion.nombre" sortable header="Clase" style={{ width: '15%' }}></Column>

@@ -41,6 +41,7 @@ export interface Usuario {
     precio: number;
     tarifa: number;
     estado: string;
+    numeroPersonas: number;
     anulado: boolean;
     nivel: Nivel;
     claseHabitacion: ClaseHabitacion;
@@ -67,7 +68,21 @@ export interface Usuario {
     fechaInicio: Date;
     fechaFin: Date;
     fechaRegistro: Date;
+    numeroAdultos: number;
+    numeroNinos: number;
     observaciones: string;
+    anulado: boolean;
+  }
+
+  export interface Producto {
+    id: number;
+    codigo: string;
+    nombre: string;
+    costo: number;
+    precioVenta: number;
+    existencia: number;
+    esServicio: boolean;
+    fechaIngreso: Date;
     anulado: boolean;
   }
 

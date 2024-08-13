@@ -80,7 +80,7 @@ const HabitacionDialog: React.FC<HabitacionDialogProps> = ({ editar, id, onHide,
         setAdvertencias('Debe seleccionar un campo válido.');
         return;
       }
-      const habitacion: Habitacion = { id: id, nombre:data.nombre, precio:data.precio, tarifa:data.tarifa, estado:estado ,nivel: nivel, claseHabitacion: clase, anulado: false };
+      const habitacion: Habitacion = { id: id, nombre:data.nombre, precio:data.precio, tarifa:data.tarifa, estado:estado ,nivel: nivel, claseHabitacion: clase, numeroPersonas:data.numeroPersonas , anulado: false };
       await onSave(habitacion);
       onHide(); 
     } catch (error) {
@@ -126,6 +126,12 @@ const HabitacionDialog: React.FC<HabitacionDialogProps> = ({ editar, id, onHide,
           <label htmlFor="tarifa">Tarifa</label>
           <InputText id="tarifa" type="number" {...register('tarifa', { valueAsNumber: true })} />
           {errors.tarifa && <small className="p-error">{errors.tarifa.message}</small>}
+        </div>
+
+        <div className="field">
+          <label htmlFor="numeroPersonas">Número de personas</label>
+          <InputText id="numeroPersonas" type="number" {...register('numeroPersonas', { valueAsNumber: true })} />
+          {errors.numeroPersonas && <small className="p-error">{errors.numeroPersonas.message}</small>}
         </div>
 
         <div className="field">

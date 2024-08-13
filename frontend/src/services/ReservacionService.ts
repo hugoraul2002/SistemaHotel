@@ -48,6 +48,8 @@ export class ReservacionService {
             fechaInicio: formatDateTime(dayjs(data.fechaInicio).subtract(6,'hours').toDate()),
             fechaFin: formatDateTime(dayjs(data.fechaFin).subtract(6,'hours').toDate()),
             fechaRegistro: formatDateTime(dayjs().subtract(6,'hours').toDate()),
+            numeroAdultos: data.numeroAdultos,
+            numeroNinos: data.numeroNinos,
             observaciones: data.observaciones,
             anulado: false
           };

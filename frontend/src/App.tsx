@@ -12,6 +12,7 @@ import HabitacionPage from './pages/HabitacionPage';
 import ClientesPage from './pages/ClientesPage';
 import ReservacionesPage from './pages/ReservacionesPage';
 import { UserProvider } from './hooks/UserContext';
+import ProductosPage from './pages/ProductosPage';
 
 function App() {
   return (
@@ -29,6 +30,7 @@ function App() {
               <Route path="/habitaciones" element={<HabitacionPage />} />
               <Route path="/clientes" element={<ClientesPage />} />
               <Route path="/reservaciones" element={<ReservacionesPage />} />
+              <Route path="/productos" element={<ProductosPage />} />
             </Route>
           </Route>
         </Routes>

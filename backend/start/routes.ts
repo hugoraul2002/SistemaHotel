@@ -9,6 +9,9 @@
 
 import router from '@adonisjs/core/services/router'
 import { middleware } from './kernel.js'
+const ProductosController = () => import('#controllers/productos_controller')
+const DetalleHospedaje = () => import('#controllers/detalle_hospedajes_controller')
+const HospedajesController = () => import('#controllers/hospedajes_controller')
 const ClientesController = () => import('#controllers/clientes_controller')
 const AuthController = () => import('#controllers/auth_controller')
 const UsersController = () => import('#controllers/users_controller')
@@ -114,3 +117,33 @@ router
   })
   .prefix('habitaciones')
   .use(middleware.auth())
+
+router
+  .group(() => {
+    router.get('/', [HospedajesController, 'index'])
+    router.post('/store', [HospedajesController, 'store'])
+    router.get('/:id', [HospedajesController, 'show'])
+    router.put('/update/:id', [HospedajesController, 'update'])
+    router.put('/updateAnulado/:id', [HospedajesController, 'updateAnulado'])
+  })
+  .prefix('hospedajes')
+
+router
+  .group(() => {
+    router.get('/', [DetalleHospedaje, 'index'])
+    router.post('/store', [DetalleHospedaje, 'store'])
+    router.get('/:id', [DetalleHospedaje, 'show'])
+    router.put('/update/:id', [DetalleHospedaje, 'update'])
+    router.delete('/:id', [DetalleHospedaje, 'destroy'])
+  })
+  .prefix('detalleHospedajes')
+
+router
+  .group(() => {
+    router.get('/', [ProductosController, 'index']),
+      router.post('/store', [ProductosController, 'store']),
+      router.get('/:id', [ProductosController, 'show']),
+      router.put('/update/:id', [ProductosController, 'update']),
+      router.put('/updateActivo/:id', [ProductosController, 'updateActivo'])
+  })
+  .prefix('productos')

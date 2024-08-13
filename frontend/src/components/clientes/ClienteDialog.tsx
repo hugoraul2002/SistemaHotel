@@ -93,7 +93,7 @@ const ClienteDialog: React.FC<ClienteDialogProps> = ({ editar, id, onHide, visib
         </div>
 
         <div className="field">
-          <label htmlFor="documento">Documnto</label>
+          <label htmlFor="documento">Documento</label>
           <InputText id="documento" {...register('num_documento')} />
           {errors.num_documento && <small className="p-error">{errors.num_documento.message}</small>}
         </div>

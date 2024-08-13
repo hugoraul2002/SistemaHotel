@@ -64,12 +64,19 @@ export default function Barra({ visible, setVisible }: { visible: boolean, setVi
             icon: 'pi pi-user', 
             command: () => navegar('/usuarios'), 
             template: itemRenderer 
+        },
+        { 
+            label: 'Productos', 
+            icon: 'pi pi-shopping-cart', 
+            command: () => navegar('/productos'), 
+            template: itemRenderer 
         }
     ];
 
 
     const filteredItems = items.filter(item => {
-        if (item.label === 'Usuarios' || item.label === 'Mantenimientos' || item.label === 'Reservaciones' || item.label === 'Clientes') {
+        if (item.label === 'Usuarios' || item.label === 'Mantenimientos' || item.label === 'Reservaciones' || item.label === 'Clientes' || item.label === 'Catálogos' || item.label === 'Productos') {
+            console.log(user?.rol.nombre, item.label);
             return user?.rol.nombre != 'CLIENTE';
         }
         return true;
