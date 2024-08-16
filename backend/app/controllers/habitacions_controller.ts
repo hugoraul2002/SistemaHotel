@@ -1,6 +1,7 @@
 import type { HttpContext } from '@adonisjs/core/http'
 import Habitacion from '#models/habitacion'
 import { habitacionValidator } from '#validators/habitacion'
+import db from '@adonisjs/lucid/services/db'
 
 export default class HabitacionController {
   async index({ response }: HttpContext) {
@@ -78,6 +79,19 @@ export default class HabitacionController {
       response.status(200).json({ message: 'Habitacion deleted successfully' })
     } catch (error) {
       response.status(500).json({ message: 'Error deleting habitacion', error })
+    }
+  }
+
+  async recepcion({ response }: HttpContext) {
+    try {
+      const habitaciones = await db.rawQuery(`
+        SELECT id, nombre, estado, obtenerInfoEstado(id,estado,NOW()) AS NumMinutos
+	      FROM habitaciones	
+	      WHERE anulado=0
+      `)
+      response.status(200).json(habitaciones[0])
+    } catch (error) {
+      response.status(500).json({ message: 'Error fetching habitaciones', error })
     }
   }
 }

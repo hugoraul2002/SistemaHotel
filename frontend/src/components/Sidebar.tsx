@@ -49,6 +49,12 @@ export default function Barra({ visible, setVisible }: { visible: boolean, setVi
                 { label: 'Reservaciones', icon: 'pi pi-calendar', command: () => navegar('/reservaciones'), template: itemRenderer }
             ]
         },
+        { 
+            label: 'Check In', 
+            icon: 'pi pi-home', 
+            command: () => navegar('/checkin'), 
+            template: itemRenderer 
+        },
         {
             label: 'Catálogos', 
             icon: 'pi pi-chart-line', 
@@ -76,7 +82,6 @@ export default function Barra({ visible, setVisible }: { visible: boolean, setVi
 
     const filteredItems = items.filter(item => {
         if (item.label === 'Usuarios' || item.label === 'Mantenimientos' || item.label === 'Reservaciones' || item.label === 'Clientes' || item.label === 'Catálogos' || item.label === 'Productos') {
-            console.log(user?.rol.nombre, item.label);
             return user?.rol.nombre != 'CLIENTE';
         }
         return true;

@@ -17,7 +17,7 @@ export default class extends BaseSchema {
         .notNullable()
       table.float('precio').notNullable()
       table.float('tarifa').notNullable()
-      table.enum('estado', ['D', 'R', 'O', 'S', 'L']).notNullable()
+      table.enum('estado', ['D', 'O', 'L']).notNullable()
       table.integer('numero_personas').notNullable()
       table.boolean('anulado').defaultTo(false)
     })

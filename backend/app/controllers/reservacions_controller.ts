@@ -149,6 +149,18 @@ export default class ReservacionesController {
     }
   }
 
+  async updateAnulado({ params, response }: HttpContext) {
+    const { id } = params
+    try {
+      const reservacion = await Reservacion.findOrFail(id)
+      reservacion.anulado = !reservacion.anulado
+      await reservacion.save()
+      return response.ok(reservacion)
+    } catch (error) {
+      return response.internalServerError({ message: 'Error updating reservation', error })
+    }
+  }
+
   async destroy({ params, response }: HttpContext) {
     try {
       const reservacion = await Reservacion.findOrFail(params.id)

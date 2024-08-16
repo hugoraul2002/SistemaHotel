@@ -61,8 +61,6 @@ const ProductosPage: React.FC = () => {
     setDialogVisible(true);
   };
 
-  
-
   const handleDialogHide = () => {
     setDialogVisible(false);
     setEditingProductoId(null);
@@ -146,6 +144,15 @@ const ProductosPage: React.FC = () => {
     });
   };
 
+  const esServicioTemplate = (rowData: Producto) => {
+    return (
+        <div className="flex align-items-center gap-2">
+            <p>{rowData.esServicio ? 'Si' : 'No'}</p>
+        </div>
+    );
+};
+
+
   return (
     <div className="card md:mx-4">
       <Toast ref={toast} />
@@ -157,7 +164,7 @@ const ProductosPage: React.FC = () => {
         <Column field="nombre" sortable header="Nombre" style={{ width: '30%' }}></Column>
         <Column field="precioVenta" sortable header="Precio Venta" style={{ width: '15%' }}></Column>
         <Column field="existencia" sortable header="Existencia" style={{ width: '10%' }}></Column>
-        <Column field="esServicio" sortable header="Es Servicio" style={{ width: '10%' }}></Column>
+        <Column field="esServicio" body={esServicioTemplate} sortable header="Es Servicio" style={{ width: '10%' }}></Column>
         {/* <Column field="fechaIngreso" sortable header="Fecha Ingreso" style={{ width: '15%' }}></Column> */}
         <Column body={actionBodyTemplate} header="Acciones" bodyStyle={{ width: '10%', textAlign: 'center' }} exportable={false}></Column>
       </DataTable>

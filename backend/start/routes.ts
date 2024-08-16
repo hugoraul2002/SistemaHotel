@@ -87,6 +87,7 @@ router
     router.post('/store', [ReservacionsController, 'store'])
     router.get('/:id', [ReservacionsController, 'show'])
     router.put('/update/:id', [ReservacionsController, 'update'])
+    router.put('/updateAnulado/:id', [ReservacionsController, 'updateAnulado'])
     router.delete('/:id', [ReservacionsController, 'destroy'])
   })
   .prefix('reservaciones')
@@ -109,6 +110,7 @@ router
 router
   .group(() => {
     router.get('/', [HabitacionsController, 'index'])
+    router.get('/recepcion', [HabitacionsController, 'recepcion'])
     router.post('/store', [HabitacionsController, 'store'])
     router.get('/:id', [HabitacionsController, 'show'])
     router.put('/update/:id', [HabitacionsController, 'update'])

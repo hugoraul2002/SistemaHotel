@@ -76,11 +76,21 @@ export class ReservacionService {
 
     static async update(id: number, data: Reservacion) {
         try {
+
+            const formatDateTime = (date: Date) => {
+                return date.toISOString().slice(0, 19).replace('T', ' ');
+              };
+
+
             const updateData = {
-                fechaInicio: data.fechaInicio,
-                fechaFin: data.fechaFin,
+                fechaInicio: formatDateTime(dayjs(data.fechaInicio).subtract(6,'hours').toDate()),
+            fechaFin: formatDateTime(dayjs(data.fechaFin).subtract(6,'hours').toDate()),
                 clienteId: data.cliente.id,
-                habitacionId: data.habitacion.id,                
+                habitacionId: data.habitacion.id,  
+                total: data.total,
+                observaciones: data.observaciones,
+                numeroAdultos: data.numeroAdultos,
+                numeroNinos: data.numeroNinos,                              
                 anulado:false
             }
             const token = localStorage.getItem('token');
@@ -95,10 +105,10 @@ export class ReservacionService {
         }
     }
 
-    static async updateActivo(id: number) {
+    static async updateAnulado(id: number) {
         try {
             const token = localStorage.getItem('token');
-            const response = await axios.put(`${API_URL}/updateActivo/${id}`,{
+            const response = await axios.put(`${API_URL}/updateAnulado/${id}`,{},{
                 headers: { 'Authorization': `Bearer ${token}` ,
                 'Content-Type': 'application/json'} 
             });
