@@ -26,8 +26,8 @@ export const HabitacionCard: React.FC<HabitacionCardProps> = ({ numeroHabitacion
         L: 'Limpieza'
     };
 
-    const bgColor: string = estadoStyles[estado] || 'from-gray-400 to-gray-600';
-    const textEstado = estadoText[estado] || 'Desconocido';
+    const bgColor: string = estadoStyles[estado as keyof typeof estadoStyles] || 'from-gray-400 to-gray-600';
+    const textEstado = estadoText[estado as keyof typeof estadoText] || 'Desconocido';
 
     
 
@@ -35,6 +35,7 @@ export const HabitacionCard: React.FC<HabitacionCardProps> = ({ numeroHabitacion
         <>
         
         <Card
+        style={{width: '175px', height: '120px', overflow: 'auto'}}
             className={classNames(
                 'rounded-lg p-4 text-white shadow-lg',
                 `bg-gradient-to-r ${bgColor}`,
@@ -42,12 +43,12 @@ export const HabitacionCard: React.FC<HabitacionCardProps> = ({ numeroHabitacion
                 'backdrop-blur-md'
             )}
         >
-            <div className="flex justify-between items-center">
-                <h1 className="text-4xl font-bold">{numeroHabitacion}</h1>
-                <span className="text-sm">{horas}hr</span>
+            <div className="flex justify-between w-full">
+                <h1 className="text-xs font-bold">{numeroHabitacion}</h1>
+                <span className="text-xs">{horas}hr</span>
             </div>
-            <h4 className="text-xl font-semibold">{clase}</h4>
-            <h4 className="text-lg mt-2 flex items-center">
+            <h4 className="text-xs font-semibold">{clase}</h4>
+            <h4 className="text-xs mt-2 flex items-center">
                 {textEstado}
                 {estado.toLowerCase() === 'ocupada' && <span className="ml-2">⚠️</span>}
                 {estado.toLowerCase() === 'libre' && <span className="ml-2">➕</span>}

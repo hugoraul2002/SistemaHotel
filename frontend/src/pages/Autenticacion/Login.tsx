@@ -41,7 +41,7 @@ const LoginComponent: React.FC = () => {
                 showSuccess();
                 setTimeout(() => {
                     navigate('/inicio');
-                }, 1000);
+                }, 800);
             }
         } catch (err) {
             const error = err as AxiosError;
