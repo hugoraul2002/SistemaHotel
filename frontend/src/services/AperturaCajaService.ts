@@ -1,4 +1,6 @@
 import axios from 'axios';
+import { AperturaCaja } from '../types/types';
+import dayjs from 'dayjs';
 
 const API_URL = 'http://localhost:3333/aperturaCaja';
 
@@ -18,10 +20,22 @@ export class AperturaCajaService {
     }
   }
 
-  static async createApertura(aperturaData: { userId: number; fecha: string; observaciones: string; monto: number; anulado: boolean }) {
+  static async createApertura(aperturaData:AperturaCaja) {
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.post(`${API_URL}/store`, aperturaData, {
+      console.log(aperturaData)
+
+      const formatDateTime = (date: Date) => {
+        return date.toISOString().slice(0, 19).replace('T', ' ');
+      };
+      const data = {
+        userId: aperturaData.userId,
+        fecha: formatDateTime(dayjs(aperturaData.fecha).subtract(6, 'hours').toDate()),
+        observaciones: aperturaData.observaciones,
+        monto: aperturaData.monto,
+        anulado: aperturaData.anulado
+      }
+      const response = await axios.post(`${API_URL}/store`, data, {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'

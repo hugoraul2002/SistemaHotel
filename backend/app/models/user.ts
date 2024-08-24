@@ -9,6 +9,7 @@ import Rol from '#models/rol'
 import Hospedaje from '#models/hospedaje'
 import Reservacion from '#models/reservacion'
 import Gasto from '#models/gasto'
+import AperturaCaja from '#models/apertura_caja'
 
 const AuthFinder = withAuthFinder(() => hash.use('scrypt'), {
   uids: ['email'],
@@ -60,6 +61,11 @@ export default class User extends compose(BaseModel, AuthFinder) {
     foreignKey: 'userId',
   })
   declare gastos: HasMany<typeof Gasto>
+
+  @hasMany(() => AperturaCaja, {
+    foreignKey: 'userId',
+  })
+  declare aperturas: HasMany<typeof AperturaCaja>
 
   static accessTokens = DbAccessTokensProvider.forModel(User, {
     expiresIn: '2 days',

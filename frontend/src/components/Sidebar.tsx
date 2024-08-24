@@ -71,6 +71,16 @@ export default function Barra({ visible, setVisible }: { visible: boolean, setVi
                 { label: 'Habitaciones', icon: 'pi pi-file', command: () => navegar('/habitaciones'), template: itemRenderer }
             ]
         },
+        {
+            label: 'Gastos', 
+            icon: 'pi pi-chart-line', 
+            template: itemRenderer,
+            items: [
+                { label: 'Tipos de gastos', icon: 'pi pi-file', command: () => navegar('/tiposgastos'), template: itemRenderer },
+                { label: 'Proveedores', icon: 'pi pi-file', command: () => navegar('/proveedores'), template: itemRenderer },
+                { label: 'Gastos', icon: 'pi pi-file', command: () => navegar('/gastos'), template: itemRenderer }
+            ]
+        },
         { 
             label: 'Usuarios', 
             icon: 'pi pi-user', 

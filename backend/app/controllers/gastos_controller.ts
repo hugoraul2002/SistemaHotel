@@ -4,11 +4,7 @@ import Gasto from '#models/gasto'
 export default class GastosController {
   async index({ response }: HttpContext) {
     try {
-      const gastos = await Gasto.query()
-        .where('anulado', false)
-        .preload('tipoGasto')
-        .preload('proveedor')
-        .preload('usuario')
+      const gastos = await Gasto.query().where('anulado', false).preload('usuario')
       return response.ok(gastos)
     } catch (error) {
       return response.internalServerError({ message: 'Error fetching expenses', error })

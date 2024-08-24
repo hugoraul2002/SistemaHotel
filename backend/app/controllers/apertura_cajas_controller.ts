@@ -3,7 +3,11 @@ import AperturaCaja from '#models/apertura_caja'
 
 export default class AperturaCajasController {
   async index({ response }: HttpContext) {
-    const aperturas = await AperturaCaja.query().where('anulado', false)
+    const aperturas = await AperturaCaja.query()
+      .where('anulado', false)
+      .preload('user')
+      .preload('arqueoCaja')
+    console.log(aperturas)
     return response.status(200).json(aperturas)
   }
 

@@ -4,6 +4,7 @@ import type { BelongsTo } from '@adonisjs/lucid/types/relations'
 import ArqueoCaja from '#models/arqueo_caja'
 
 export default class CierreCaja extends BaseModel {
+  static table = 'cierre_caja'
   @column({ isPrimary: true })
   declare id: number
 

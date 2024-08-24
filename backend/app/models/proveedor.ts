@@ -2,6 +2,7 @@ import { BaseModel, column, hasMany } from '@adonisjs/lucid/orm'
 import type { HasMany } from '@adonisjs/lucid/types/relations'
 import Gasto from '#models/gasto'
 export default class Proveedor extends BaseModel {
+  static table = 'proveedores'
   @column({ isPrimary: true })
   declare id: number
 

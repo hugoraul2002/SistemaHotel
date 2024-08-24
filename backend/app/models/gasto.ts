@@ -5,6 +5,7 @@ import User from '#models/user'
 import TipoGasto from '#models/tipogasto'
 
 export default class Gasto extends BaseModel {
+  static table = 'gastos'
   @column({ isPrimary: true })
   declare id: number
 

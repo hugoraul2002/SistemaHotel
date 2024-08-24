@@ -1,9 +1,11 @@
 import { DateTime } from 'luxon'
-import { BaseModel, column, hasOne } from '@adonisjs/lucid/orm'
-import type { HasOne } from '@adonisjs/lucid/types/relations'
+import { BaseModel, belongsTo, column, hasOne } from '@adonisjs/lucid/orm'
+import type { HasOne, BelongsTo } from '@adonisjs/lucid/types/relations'
 import ArqueoCaja from './arqueo_caja.js'
+import User from '#models/user'
 
 export default class AperturaCaja extends BaseModel {
+  static table = 'apertura_caja'
   @column({ isPrimary: true })
   declare id: number
 
@@ -22,8 +24,13 @@ export default class AperturaCaja extends BaseModel {
   @column()
   declare anulado: boolean
 
+  @belongsTo(() => User, {
+    foreignKey: 'userId',
+  })
+  declare user: BelongsTo<typeof User>
+
   @hasOne(() => ArqueoCaja, {
     foreignKey: 'aperturaId',
   })
-  declare cliente: HasOne<typeof ArqueoCaja>
+  declare arqueoCaja: HasOne<typeof ArqueoCaja>
 }

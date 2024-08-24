@@ -1,4 +1,6 @@
 import axios from 'axios';
+import { ArqueoCaja } from '../types/types';
+import dayjs from 'dayjs';
 
 const API_URL = 'http://localhost:3333/arqueoCaja';
 
@@ -18,10 +20,21 @@ export class ArqueoCajaService {
     }
   }
 
-  static async createArqueo(arqueoData: { aperturaId: number; usuarioId: number; fecha: string; monto: number; anulado: boolean }) {
+  static async createArqueo(arqueoData: ArqueoCaja) {
     try {
+      const formatDateTime = (date: Date) => {
+        return date.toISOString().slice(0, 19).replace('T', ' ');
+      };
+
+      const data = {
+        aperturaId: arqueoData.aperturaId,
+        userId: arqueoData.userId,
+        fecha: formatDateTime(dayjs(arqueoData.fecha).subtract(6, 'hours').toDate()),
+        monto: arqueoData.monto,
+        anulado: arqueoData.anulado
+      };
       const token = localStorage.getItem('token');
-      const response = await axios.post(`${API_URL}/store`, arqueoData, {
+      const response = await axios.post(`${API_URL}/store`, data, {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'

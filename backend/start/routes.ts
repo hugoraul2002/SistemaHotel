@@ -23,7 +23,9 @@ const ClaseHabitacionsController = () => import('#controllers/clase_habitacions_
 const AperturaCajasController = () => import('#controllers/apertura_cajas_controller')
 const ArqueoCajasController = () => import('#controllers/arqueo_cajas_controller')
 const CierreCajasController = () => import('#controllers/cierre_cajas_controller')
-
+const GastosController = () => import('#controllers/gastos_controller')
+const TiposGastosController = () => import('#controllers/tipogastos_controller')
+const ProveedoresController = () => import('#controllers/proveedors_controller')
 // Rutas de autenticación
 router
   .group(() => {
@@ -163,6 +165,7 @@ router
     router.post('/store', [AperturaCajasController, 'store'])
     router.get('/:id', [AperturaCajasController, 'show'])
     router.put('/update/:id', [AperturaCajasController, 'update'])
+    router.put('/updateAnulado/:id', [AperturaCajasController, 'updateAnulado'])
   })
   .prefix('aperturaCaja')
 
@@ -184,3 +187,33 @@ router
     router.put('/updateAnulado/:id', [CierreCajasController, 'updateAnulado'])
   })
   .prefix('cierreCaja')
+
+router
+  .group(() => {
+    router.get('/', [TiposGastosController, 'index'])
+    router.post('/store', [TiposGastosController, 'store'])
+    router.get('/:id', [TiposGastosController, 'show'])
+    router.put('/update/:id', [TiposGastosController, 'update'])
+    router.put('/updateAnulado/:id', [TiposGastosController, 'updateAnulado'])
+  })
+  .prefix('tiposGastos')
+
+router
+  .group(() => {
+    router.get('/', [GastosController, 'index'])
+    router.post('/store', [GastosController, 'store'])
+    router.get('/:id', [GastosController, 'show'])
+    router.put('/update/:id', [GastosController, 'update'])
+    router.put('/updateAnulado/:id', [GastosController, 'updateAnulado'])
+  })
+  .prefix('gastos')
+
+router
+  .group(() => {
+    router.get('/', [ProveedoresController, 'index'])
+    router.post('/store', [ProveedoresController, 'store'])
+    router.get('/:id', [ProveedoresController, 'show'])
+    router.put('/update/:id', [ProveedoresController, 'update'])
+    router.put('/updateAnulado/:id', [ProveedoresController, 'updateActivo'])
+  })
+  .prefix('proveedores')

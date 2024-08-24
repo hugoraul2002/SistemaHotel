@@ -15,6 +15,9 @@ import RegistrarHospedaje from './components/hospedajes/RegistroHospedaje';
 import ProductosPage from './pages/ProductosPage';
 import CheckInPage from './pages/CheckInPage';
 import CajaPage from './pages/CajaPage';
+import ProveedoresPage from './pages/ProveedoresPage';
+import TiposGastosPage from './pages/TiposGastosPage';
+import GastosPage from './pages/GastosPage';
 function App() {
   return (
     
@@ -35,6 +38,10 @@ function App() {
               <Route path="/checkin" element={<CheckInPage />} />
               <Route path="/registrohospedaje/:idHabitacion" element={<RegistrarHospedaje />} />
               <Route path="/cajas" element={<CajaPage />} />
+              <Route path="/tiposgastos" element={<TiposGastosPage />} />
+              <Route path="/proveedores" element={<ProveedoresPage />} />
+              <Route path="/gastos" element={<GastosPage />} />
+
             </Route>
           </Route>
         </Routes>

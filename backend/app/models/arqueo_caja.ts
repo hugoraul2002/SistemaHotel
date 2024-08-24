@@ -5,6 +5,7 @@ import AperturaCaja from './apertura_caja.js'
 import CierreCaja from './cierre_caja.js'
 
 export default class ArqueoCaja extends BaseModel {
+  static table = 'arqueo_caja'
   @column({ isPrimary: true })
   declare id: number
 

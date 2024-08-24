@@ -107,6 +107,55 @@ export interface Usuario {
     monto_penalidad: number;
   }
 
+  export interface AperturaCaja {
+    id: number;
+    userId: number;
+    fecha: Date;
+    monto: number;
+    observaciones: string;
+    user: Usuario;
+    anulado: boolean;
+    arqueoCaja?: ArqueoCaja;
+  }
+
+  export interface ArqueoCaja {
+    id: number;
+    aperturaId: number;
+    userId: number;
+    fecha: Date;
+    monto: number;
+    observaciones: string;
+    anulado: boolean;
+  }
+
+  export interface TipoGasto{
+    id: number;
+    tipo: string;
+    anulado: boolean;
+  }
+
+  export interface Proveedor{
+    id: number;
+    nit: string;
+    nombre: string;
+    telefono: string;
+    direccion: string;
+    email: string;
+    anulado: boolean;
+  }
+
+  export interface Gasto{
+    id: number;
+    userId: number;
+    tipoGastoId: number;
+    proveedorId: number;
+    descripcion: string;
+    proveedor: Proveedor;
+    tipoGasto: TipoGasto;
+    fecha: Date;
+    monto: number;
+    anulado: boolean;
+  }
   //INTERFACES PARA PROPS DE COMPONENTES
   export interface HabitacionDialogProps {
     editar: boolean;
