@@ -11,9 +11,10 @@ import ClaseHabitacionPage from './pages/ClaseHabitacion';
 import HabitacionPage from './pages/HabitacionPage';
 import ClientesPage from './pages/ClientesPage';
 import ReservacionesPage from './pages/ReservacionesPage';
-
+import RegistrarHospedaje from './components/hospedajes/RegistroHospedaje';
 import ProductosPage from './pages/ProductosPage';
 import CheckInPage from './pages/CheckInPage';
+import CajaPage from './pages/CajaPage';
 function App() {
   return (
     
@@ -32,6 +33,8 @@ function App() {
               <Route path="/reservaciones" element={<ReservacionesPage />} />
               <Route path="/productos" element={<ProductosPage />} />
               <Route path="/checkin" element={<CheckInPage />} />
+              <Route path="/registrohospedaje/:idHabitacion" element={<RegistrarHospedaje />} />
+              <Route path="/cajas" element={<CajaPage />} />
             </Route>
           </Route>
         </Routes>

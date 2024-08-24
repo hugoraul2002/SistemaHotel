@@ -82,14 +82,43 @@ export default class HabitacionController {
     }
   }
 
-  async recepcion({ response }: HttpContext) {
+  async recepcion({ params, response }: HttpContext) {
     try {
       const habitaciones = await db.rawQuery(`
-        SELECT id, nombre, estado, obtenerInfoEstado(id,estado,NOW()) AS NumMinutos
-	      FROM habitaciones	
-	      WHERE anulado=0
+        SELECT habitaciones.id, habitaciones.nombre, obtener_estado_habitacion(habitaciones.id,NOW()) AS estado, obtenerInfoEstado(habitaciones.id,estado,NOW()) AS numMinutos, clases_habitaciones.nombre AS clase, habitaciones.tarifa
+	      FROM habitaciones	INNER JOIN clases_habitaciones ON clases_habitaciones.id = habitaciones.clase_habitacion_id
+	      WHERE habitaciones.anulado=0 AND habitaciones.nivel_id = ${params.id}
       `)
       response.status(200).json(habitaciones[0])
+    } catch (error) {
+      response.status(500).json({ message: 'Error fetching habitaciones', error })
+    }
+  }
+
+  async getReservacionProxima({ params, response }: HttpContext) {
+    try {
+      const habitacion = await Habitacion.query()
+        .where('id', params.idHabitacion)
+        .preload('nivel')
+        .preload('claseHabitacion')
+        .firstOrFail()
+
+      const data = await db.rawQuery(`
+        SELECT  obtener_estado_habitacion(id,NOW()) AS estado, 
+        CASE WHEN obtener_estado_habitacion(id,NOW())='R' THEN
+        obtener_reservacion_proxima(id,NOW())
+        ELSE 0 END AS idReservacion
+        FROM habitaciones WHERE id= ${params.idHabitacion}
+      `)
+      response.status(200).json({ habitacion: habitacion, info: data[0][0] })
+      // console.log({
+      //   habitacion,
+      //   data,
+      // })
+      // return {
+      //   habitacion,
+      //   json(data[0]),
+      // }
     } catch (error) {
       response.status(500).json({ message: 'Error fetching habitaciones', error })
     }

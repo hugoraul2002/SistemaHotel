@@ -20,6 +20,9 @@ const NivelesController = () => import('#controllers/nivels_controller')
 const HabitacionsController = () => import('#controllers/habitacions_controller')
 const ReservacionsController = () => import('#controllers/reservacions_controller')
 const ClaseHabitacionsController = () => import('#controllers/clase_habitacions_controller')
+const AperturaCajasController = () => import('#controllers/apertura_cajas_controller')
+const ArqueoCajasController = () => import('#controllers/arqueo_cajas_controller')
+const CierreCajasController = () => import('#controllers/cierre_cajas_controller')
 
 // Rutas de autenticación
 router
@@ -110,7 +113,11 @@ router
 router
   .group(() => {
     router.get('/', [HabitacionsController, 'index'])
-    router.get('/recepcion', [HabitacionsController, 'recepcion'])
+    router.get('/recepcion/:id', [HabitacionsController, 'recepcion'])
+    router.get('/getReservacionProxima/:idHabitacion', [
+      HabitacionsController,
+      'getReservacionProxima',
+    ])
     router.post('/store', [HabitacionsController, 'store'])
     router.get('/:id', [HabitacionsController, 'show'])
     router.put('/update/:id', [HabitacionsController, 'update'])
@@ -149,3 +156,31 @@ router
       router.put('/updateActivo/:id', [ProductosController, 'updateActivo'])
   })
   .prefix('productos')
+
+router
+  .group(() => {
+    router.get('/', [AperturaCajasController, 'index'])
+    router.post('/store', [AperturaCajasController, 'store'])
+    router.get('/:id', [AperturaCajasController, 'show'])
+    router.put('/update/:id', [AperturaCajasController, 'update'])
+  })
+  .prefix('aperturaCaja')
+
+router
+  .group(() => {
+    router.get('/', [ArqueoCajasController, 'index'])
+    router.post('/store', [ArqueoCajasController, 'store'])
+    router.get('/:id', [ArqueoCajasController, 'show'])
+    router.put('/update/:id', [ArqueoCajasController, 'update'])
+  })
+  .prefix('arqueoCaja')
+
+router
+  .group(() => {
+    router.get('/', [CierreCajasController, 'index'])
+    router.post('/store', [CierreCajasController, 'store'])
+    router.get('/:id', [CierreCajasController, 'show'])
+    router.put('/update/:id', [CierreCajasController, 'update'])
+    router.put('/updateAnulado/:id', [CierreCajasController, 'updateAnulado'])
+  })
+  .prefix('cierreCaja')

@@ -8,6 +8,7 @@ import type { HasOne, BelongsTo, HasMany } from '@adonisjs/lucid/types/relations
 import Rol from '#models/rol'
 import Hospedaje from '#models/hospedaje'
 import Reservacion from '#models/reservacion'
+import Gasto from '#models/gasto'
 
 const AuthFinder = withAuthFinder(() => hash.use('scrypt'), {
   uids: ['email'],
@@ -54,6 +55,11 @@ export default class User extends compose(BaseModel, AuthFinder) {
     foreignKey: 'userId',
   })
   declare hospedajes: HasMany<typeof Hospedaje>
+
+  @hasMany(() => Gasto, {
+    foreignKey: 'userId',
+  })
+  declare gastos: HasMany<typeof Gasto>
 
   static accessTokens = DbAccessTokensProvider.forModel(User, {
     expiresIn: '2 days',

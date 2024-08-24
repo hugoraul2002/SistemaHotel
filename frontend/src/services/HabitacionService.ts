@@ -17,6 +17,32 @@ export class HabitacionService {
         }
     }
 
+    static async getRecepcion(idNivel:number) {
+        try {
+        const token = localStorage.getItem('token');
+        const response = await axios.get(`${API_URL}/recepcion/${idNivel}`,{
+            headers: { 'Authorization': `Bearer ${token}` } 
+        });
+        return response.data;
+        } catch (error) {   
+        console.error('Error fetching users:', error);
+        throw error;
+        }
+    }
+
+    static async getReservacionProxima(idHabitacion:number) {
+        try {
+        const token = localStorage.getItem('token');
+        const response = await axios.get(`${API_URL}/getReservacionProxima/${idHabitacion}`,{
+            headers: { 'Authorization': `Bearer ${token}` } 
+        });
+        return response.data;
+        } catch (error) {   
+        console.error('Error fetching users:', error);
+        throw error;
+        }
+    }
+
     static async getById(id: number) {
         try {
         const token = localStorage.getItem('token');

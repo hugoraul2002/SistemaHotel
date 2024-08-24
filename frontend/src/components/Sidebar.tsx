@@ -55,6 +55,12 @@ export default function Barra({ visible, setVisible }: { visible: boolean, setVi
             command: () => navegar('/checkin'), 
             template: itemRenderer 
         },
+        { 
+            label: 'Cajas', 
+            icon: 'pi pi-money-bill', 
+            command: () => navegar('/cajas'), 
+            template: itemRenderer 
+        },
         {
             label: 'Catálogos', 
             icon: 'pi pi-chart-line', 

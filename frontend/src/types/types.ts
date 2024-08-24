@@ -47,6 +47,14 @@ export interface Usuario {
     claseHabitacion: ClaseHabitacion;
   }
 
+  export interface HabitacionRecepcion {
+    id: number;
+    nombre: string;
+    clase: string;
+    estado: string;
+    numMinutos: number;
+    tarifa: number;
+  }
   export interface Cliente{
     id: number;
     nombre: string;
@@ -84,6 +92,19 @@ export interface Usuario {
     esServicio: boolean;
     fechaIngreso: Date;
     anulado: boolean;
+  }
+
+  export interface Hospedaje{
+    id: number;
+    cliente: Cliente;
+    habitacion: Habitacion;
+    reservacion?: Reservacion;
+    fechaInicio: Date;
+    fechaFin: Date;
+    fechaRegistro: Date;
+    total: number;
+    monto_descuento: number;
+    monto_penalidad: number;
   }
 
   //INTERFACES PARA PROPS DE COMPONENTES

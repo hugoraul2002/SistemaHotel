@@ -29,6 +29,7 @@ const ProductoDialog: React.FC<ProductoDialogProps> = ({ editar, id, onHide, vis
             try {
                 if (editar && id) {
                     const producto = await ProductoService.getProductoById(id);
+                    console.log(producto);
                     setCodigo(producto.codigo);
                     setNombre(producto.nombre);
                     setCosto(producto.costo);

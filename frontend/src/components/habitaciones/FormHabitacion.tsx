@@ -33,7 +33,7 @@ const HabitacionDialog: React.FC<HabitacionDialogProps> = ({ editar, id, onHide,
     tarifa:12,
     estado: '',
     nivel: { id: 0, nombre: '' },
-    claseHabitacion: { id: 0, nombre: '' }
+    claseHabitacion: { id: 0, nombre: '' },
   };
 
   const { register, handleSubmit, setError, reset, setValue, formState: { errors, isSubmitting } } = useForm<HabitacionValidador>({
@@ -58,6 +58,7 @@ const HabitacionDialog: React.FC<HabitacionDialogProps> = ({ editar, id, onHide,
           setValue('nombre', habitacion.nombre);
           setValue('precio', habitacion.precio);
           setEstado(habitacion.estado);
+          setValue('numeroPersonas', habitacion.numeroPersonas);
           setNivel(nivelesData.find((n:Nivel)  => n.id === habitacion.nivelId ) );
           setClase(clasesData.find((c:ClaseHabitacion) => c.id === habitacion.claseHabitacionId) );
         } else {

@@ -1,5 +1,9 @@
 import type { HttpContext } from '@adonisjs/core/http'
 import Hospedaje from '#models/hospedaje'
+import Habitacion from '#models/habitacion'
+import Reservacion from '#models/reservacion'
+import DetalleHospedaje from '#models/detalle_hospedaje'
+
 export default class HospedajesController {
   async index({ response }: HttpContext) {
     try {
@@ -26,12 +30,29 @@ export default class HospedajesController {
       'total',
       'montoPenalidad',
       'montoDescuento',
-      'anulado',
     ])
+    console.log(data)
     try {
       const hospedaje = await Hospedaje.create(data)
+      await DetalleHospedaje.create({
+        hospedajeId: hospedaje.id,
+        productoId: 1,
+        cantidad: 1,
+        costo: 1,
+        precioVenta: data.total,
+      })
+      const habitacion = await Habitacion.findOrFail(data.habitacionId)
+      habitacion.estado = 'O'
+      await habitacion.save()
+
+      if (data.reservacionId) {
+        const reservacion = await Reservacion.findOrFail(data.reservacionId)
+        reservacion.estado = 'recepcionada'
+        await reservacion.save()
+      }
       return response.created(hospedaje)
     } catch (error) {
+      console.log(error)
       return response.internalServerError({ message: 'Error creating lodging', error })
     }
   }

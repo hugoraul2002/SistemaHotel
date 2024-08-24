@@ -152,7 +152,7 @@ export const ReservacionDialog: React.FC<ReservacionDialogProps> = ({ visible, o
             <label htmlFor="anulado">{anulado ? 'Anulado' : 'Anular'}</label>
           </div>
           <div className="ml-2">
-            <InputSwitch checked={anulado} disabled={anulado} onChange={(e) => {if (e.value === true) confirmarAnulacion(idReservacion!); }} />
+            <InputSwitch checked={anulado} disabled={anulado || estado !== 'creada'} onChange={(e) => {if (e.value === true) confirmarAnulacion(idReservacion!); }} />
           </div>
         </div>)}
         <div className="field">
