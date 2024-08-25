@@ -15,14 +15,14 @@ export const HabitacionCard: React.FC<HabitacionCardProps> = ({ idHabitacion,num
     const estadoStyles = {
         D: 'from-green-400 to-green-600',
         O: 'from-orange-400 to-orange-600',
-        sucia: 'from-red-400 to-red-600',
+        S: 'from-red-400 to-red-600',
         R: 'from-blue-400 to-blue-600'
     };
 
     const estadoText = {
         D: 'Disponible',
         O: 'Ocupada',
-        sucia: 'Sucia',
+        S: 'Ocupada',
         L: 'Limpieza',
         R:'Reservada'
     };
