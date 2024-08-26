@@ -81,10 +81,9 @@ const RegistrarHospedaje: React.FC<RegistrarHospedajeProps> = () => {
   }, [idHabitacion]);
 
   useEffect(() => {
-    // Calcula el total cada vez que cambian montoDescuento, montoPenalidad o habitacion
     if (habitacion) {
       const nuevoTotal = habitacion.precio - montoDescuento + montoPenalidad;
-      setTotal(nuevoTotal);
+      setTotal(nuevoTotal < 0 ? 0 : nuevoTotal);
     }
   }, [montoDescuento, montoPenalidad, habitacion]);
 
@@ -93,6 +92,23 @@ const RegistrarHospedaje: React.FC<RegistrarHospedajeProps> = () => {
   };
 
   const handleRegister = async () => {
+    if (!cliente) {
+      mostrarToast('Debe seleccionar un cliente.', 'warn');
+      return;
+    }
+    if (!fechaInicio || !fechaFin) {
+      mostrarToast('Las fechas de inicio y fin son obligatorias.', 'warn');
+      return;
+    }
+    if (fechaInicio > fechaFin) {
+      mostrarToast('La fecha de inicio no puede ser posterior a la fecha de fin.', 'warn');
+      return;
+    }
+    if (montoDescuento > total) {
+      mostrarToast('El monto de descuento no puede ser mayor que el total.', 'warn');
+      return;
+    }
+
     try {
       const newHospedaje = {
         id: 0,
@@ -120,92 +136,126 @@ const RegistrarHospedaje: React.FC<RegistrarHospedajeProps> = () => {
   };
 
   return (
-    <div className="p-4">
+    <div className="p-4 flex flex-col space-y-3 md:flex-wrap">
       <Toast ref={toast} />
-      <Panel header="Información de la Habitación" className="mb-3">
-        {habitacion && (
-          <div>
-            <h4>{habitacion.nombre}</h4>
-            <p>Precio: {habitacion.precio}</p>
-            <p>Tarifa: {habitacion.tarifa} h</p>
-            <p>Estado: {habitacion.estado === 'O' ? 'Ocupada' : 'Disponible'}</p>
+
+      <Panel header="Información de la Habitación" className="w-full">
+        <div className="p-field flex gap-3 w-full">
+          <div className="p-field flex flex-col w-full">
+            <label htmlFor="habitacionNombre">Nombre</label>
+            <InputText id="habitacionNombre" w-full value={habitacion?.nombre || ''} />
           </div>
-        )}
+          <div className="p-field flex flex-col w-full">
+            <label htmlFor="habitacionPrecio">Precio</label>
+            <InputText id="habitacionPrecio" w-full value={habitacion?.precio.toString() || ''} />
+          </div>
+        </div>
+        <div className="p-field flex gap-3 mt-1">
+          <div className="p-field flex flex-col w-full">
+            <label htmlFor="habitacionTarifa">Tarifa</label>
+            <InputText id="habitacionTarifa" w-full value={habitacion?.tarifa.toString() + "  Horas" || ''} />
+          </div>
+          <div className="p-field flex flex-col w-full">
+            <label htmlFor="habitacionEstado">Estado</label>
+            <InputText id="habitacionEstado" w-full value={habitacion?.estado === 'O' ? 'Ocupada' : 'Disponible' || ''} />
+          </div>
+        </div>
       </Panel>
 
-      <div className="grid">
-        <div className="col-6">
-          <Panel header="Información del Cliente" className="mb-3">
-            {reservacion ? (
-              <div>
-                <h4>{cliente!.nombre}</h4>
-                <p>Tipo de Documento: {cliente!.tipoDocumento}</p>
-                <p>Número de Documento: {numeroDocumento}</p>
-                <p>Teléfono: {cliente!.telefono}</p>
-                <p>Dirección: {cliente!.direccion}</p>
-              </div>
-            ) : (
-              <div className="field">
-                <label htmlFor="cliente" className="mr-3">Cliente</label>
-                <Dropdown
-                  filter
-                  id="cliente"
-                  value={cliente}
-                  options={clientes}
-                  optionLabel="nombre"
-                  placeholder="Seleccione un cliente"
-                  onChange={(e) => { setCliente(e.value); setNumeroDocumento(e.value.numDocumento) }}
-                />
-                {cliente && <div>
-                  <p>Tipo de Documento: {cliente!.tipoDocumento}</p>
-                  <p>Número de Documento: {numeroDocumento}</p>
-                  <p>Teléfono: {cliente!.telefono}</p>
-                  <p>Dirección: {cliente!.direccion}</p>
-                </div>}
-              </div>
-            )}
+      <div className="flex flex-col md:flex-row space-y-3 md:space-y-0 md:space-x-3">
+        <div className="flex-1 flex flex-col">
+          <Panel header="Información del Cliente" className="w-full flex-1 flex flex-col">
+            <div className="p-field flex flex-col w-full">
+              <label htmlFor="cliente">Cliente</label>
+              <Dropdown
+                filter
+                id="cliente"
+                value={cliente}
+                options={clientes}
+                optionLabel="nombre"
+                placeholder="Seleccione un cliente"
+                onChange={(e) => { setCliente(e.value); setNumeroDocumento(e.value.numDocumento); }}
+                disabled={esReservada}
+              />
+            </div>
+
+            <div className="p-field flex flex-col w-full mt-3">
+              <label htmlFor="tipoDocumento">Tipo de Documento</label>
+              <InputText id="tipoDocumento" value={cliente && cliente.tipoDocumento} disabled={cliente === null} />
+            </div>
+
+            <div className="p-field flex flex-col w-full mt-3">
+              <label htmlFor="numeroDocumento">Número de Documento</label>
+              <InputText id="numeroDocumento" value={numeroDocumento} disabled={cliente === null} />
+            </div>
+
+            <div className="p-field flex flex-col w-full mt-3">
+              <label htmlFor="telefono">Teléfono</label>
+              <InputText id="telefono" value={cliente && cliente.telefono} disabled={cliente === null} />
+            </div>
+
+            <div className="p-field flex flex-col w-full mt-3">
+              <label htmlFor="direccion">Dirección</label>
+              <InputText id="direccion" value={cliente && cliente.direccion} disabled={cliente === null} />
+            </div>
           </Panel>
         </div>
 
-        <div className="col-6">
-          <Panel header="Información del Hospedaje" className="mb-3">
-            <div className="p-field mt-3">
-              <label htmlFor="fechaInicio" className="mr-3">Fecha Inicio</label>
+        <div className="flex-1 flex flex-col">
+          <Panel header="Información del Hospedaje" className="w-full flex-1 flex flex-col">
+            <div className="p-field flex flex-col flex-1">
+              <label htmlFor="fechaInicio">Fecha Inicio</label>
               <Calendar
-                hourFormat="24" dateFormat="dd/mm/yy" locale='es'
+                hourFormat="24"
+                dateFormat="dd/mm/yy"
+                locale='es'
                 id="fechaInicio"
-                value={fechaInicio} touchUI
-                onChange={(e) => { setFechaInicio(e.value); setFechaFin(dayjs(e.value).add(habitacion?.tarifa ?? 4, 'hours').toDate()); }}
+                value={fechaInicio}
+                touchUI
+                onChange={(e) => { setFechaInicio(e.value); setFechaFin(dayjs(e.value).add(habitacion?.tarifa ?? 4, 'hours').toDate()) }}
                 showTime
                 disabled={esReservada}
-                minDate={dayjs().toDate()}
               />
             </div>
-            <div className="p-field mt-3">
-              <label htmlFor="fechaFin" className="mr-3">Fecha Fin</label>
-              <Calendar hourFormat="24" dateFormat="dd/mm/yy" locale='es' id="fechaFin" value={fechaFin} onChange={(e) => setFechaFin(e.value)} showTime disabled />
+            <div className="p-field flex flex-col mt-3 flex-1">
+              <label htmlFor="fechaFin">Fecha Fin</label>
+              <Calendar
+                hourFormat="24"
+                dateFormat="dd/mm/yy"
+                locale='es'
+                id="fechaFin"
+                value={fechaFin}
+                touchUI
+                onChange={(e) => setFechaFin(e.value)}
+                showTime
+                disabled={esReservada}
+              />
             </div>
-            <div className="p-field mt-3">
-              <label htmlFor="montoPenalidad" className="mr-3">Monto Penalidad</label>
-              <InputText type="number" id="montoPenalidad" value={montoPenalidad} onChange={(e) => setMontoPenalidad(Number(e.target.value))} />
+
+            <div className="p-field flex flex-col mt-3 flex-1">
+              <label htmlFor="montoDescuento">Monto de Descuento</label>
+              <InputText defaultValue={0} type='number' id="montoDescuento" value={montoDescuento.toString()} onChange={(e) => setMontoDescuento(parseFloat(e.target.value === '' || Number(e.target.value) < 0 ? '0' : e.target.value))} />
             </div>
-            <div className="p-field mt-3">
-              <label htmlFor="montoDescuento" className="mr-3">Monto Descuento</label>
-              <InputText type="number" id="montoDescuento" value={montoDescuento} onChange={(e) => setMontoDescuento(Number(e.target.value))} />
+            <div className="p-field flex flex-col mt-3 flex-1">
+              <label htmlFor="montoPenalidad">Monto de Penalidad</label>
+              <InputText defaultValue={0} type='number' id="montoPenalidad" value={montoPenalidad.toString()} onChange={(e) => setMontoPenalidad(parseFloat(e.target.value === '' || Number(e.target.value) < 0 ? '0' : e.target.value))} />
             </div>
-            <div className="p-field mt-3">
-              <h4>Total: Q. {total}</h4>
+            <div className="p-field flex flex-col mt-3 flex-1">
+              <label htmlFor="total">Total</label>
+              <InputText defaultValue={0} type='number' id="total" value={total.toString()} />
+            </div>
+            <div className="flex flex-row justify-end space-x-2 mt-3">
+              <Button label="Registrar" icon="pi pi-save" className="p-button-success" onClick={handleRegister} />
+              <Button label="Cancelar" icon="pi pi-times" className="p-button-secondary" onClick={() => navigate(-1)} />
             </div>
           </Panel>
         </div>
       </div>
 
-      <Panel className="text-center">
-        <Button label="Registrar" icon="pi pi-check" className="p-button-success" onClick={handleRegister} />
-        <Button label="Cancelar" icon="pi pi-times" className="p-button-secondary" onClick={() => navigate('/checkin')} />
-      </Panel>
+
+
     </div>
   );
-}
+};
 
 export default RegistrarHospedaje;

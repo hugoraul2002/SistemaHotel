@@ -9,7 +9,6 @@ import { HabitacionService } from '../services/HabitacionService';
 function CheckInPage() {
   const [items, setItems] = useState<MenuItem[]>([]);
   const [habitaciones, setHabitaciones] = useState<HabitacionRecepcion[]>([]);
-  const [niveles, setNiveles] = useState<Nivel[]>([]);
   const [selectedNivel, setSelectedNivel] = useState<Nivel | null>(null);
 
   useEffect(() => {
@@ -22,7 +21,6 @@ function CheckInPage() {
         command: () => setSelectedNivel(nivel),
       }));
       setItems(menuItems);
-      setNiveles(nivelesRegistros);
       if (nivelesRegistros.length > 0) {
         setSelectedNivel(nivelesRegistros[0]);         
       }

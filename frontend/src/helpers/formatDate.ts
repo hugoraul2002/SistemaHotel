@@ -1,3 +1,6 @@
+import dayjs from "dayjs";
+dayjs.locale('es');
 export const formatDateTime = (date: Date) => {
-    return date.toISOString().slice(0, 19).replace('T', ' ');
+  const fecha = dayjs(date).format('DD/MM/YYYY HH:mm');
+    return fecha
   };

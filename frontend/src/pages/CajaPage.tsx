@@ -14,7 +14,7 @@ import { useUser } from '../hooks/UserContext';
 import { AperturaCajaService } from '../services/AperturaCajaService';
 import { AperturaCaja, ArqueoCaja } from '../types/types';
 import { ArqueoCajaService } from '../services/ArqueoCajaService';
-
+import {formatDateTime} from '../helpers/formatDate';
 function CajaPage() {
     const [aperturasCaja, setAperturasCaja] = useState<AperturaCaja[]>([]);
     const [selectedApertura, setSelectedApertura] = useState<AperturaCaja | null>(null);
@@ -217,9 +217,9 @@ function CajaPage() {
                 globalFilterFields={['user.fullName', 'monto', 'fecha', 'observaciones']} paginator rows={10}
                 header={renderHeader()} emptyMessage="No se encontraron registros" scrollable scrollHeight="600px">
                 <Column field="id" header="#" sortable style={{ flexGrow: 1, flexBasis: '5%' }} />
-                <Column field="user.fullName" header="Responsable" sortable style={{ flexGrow: 1, flexBasis: '20%' }} />
-                <Column field="monto" header="Monto" sortable style={{ flexGrow: 1, flexBasis: '15%' }} />
-                <Column field="fecha" header="Fecha Apertura" sortable style={{ flexGrow: 1, flexBasis: '20%' }} />
+                <Column field="user.fullName" header="Cajero" sortable style={{ flexGrow: 1, flexBasis: '20%' }} />
+                <Column field="monto" header="Monto apertura" sortable style={{ flexGrow: 1, flexBasis: '15%' }} />
+                <Column  field="fecha" body={(rowData: AperturaCaja) => formatDateTime(new Date(rowData.fecha))} header="Fecha Apertura" sortable style={{ flexGrow: 1, flexBasis: '20%' }} />
                 <Column field="observaciones" header="Observaciones" sortable style={{ flexGrow: 1, flexBasis: '20%' }} />
                 <Column field="arqueoCaja.monto" body={arqueoColumnTemplate} header="Arqueo de Caja" style={{ flexGrow: 1, flexBasis: '15%' }} />
                 <Column header="Acciones" body={actionBodyTemplate} exportable={false} style={{ flexGrow: 1, flexBasis: '15%', minWidth: '8rem' }} />
@@ -242,14 +242,14 @@ function CajaPage() {
 
             <Dialog visible={arqueoDialogVisible} style={{ width: '400px' }} header="Registrar Arqueo" modal className="p-fluid" onHide={handleArqueoDialogHide}>
                 <div className="field">
-                    <label htmlFor="apertura">Apertura</label>
-                    <InputText id="apertura" value={`#${selectedApertura?.id || ''} - ${selectedApertura?.fecha.toLocaleString() || ''}`} readOnly />
+                    <label htmlFor="apertura" className='font-semibold'>Apertura #{selectedApertura?.id || ''}</label>
+                    <InputText id="apertura" value={`${selectedApertura && formatDateTime(selectedApertura?.fecha)}`} readOnly />
                 </div>
                 <div className="field">
                     <label htmlFor="montoArqueo">Monto del Arqueo</label>
                     <InputText id="montoArqueo" value={monto.toString()} onChange={(e) => setMonto(Number(e.target.value))} />
                 </div>
-                <div className="flex place-content-end gap-2">
+                <div className="flex place-content-end gap-2 mt-2">
                     <Button label="Cancelar" icon="pi pi-times" outlined onClick={handleArqueoDialogHide} />
                     <Button label="Registrar" icon="pi pi-check" onClick={handleSaveArqueo} />
                 </div>

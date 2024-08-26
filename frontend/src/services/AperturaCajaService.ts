@@ -30,7 +30,7 @@ export class AperturaCajaService {
       };
       const data = {
         userId: aperturaData.userId,
-        fecha: formatDateTime(dayjs(aperturaData.fecha).subtract(6, 'hours').toDate()),
+        fecha: formatDateTime(dayjs(aperturaData.fecha).toDate()),
         observaciones: aperturaData.observaciones,
         monto: aperturaData.monto,
         anulado: aperturaData.anulado
