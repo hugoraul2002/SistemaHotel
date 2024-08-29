@@ -9,7 +9,7 @@ interface HabitacionCardProps {
     horas: number;
 }
 
-export const HabitacionCard: React.FC<HabitacionCardProps> = ({ idHabitacion,numeroHabitacion, clase, estado, horas }) => {
+export const HabitacionCard: React.FC<HabitacionCardProps> = ({ idHabitacion, numeroHabitacion, clase, estado, horas }) => {
     const [isDarkMode, setIsDarkMode] = useState(false);
     const navigate = useNavigate();
     const estadoStyles = {
@@ -24,19 +24,20 @@ export const HabitacionCard: React.FC<HabitacionCardProps> = ({ idHabitacion,num
         O: 'Ocupada',
         S: 'Ocupada',
         L: 'Limpieza',
-        R:'Reservada'
+        R: 'Reservada'
     };
 
     const bgColor: string = estadoStyles[estado as keyof typeof estadoStyles] || 'from-gray-400 to-gray-600';
     const textEstado = estadoText[estado as keyof typeof estadoText] || 'Desconocido';
 
     const Recepcionar = () => {
-        if (estado === 'R') {
-          navigate(`/registrohospedaje/${idHabitacion}`); 
-        } else if (estado === 'D') {
-          navigate(`/registrohospedaje/${idHabitacion}`);
-        }
-      }
+        navigate(`/registrohospedaje/${idHabitacion}`);
+    //     if (estado === 'R') {
+    //         navigate(`/registrohospedaje/${idHabitacion}`);
+    //     } else if (estado === 'D') {
+    //         navigate(`/registrohospedaje/${idHabitacion}`);
+    //     }
+    }
     return (
         <div
             className={classNames(

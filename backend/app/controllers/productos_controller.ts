@@ -1,9 +1,10 @@
 import type { HttpContext } from '@adonisjs/core/http'
 import Producto from '#models/producto'
 export default class ProductosController {
-  async index({ response }: HttpContext) {
+  async index({ request, response }: HttpContext) {
     try {
-      const productos = await Producto.query().where('anulado', false)
+      const anulado = request.input('anulado', false)
+      const productos = await Producto.query().where('anulado', anulado)
       return response.ok(productos)
     } catch (error) {
       return response.internalServerError({ message: 'Error fetching products', error })
@@ -41,7 +42,14 @@ export default class ProductosController {
 
   async update({ params, request, response }: HttpContext) {
     const { id } = params
-    const data = request.only(['nombre', 'descripcion', 'precio', 'stock', 'activo'])
+    const data = request.only([
+      'codigo',
+      'nombre',
+      'costo',
+      'precioVenta',
+      'existencia',
+      'esServicio',
+    ])
     try {
       const producto = await Producto.findOrFail(id)
       producto.merge(data)

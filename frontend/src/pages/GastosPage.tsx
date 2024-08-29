@@ -10,7 +10,7 @@ import { Button } from 'primereact/button';
 import { Toast } from 'primereact/toast';
 import { Gasto } from '../types/types';
 import { ConfirmDialog } from 'primereact/confirmdialog';
-
+import {formatDate} from '../helpers/formatDate';
 const GastosPage: React.FC = () => {
   const toast = useRef<Toast>(null);
   const [gastos, setGastos] = useState<Gasto[]>([]);
@@ -87,7 +87,7 @@ const GastosPage: React.FC = () => {
         globalFilterFields={['nombre']} paginator rows={10} rowsPerPageOptions={[5, 10, 25, 50]} tableStyle={{ minWidth: '50rem' }} header={header} emptyMessage="No se encuentran gastos.">
         <Column field="descripcion" sortable header="Descripcion" style={{ width: '25%' }}></Column>
         <Column field="monto" sortable header="Monto" style={{ width: '25%' }}></Column>
-        <Column field="fecha" sortable header="Fecha" style={{ width: '25%' }}></Column>
+        <Column field="fecha" body={(rowData: Gasto) => formatDate(new Date(rowData.fecha))} sortable header="Fecha" style={{ width: '25%' }}></Column>
         <Column header="Acciones" body={actionBodyTemplate} bodyStyle={{ width: '25%', textAlign: 'center' }} exportable={false}></Column>
       </DataTable>
     </div>

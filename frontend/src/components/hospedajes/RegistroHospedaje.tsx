@@ -15,11 +15,9 @@ import { Dropdown } from 'primereact/dropdown';
 import { addLocale } from 'primereact/api';
 import { Toast } from 'primereact/toast';
 
-interface RegistrarHospedajeProps {
-  idReserva?: number;
-}
 
-const RegistrarHospedaje: React.FC<RegistrarHospedajeProps> = () => {
+
+const RegistrarHospedaje: React.FC = () => {
   const toast = useRef<Toast>(null);
   const [habitacion, setHabitacion] = useState<Habitacion | null>(null);
   const [cliente, setCliente] = useState<Cliente | null>(null);
@@ -34,7 +32,6 @@ const RegistrarHospedaje: React.FC<RegistrarHospedajeProps> = () => {
   const [numeroDocumento, setNumeroDocumento] = useState<string>('');
   const navigate = useNavigate();
   const { idHabitacion } = useParams();
-  const [status, setStatus] = useState('');
 
   addLocale('es', {
     firstDayOfWeek: 1,
@@ -54,7 +51,6 @@ const RegistrarHospedaje: React.FC<RegistrarHospedajeProps> = () => {
           const response = await HabitacionService.getReservacionProxima(Number(idHabitacion));
           if (response) {
             setHabitacion(response.habitacion);
-            setStatus(response.info.estado);
             const clientes = await ClienteService.getAll();
             setClientes(clientes);
 
@@ -139,7 +135,7 @@ const RegistrarHospedaje: React.FC<RegistrarHospedajeProps> = () => {
     <div className="p-4 flex flex-col space-y-3 md:flex-wrap">
       <Toast ref={toast} />
 
-      <Panel header="Información de la Habitación" className="w-full">
+      <Panel header="Información de la Habitación" className="w-full" toggleable>
         <div className="p-field flex gap-3 w-full">
           <div className="p-field flex flex-col w-full">
             <label htmlFor="habitacionNombre">Nombre</label>
@@ -164,7 +160,7 @@ const RegistrarHospedaje: React.FC<RegistrarHospedajeProps> = () => {
 
       <div className="flex flex-col md:flex-row space-y-3 md:space-y-0 md:space-x-3">
         <div className="flex-1 flex flex-col">
-          <Panel header="Información del Cliente" className="w-full flex-1 flex flex-col">
+          <Panel header="Información del Cliente" className="w-full flex-1 flex flex-col" toggleable>
             <div className="p-field flex flex-col w-full">
               <label htmlFor="cliente">Cliente</label>
               <Dropdown
@@ -202,7 +198,7 @@ const RegistrarHospedaje: React.FC<RegistrarHospedajeProps> = () => {
         </div>
 
         <div className="flex-1 flex flex-col">
-          <Panel header="Información del Hospedaje" className="w-full flex-1 flex flex-col">
+          <Panel header="Información del Hospedaje" className="w-full flex-1 flex flex-col" toggleable>
             <div className="p-field flex flex-col flex-1">
               <label htmlFor="fechaInicio">Fecha Inicio</label>
               <Calendar
@@ -214,6 +210,7 @@ const RegistrarHospedaje: React.FC<RegistrarHospedajeProps> = () => {
                 touchUI
                 onChange={(e) => { setFechaInicio(e.value); setFechaFin(dayjs(e.value).add(habitacion?.tarifa ?? 4, 'hours').toDate()) }}
                 showTime
+                minDate={dayjs().toDate()} 
                 disabled={esReservada}
               />
             </div>
@@ -241,7 +238,10 @@ const RegistrarHospedaje: React.FC<RegistrarHospedajeProps> = () => {
               <InputText defaultValue={0} type='number' id="montoPenalidad" value={montoPenalidad.toString()} onChange={(e) => setMontoPenalidad(parseFloat(e.target.value === '' || Number(e.target.value) < 0 ? '0' : e.target.value))} />
             </div>
             <div className="p-field flex flex-col mt-3 flex-1">
-              <label htmlFor="total">Total</label>
+              <div className='mb-1 flex align-items-center'>
+              <label htmlFor="total">Total  </label>
+              <small className="ml-2 bg-slate-500 px-2 py-1 bg-opacity-50  rounded-full text-xs">Precio Q. {habitacion?.precio}</small>
+              </div>
               <InputText defaultValue={0} type='number' id="total" value={total.toString()} />
             </div>
             <div className="flex flex-row justify-end space-x-2 mt-3">

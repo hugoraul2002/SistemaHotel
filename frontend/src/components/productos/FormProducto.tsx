@@ -29,13 +29,14 @@ const ProductoDialog: React.FC<ProductoDialogProps> = ({ editar, id, onHide, vis
             try {
                 if (editar && id) {
                     const producto = await ProductoService.getProductoById(id);
+                    setErrors({});
                     console.log(producto);
                     setCodigo(producto.codigo);
                     setNombre(producto.nombre);
                     setCosto(producto.costo);
                     setPrecioVenta(producto.precioVenta);
                     setExistencia(producto.existencia);
-                    setEsServicio(producto.esServicio);
+                    setEsServicio(producto.esServicio==1 ? true : false);
                 } else {
                     resetFields();
                 }
@@ -64,9 +65,9 @@ const ProductoDialog: React.FC<ProductoDialogProps> = ({ editar, id, onHide, vis
         const newErrors: Record<string, string> = {};
         if (!codigo) newErrors.codigo = 'El código es requerido.';
         if (!nombre) newErrors.nombre = 'El nombre es requerido.';
-        if (costo === 0) newErrors.costo = 'El costo es requerido.';
-        if (precioVenta === 0) newErrors.precioVenta = 'El precio de venta es requerido.';
-        if (existencia === 0) newErrors.existencia = 'La existencia es requerida.';
+        if (costo === 0 || costo<0 || !costo) newErrors.costo = 'El costo es requerido.';
+        if (precioVenta === 0 || precioVenta<0 || !precioVenta) newErrors.precioVenta = 'El precio de venta es requerido.';
+        if (existencia === 0 || existencia<0 || !existencia) newErrors.existencia = 'La existencia es requerida.';
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0;
     };
@@ -78,7 +79,7 @@ const ProductoDialog: React.FC<ProductoDialogProps> = ({ editar, id, onHide, vis
 
         try {
             const producto: Producto = {
-                id: id || 0,
+                id: editar ? id! : 0,
                 codigo,
                 nombre,
                 costo: Number(costo),
@@ -88,6 +89,7 @@ const ProductoDialog: React.FC<ProductoDialogProps> = ({ editar, id, onHide, vis
                 fechaIngreso: new Date(),
                 anulado: false
             };
+            console.log(producto);
             await onSave(producto);
             onHide();
         } catch (error) {
@@ -108,7 +110,8 @@ const ProductoDialog: React.FC<ProductoDialogProps> = ({ editar, id, onHide, vis
     };
 
     return (
-        <Dialog visible={visible} style={{ width: '40vw' }} header={editar ? 'Editar Producto' : 'Nuevo Producto'} modal className="p-fluid"
+
+        <Dialog visible={visible} style={{ width: '350px' }} header={editar ? 'Editar Producto' : 'Nuevo Producto'} modal className="p-fluid"
             footer={renderFooter()} onHide={onHide}>
             <div className="field">
                 <label htmlFor="codigo">Código</label>

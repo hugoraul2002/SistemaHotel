@@ -21,7 +21,7 @@ interface ReservacionDialogProps {
   habitaciones: Habitacion[];
   clientes: Cliente[];
   mostrarToast: (detalle: string, tipo: "success" | "info" | "warn" | "error") => void;
-  idReservacion?: number; // ID de la reservación para editar
+  idReservacion?: number; 
 }
 
 export const ReservacionDialog: React.FC<ReservacionDialogProps> = ({ visible, onHide, onSave, onDelete, habitaciones, clientes, mostrarToast, idReservacion }) => {

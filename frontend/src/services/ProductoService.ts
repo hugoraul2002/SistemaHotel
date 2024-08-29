@@ -4,9 +4,10 @@ import dayjs from 'dayjs';
 const API_URL = 'http://localhost:3333/productos';
 
 export class ProductoService {
-    static async getAll() {
+    static async getAll(anulado:boolean) {
         try {
-            const response = await axios.get(API_URL);
+            const token = localStorage.getItem('token');
+            const response = await axios.post(API_URL,{anulado}, { headers: { 'Authorization': `Bearer ${token}` } });
             return response.data;
         } catch (error) {
             console.error('Error fetching products:', error);
@@ -16,7 +17,8 @@ export class ProductoService {
 
     static async getProductoById(id: number) {
         try {
-            const response = await axios.get(`${API_URL}/${id}`);
+            const token = localStorage.getItem('token');
+            const response = await axios.get(`${API_URL}/${id}`, { headers: { 'Authorization': `Bearer ${token}` } });
             return response.data;
         } catch (error) {
             console.error('Error fetching product:', error);
@@ -25,16 +27,19 @@ export class ProductoService {
     }
 
     static async createProducto(producto: Producto) {
+        const token = localStorage.getItem('token');
         const formatDateTime = (date: Date) => {
             return date.toISOString().slice(0, 19).replace('T', ' ');
           };
         try {
             const newProducto  = {
                 ...producto,
-                fechaIngreso: formatDateTime(dayjs(producto.fechaIngreso).toDate())
+                fechaIngreso: formatDateTime(dayjs(producto.fechaIngreso).subtract(6,'hours').toDate())
             }
             console.log(newProducto);
-            const response = await axios.post(API_URL+"/store", newProducto);
+            const response = await axios.post(API_URL+"/store", newProducto,
+                { headers: { 'Authorization': `Bearer ${token}` } }
+            );
             return response.data;
         } catch (error) {
             console.error('Error creating product:', error);
@@ -44,7 +49,10 @@ export class ProductoService {
 
     static async updateProducto(producto: Producto) {
         try {
-            const response = await axios.put(`${API_URL}/${producto.id}`, producto);
+            const token = localStorage.getItem('token');
+            console.log(producto);
+            const response = await axios.put(`${API_URL}/update/${producto.id}`, producto, { headers: { 'Authorization': `Bearer ${token}` } 
+            });
             return response.data;
         } catch (error) {
             console.error('Error updating product:', error);
@@ -54,7 +62,8 @@ export class ProductoService {
 
     static async updateActivo(id: number) {
         try {
-            const response = await axios.put(`${API_URL}/anulado/${id}`);
+            const token = localStorage.getItem('token');
+            const response = await axios.put(`${API_URL}/updateActivo/${id}`, {},{ headers: { 'Authorization': `Bearer ${token}` } });
             return response.data;
         } catch (error) {
             console.error('Error updating product:', error);

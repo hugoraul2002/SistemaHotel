@@ -138,6 +138,7 @@ router
     router.put('/updateAnulado/:id', [HospedajesController, 'updateAnulado'])
   })
   .prefix('hospedajes')
+  .use(middleware.auth())
 
 router
   .group(() => {
@@ -148,16 +149,18 @@ router
     router.delete('/:id', [DetalleHospedaje, 'destroy'])
   })
   .prefix('detalleHospedajes')
+  .use(middleware.auth())
 
 router
   .group(() => {
-    router.get('/', [ProductosController, 'index']),
+    router.post('/', [ProductosController, 'index']),
       router.post('/store', [ProductosController, 'store']),
       router.get('/:id', [ProductosController, 'show']),
       router.put('/update/:id', [ProductosController, 'update']),
       router.put('/updateActivo/:id', [ProductosController, 'updateActivo'])
   })
   .prefix('productos')
+  .use(middleware.auth())
 
 router
   .group(() => {
@@ -168,6 +171,7 @@ router
     router.put('/updateAnulado/:id', [AperturaCajasController, 'updateAnulado'])
   })
   .prefix('aperturaCaja')
+  .use(middleware.auth())
 
 router
   .group(() => {
@@ -177,6 +181,7 @@ router
     router.put('/update/:id', [ArqueoCajasController, 'update'])
   })
   .prefix('arqueoCaja')
+  .use(middleware.auth())
 
 router
   .group(() => {
@@ -187,6 +192,7 @@ router
     router.put('/updateAnulado/:id', [CierreCajasController, 'updateAnulado'])
   })
   .prefix('cierreCaja')
+  .use(middleware.auth())
 
 router
   .group(() => {
@@ -197,6 +203,7 @@ router
     router.put('/updateAnulado/:id', [TiposGastosController, 'updateAnulado'])
   })
   .prefix('tiposGastos')
+  .use(middleware.auth())
 
 router
   .group(() => {
@@ -207,6 +214,7 @@ router
     router.put('/updateAnulado/:id', [GastosController, 'updateAnulado'])
   })
   .prefix('gastos')
+  .use(middleware.auth())
 
 router
   .group(() => {
@@ -217,3 +225,4 @@ router
     router.put('/updateAnulado/:id', [ProveedoresController, 'updateActivo'])
   })
   .prefix('proveedores')
+  .use(middleware.auth())

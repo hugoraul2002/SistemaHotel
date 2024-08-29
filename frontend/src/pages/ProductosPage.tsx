@@ -19,7 +19,7 @@ const ProductosPage: React.FC = () => {
   const [dialogVisible, setDialogVisible] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [editingProductoId, setEditingProductoId] = useState<number | null>(null);
-
+  const [anulados, setAnulados] = useState<boolean>(false);
   const [filters, setFilters] = useState<DataTableFilterMeta>({
     global: { value: null, matchMode: FilterMatchMode.CONTAINS },
     nombre: { value: null, matchMode: FilterMatchMode.STARTS_WITH },
@@ -46,10 +46,18 @@ const ProductosPage: React.FC = () => {
   };
   const renderHeader = () => {
     return (
-      <div className="flex place-content-between gap-2">
-        <InputText value={globalFilterValue} onChange={onGlobalFilterChange} placeholder="Búsqueda" />
-        <Button type="button" icon="pi pi-plus" rounded onClick={handleNuevo} />
-      </div>
+      <>
+        <h1 className='font-semibold text-lg mb-4'>Listado de productos</h1>
+        <div className="flex place-content-between gap-2">
+
+          <InputText value={globalFilterValue} onChange={onGlobalFilterChange} placeholder="Búsqueda" />
+          <div className="flex gap-1">
+            <Button type="button" icon="pi pi-plus" rounded onClick={handleNuevo} />
+            <Button type="button" label={anulados ? 'Inactivos' : 'Activos'} rounded onClick={() => setAnulados(!anulados)} />
+
+          </div>
+        </div>
+      </>
     );
   };
 
@@ -69,16 +77,16 @@ const ProductosPage: React.FC = () => {
   const handleSaveProducto = async (producto: Producto) => {
     try {
       if (isEditing && editingProductoId !== null) {
-        const response = await ProductoService.updateProducto( producto);
+        const response = await ProductoService.updateProducto(producto);
         if (response) {
-          const productos = await ProductoService.getAll();
+          const productos = await ProductoService.getAll(anulados);
           setProductos(productos);
           mostrarToast('Producto actualizado.', 'success');
         }
       } else {
         const response = await ProductoService.createProducto(producto);
         if (response) {
-          const productos = await ProductoService.getAll();
+          const productos = await ProductoService.getAll(anulados);
           setProductos(productos);
           mostrarToast('Producto creado.', 'success');
         }
@@ -104,7 +112,8 @@ const ProductosPage: React.FC = () => {
   useEffect(() => {
     const fetchProductos = async () => {
       try {
-        const productos = await ProductoService.getAll();
+        const productos = await ProductoService.getAll(anulados);
+        console.log(productos);
         setProductos(productos);
         setLoading(false);
       } catch (error) {
@@ -113,13 +122,13 @@ const ProductosPage: React.FC = () => {
     };
 
     fetchProductos();
-  }, []);
+  }, [anulados]);
 
   const aceptarAnular = async (producto: Producto) => {
     try {
       const response = await ProductoService.updateActivo(producto.id);
       if (response) {
-        const productos = await ProductoService.getAll();
+        const productos = await ProductoService.getAll(anulados);
         setProductos(productos);
         mostrarToast('Producto eliminado.', 'success');
       }
@@ -146,11 +155,11 @@ const ProductosPage: React.FC = () => {
 
   const esServicioTemplate = (rowData: Producto) => {
     return (
-        <div className="flex align-items-center gap-2">
-            <p>{rowData.esServicio ? 'Si' : 'No'}</p>
-        </div>
+      <div className="flex align-items-center gap-2">
+        <p>{rowData.esServicio ? 'Si' : 'No'}</p>
+      </div>
     );
-};
+  };
 
 
   return (
@@ -159,12 +168,14 @@ const ProductosPage: React.FC = () => {
       <ConfirmDialog />
       <DataTable dataKey="id" loading={loading} showGridlines size='small' value={productos} filters={filters}
         selectionMode="single" selection={selectedProducto!}
-        globalFilterFields={['nombre', 'codigo']} paginator rows={10} rowsPerPageOptions={[5, 10, 25, 50]} header={header} emptyMessage="No se encuentran productos.">
+        onSelectionChange={(e) => setSelectedProducto(e.value)}
+        globalFilterFields={['nombre', 'codigo', 'costo', 'existencia', 'esServicio']} paginator rows={10} rowsPerPageOptions={[5, 10, 25, 50]} header={header} emptyMessage="No se encuentran productos.">
         <Column field="codigo" sortable header="Código" style={{ width: '15%' }}></Column>
         <Column field="nombre" sortable header="Nombre" style={{ width: '30%' }}></Column>
+        <Column field="costo" sortable header="Costo" style={{ width: '15%' }}></Column>
         <Column field="precioVenta" sortable header="Precio Venta" style={{ width: '15%' }}></Column>
         <Column field="existencia" sortable header="Existencia" style={{ width: '10%' }}></Column>
-        <Column field="esServicio" body={esServicioTemplate} sortable header="Es Servicio" style={{ width: '10%' }}></Column>
+        <Column field="esServicio" body={esServicioTemplate} sortable header="Servicio" style={{ width: '10%' }}></Column>
         {/* <Column field="fechaIngreso" sortable header="Fecha Ingreso" style={{ width: '15%' }}></Column> */}
         <Column body={actionBodyTemplate} header="Acciones" bodyStyle={{ width: '10%', textAlign: 'center' }} exportable={false}></Column>
       </DataTable>
