@@ -9,7 +9,6 @@ import { InputText } from 'primereact/inputtext';
 import { Button } from 'primereact/button';
 import { Cliente } from '../types/types';
 import { Toast } from 'primereact/toast';
-// import ClienteDialog from '../components/clientes/FormCliente';
 import { ConfirmDialog, confirmDialog } from 'primereact/confirmdialog';
 import ClienteDialog from '../components/clientes/ClienteDialog';
 import { useUser } from '../hooks/UserContext';
@@ -187,14 +186,6 @@ export default function ClientePage() {
 
         <Column body={actionBodyTemplate} header="Acciones" bodyStyle={{ width: '10%', textAlign: 'center' }} exportable={false}></Column>
       </DataTable>
-
-      {/* <ClienteDialog
-        editar={isEditing}
-        id={editingClienteId!}
-        onHide={handleDialogHide}
-        visible={dialogVisible}
-        onSave={handleSaveCliente}
-      /> */}
       <ClienteDialog
         editar={isEditing}
         id={editingClienteId!}

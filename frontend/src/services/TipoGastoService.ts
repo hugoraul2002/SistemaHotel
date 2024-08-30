@@ -4,10 +4,10 @@ import {TipoGasto}  from '../types/types';
 const API_URL = 'http://localhost:3333/tiposGastos';
 
 export class TipoGastoService {
-  static async getAllTipoGastos() {
+  static async getAllTipoGastos(anulados: boolean) {
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.get(`${API_URL}/`, {
+      const response = await axios.post(`${API_URL}/`, {anulados},{
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -66,10 +66,10 @@ export class TipoGastoService {
     }
   }
 
-  static async updateAnulado(tipoGastoId: number, anulado: boolean) {
+  static async updateAnulado(tipoGastoId: number) {
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.put(`${API_URL}/updateAnulado/${tipoGastoId}`, { anulado }, {
+      const response = await axios.put(`${API_URL}/updateAnulado/${tipoGastoId}`, {  }, {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'

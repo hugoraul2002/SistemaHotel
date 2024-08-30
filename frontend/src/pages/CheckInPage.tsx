@@ -5,6 +5,7 @@ import { Nivel, HabitacionRecepcion } from '../types/types';
 import { Menubar } from 'primereact/menubar';
 import { MenuItem } from 'primereact/menuitem';
 import { HabitacionService } from '../services/HabitacionService';
+import { Panel } from 'primereact/panel';
 
 function CheckInPage() {
   const [items, setItems] = useState<MenuItem[]>([]);
@@ -42,6 +43,8 @@ function CheckInPage() {
   };
 
   return (
+    <Panel header='Check In' style={{ width: '100%' , height: '100vh'}}>
+
     <div className='flex flex-col gap-2'>
       <Menubar model={items} className='lg:my-0 md:my-10 my-12' />
       <div className='flex flex-wrap gap-1'>
@@ -57,6 +60,8 @@ function CheckInPage() {
         ))}
       </div>
     </div>
+
+    </Panel>
   );
 }
 

@@ -196,7 +196,7 @@ router
 
 router
   .group(() => {
-    router.get('/', [TiposGastosController, 'index'])
+    router.post('/', [TiposGastosController, 'index'])
     router.post('/store', [TiposGastosController, 'store'])
     router.get('/:id', [TiposGastosController, 'show'])
     router.put('/update/:id', [TiposGastosController, 'update'])

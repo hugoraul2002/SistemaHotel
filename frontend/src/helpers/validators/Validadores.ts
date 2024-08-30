@@ -77,6 +77,10 @@ export const ProductoSchema = z.object({
   esServicio: z.boolean(),
 });
 
+export const TipoGastoSchema = z.object({
+  tipo: z.string().min(1,{message:"El tipo de gasto no puede ser vacío."})
+});
+
 export type UsuarioCliente = z.infer<typeof UsuarioClienteSchema>;
 export type UsuarioValidador = z.infer<typeof UsuarioSchema>;
 export type UserValidator = z.infer<typeof UserSchema>;
@@ -86,3 +90,4 @@ export type NivelValidador = z.infer<typeof NivelSchema>;
 export type ClaseHabitacionValidador = z.infer<typeof NivelSchema>;
 export type ReservacionValidador = z.infer<typeof ReservacionSchema>;
 export type ProductoValidador = z.infer<typeof ProductoSchema>;
+export type TipoGastoValidador = z.infer<typeof TipoGastoSchema>;

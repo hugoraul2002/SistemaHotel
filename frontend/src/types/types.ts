@@ -172,6 +172,13 @@ export interface Usuario {
     visible: boolean;
     onSave: (nivel: Nivel) => void;
   }
+  export interface TipoGastoProps {
+    editar: boolean;
+    id: number;
+    onHide: () => void;
+    visible: boolean;
+    onSave: (tipoGasto: TipoGasto) => void;
+  }
 
   export interface FormClaseHabitacionProps {
     editar: boolean;

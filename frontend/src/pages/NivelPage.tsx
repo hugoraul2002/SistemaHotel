@@ -117,8 +117,8 @@ export default function NivelPage() {
       setDialogVisible(false);
       setEditingNivelId(null);
     } catch (error) {
-      console.error('Error creating user:', error);
-      mostrarToast('Error al crear usuario.', 'error');
+      console.error('Error creating nivel:', error);
+      mostrarToast('Error al crear nivel.', 'error');
     }
 
   }

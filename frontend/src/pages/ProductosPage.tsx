@@ -102,9 +102,9 @@ const ProductosPage: React.FC = () => {
   const actionBodyTemplate = (rowData: Producto) => {
     return (
       <div className="flex align-items-center justify-content-end gap-2">
-        <Button type="button" icon="pi pi-pen-to-square" onClick={() => handleEditProducto(rowData)}
-          severity='info' outlined rounded />
-        <Button type="button" outlined icon="pi pi-trash" severity="danger" onClick={() => confirmarAnulacion(rowData)} rounded />
+        <Button className='hover:bg-sky-500 hover:text-white' type="button" icon="pi pi-pen-to-square" onClick={() => handleEditProducto(rowData) }
+          severity='info' outlined rounded  disabled={anulados}/>
+        <Button type="button" outlined icon={anulados ? 'pi pi-replay' : 'pi pi-minus-circle'} severity="danger" className='hover:bg-red-500 hover:text-white' onClick={() => confirmarAnulacion(rowData)} rounded />
       </div>
     );
   };
@@ -139,8 +139,9 @@ const ProductosPage: React.FC = () => {
   };
 
   const confirmarAnulacion = (producto: Producto) => {
+    const mensaje = !anulados ? '¿Estás seguro de anular el producto con código ' + producto.codigo + '?' : '¿Estás seguro de activar el producto con código ' + producto.codigo + '?';
     confirmDialog({
-      message: '¿Estás seguro de eliminar?',
+      message: mensaje,
       header: 'Confirmación',
       icon: 'pi pi-exclamation-triangle',
       defaultFocus: 'accept',
