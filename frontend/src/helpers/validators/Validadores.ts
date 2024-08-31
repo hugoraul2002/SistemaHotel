@@ -17,6 +17,14 @@ export const ClienteSchema = z.object({
   direccion: z.string().min(1, { message: 'La dirección es obligatoria' }),
 });
 
+export const ProveedorSchema = z.object({
+  nit: z.string().min(2, { message: 'El nit es obligatorio' }),
+  nombre: z.string().min(1, { message: 'El nombre del proveedor es obligatorio' }),
+  telefono: z.string().optional(),
+  direccion: z.string().optional(),
+  email: z.string({ message: 'Correo electrónico no válido' }).optional(),
+})
+
 export const Rol = z.object({
   id: z.number().positive(),
   nombre: z.string(),
@@ -91,3 +99,4 @@ export type ClaseHabitacionValidador = z.infer<typeof NivelSchema>;
 export type ReservacionValidador = z.infer<typeof ReservacionSchema>;
 export type ProductoValidador = z.infer<typeof ProductoSchema>;
 export type TipoGastoValidador = z.infer<typeof TipoGastoSchema>;
+export type ProveedorValidador = z.infer<typeof ProveedorSchema>;

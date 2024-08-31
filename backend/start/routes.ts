@@ -52,7 +52,7 @@ router
 // Rutas de clientes
 router
   .group(() => {
-    router.get('/', [ClientesController, 'index'])
+    router.post('/', [ClientesController, 'index'])
     router.post('/store', [ClientesController, 'store'])
     router.get('/:id', [ClientesController, 'show'])
     router.put('/update/:id', [ClientesController, 'update'])
@@ -207,7 +207,7 @@ router
 
 router
   .group(() => {
-    router.get('/', [GastosController, 'index'])
+    router.post('/', [GastosController, 'index'])
     router.post('/store', [GastosController, 'store'])
     router.get('/:id', [GastosController, 'show'])
     router.put('/update/:id', [GastosController, 'update'])
@@ -218,7 +218,7 @@ router
 
 router
   .group(() => {
-    router.get('/', [ProveedoresController, 'index'])
+    router.post('/', [ProveedoresController, 'index'])
     router.post('/store', [ProveedoresController, 'store'])
     router.get('/:id', [ProveedoresController, 'show'])
     router.put('/update/:id', [ProveedoresController, 'update'])

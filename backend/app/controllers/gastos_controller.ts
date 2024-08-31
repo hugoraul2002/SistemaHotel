@@ -2,9 +2,10 @@ import { HttpContext } from '@adonisjs/core/http'
 import Gasto from '#models/gasto'
 
 export default class GastosController {
-  async index({ response }: HttpContext) {
+  async index({ request, response }: HttpContext) {
     try {
-      const gastos = await Gasto.query().where('anulado', false).preload('usuario')
+      const anulados = request.input('anulados')
+      const gastos = await Gasto.query().where('anulado', anulados).preload('usuario')
       return response.ok(gastos)
     } catch (error) {
       return response.internalServerError({ message: 'Error fetching expenses', error })

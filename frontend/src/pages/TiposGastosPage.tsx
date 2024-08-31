@@ -110,7 +110,7 @@ const TiposGastosPage: React.FC = () => {
           if (response) {
             const tiposGasto = await TipoGastoService.getAllTipoGastos(anulados);
             setTiposGasto(tiposGasto);
-            mostrarToast('Tipo de gasto anulado.', 'success');
+            mostrarToast(anulados ? 'Tipo de gasto activado.' : 'Tipo de gasto inactivado.', 'success');
           }
         } catch (error) {
           console.error('Error eliminando tipo de gasto.', error);
@@ -155,7 +155,7 @@ const TiposGastosPage: React.FC = () => {
         return (
             <div className="flex align-items-center justify-content-end gap-2">
                 <Button type="button" icon="pi pi-pen-to-square"
-                    severity='info' outlined rounded onClick={() => handleEditTipoGasto(rowData)} data-pr-tooltip="Editar" disabled={anulados} />
+                    severity='info' outlined rounded onClick={() => handleEditTipoGasto(rowData)} data-pr-tooltip="Editar" disabled={anulados} className='hover:bg-sky-500 hover:text-white' />
                 <Button type="button" outlined icon={anulados ? 'pi pi-replay' : 'pi pi-minus-circle'} className='hover:bg-red-500 hover:text-white'  severity="danger" onClick={() => confirmarAnulacion(rowData)} rounded data-pr-tooltip="Eliminar" />
             </div>
         );

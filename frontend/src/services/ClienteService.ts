@@ -4,10 +4,11 @@ import { Cliente } from '../types/types';
 const API_URL = 'http://localhost:3333/clientes'; 
 
 export class ClienteService {
-    static async getAll() {
+    static async getAll(anulados:boolean) {
         try {
+            console.log(anulados)
         const token = localStorage.getItem('token');
-        const response = await axios.get(`${API_URL}/`,{
+        const response = await axios.post(`${API_URL}/`,{anulados},{
             headers: { 'Authorization': `Bearer ${token}` } 
         });
         return response.data;

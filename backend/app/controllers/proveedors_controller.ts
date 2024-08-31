@@ -1,9 +1,10 @@
 import type { HttpContext } from '@adonisjs/core/http'
 import Proveedor from '#models/proveedor'
 export default class ProveedorsController {
-  async index({ response }: HttpContext) {
+  async index({ request, response }: HttpContext) {
     try {
-      const proveedores = await Proveedor.query().where('anulado', false)
+      const anulados = request.input('anulados')
+      const proveedores = await Proveedor.query().where('anulado', anulados)
       return response.ok(proveedores)
     } catch (error) {
       return response.internalServerError({ message: 'Error fetching clients', error })
@@ -12,6 +13,7 @@ export default class ProveedorsController {
 
   async store({ request, response }: HttpContext) {
     try {
+      console.log(request.all())
       const data = request.only(['nit', 'nombre', 'telefono', 'direccion', 'email', 'anulado'])
       const proveedor = await Proveedor.create(data)
       return response.created(proveedor)

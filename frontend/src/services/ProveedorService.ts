@@ -2,12 +2,14 @@ import axios from 'axios';
 import { Proveedor } from '../types/types';
 
 const API_URL = 'http://localhost:3333/proveedores';
+// const API_URL = import.meta.env.API_IP + '/proveedores';
+
 
 export class ProveedorService {
-  static async getAllProveedors() {
+  static async getAllProveedors(anulados:boolean) {
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.get(`${API_URL}/`, {
+      const response = await axios.post(`${API_URL}/`,{anulados}, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -66,10 +68,10 @@ export class ProveedorService {
     }
   }
 
-  static async updateAnulado(proveedorId: number, anulado: boolean) {
+  static async updateAnulado(proveedorId: number) {
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.put(`${API_URL}/updateAnulado/${proveedorId}`, { anulado }, {
+      const response = await axios.put(`${API_URL}/updateAnulado/${proveedorId}`, {  }, {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'

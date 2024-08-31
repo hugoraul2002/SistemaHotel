@@ -2,9 +2,10 @@ import { HttpContext } from '@adonisjs/core/http'
 import Cliente from '#models/cliente'
 
 export default class ClientesController {
-  async index({ response }: HttpContext) {
+  async index({ request, response }: HttpContext) {
     try {
-      const clientes = await Cliente.query().where('activo', true).preload('user')
+      const anulados = request.input('anulados', false)
+      const clientes = await Cliente.query().where('activo', !anulados).preload('user')
       return response.ok(clientes)
     } catch (error) {
       return response.internalServerError({ message: 'Error fetching clients', error })

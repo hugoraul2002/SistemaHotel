@@ -130,7 +130,7 @@ const ProductosPage: React.FC = () => {
       if (response) {
         const productos = await ProductoService.getAll(anulados);
         setProductos(productos);
-        mostrarToast('Producto eliminado.', 'success');
+        mostrarToast(anulados ? 'Producto activado.' : 'Producto anulado.', 'success');
       }
     } catch (error) {
       console.error('Error eliminando producto:', error);

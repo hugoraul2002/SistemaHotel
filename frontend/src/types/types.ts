@@ -203,6 +203,13 @@ export interface Usuario {
     visible: boolean;
     onSave: (cliente: Cliente) => void;
   }
+  export interface ProveedorDialogProps {
+    editar: boolean;
+    id: number;
+    onHide: () => void;
+    visible: boolean;
+    onSave: (proveedor:Proveedor) => void;
+  }
 
   export interface CalendarEvent {
     start: Date;

@@ -16,6 +16,7 @@ import { useUser } from '../hooks/UserContext';
 export default function ClientePage() {
   const toast = useRef<Toast>(null);
   const { user } = useUser();
+  const [anulados, setAnulados] = useState<boolean>(false);
   const [clientes, setClientes] = useState<Cliente[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [globalFilterValue, setGlobalFilterValue] = useState<string>('');
@@ -63,6 +64,7 @@ export default function ClientePage() {
             <Button type="button" icon="pi pi-plus" rounded data-pr-tooltip="Nuevo" onClick={() => handleNuevo()} />
             {/* <Button type="button" icon="pi pi-file-excel" severity="success" rounded data-pr-tooltip="XLS" onClick={exportToExcel} /> */}
             <Button type="button" icon="pi pi-file-pdf" severity="warning" rounded data-pr-tooltip="PDF" />
+            <Button type="button" label={anulados ? 'Inactivos' : 'Activos'} rounded onClick={() => setAnulados(!anulados)} size='small' />
           </div>
         </div>
       </>
@@ -95,14 +97,14 @@ export default function ClientePage() {
       if (isEditing && editingClienteId !== null) {
         const response = await ClienteService.update(editingClienteId, cliente);
         if (response) {
-          const clientes = await ClienteService.getAll();
+          const clientes = await ClienteService.getAll(anulados);
           setClientes(clientes);
           mostrarToast('Cliente actualizado.', 'success');
         }
       } else {
         const response = await ClienteService.create(cliente);
         if (response) {
-          const clientes = await ClienteService.getAll();
+          const clientes = await ClienteService.getAll(anulados);
           setClientes(clientes);
           mostrarToast('Cliente creado.', 'success');
         }
@@ -118,9 +120,9 @@ export default function ClientePage() {
   const actionBodyTemplate = (rowData: Cliente) => {
     return (
       <div className="flex align-items-center justify-content-end gap-2">
-        <Button type="button" icon="pi pi-pen-to-square" onClick={() => handleEditCliente(rowData)}
+        <Button type="button" icon="pi pi-pen-to-square" onClick={() => handleEditCliente(rowData)} disabled={anulados} className='hover:bg-sky-500 hover:text-white'
           severity='info' outlined rounded data-pr-tooltip="Editar" />
-        {user?.rol.nombre === "ADMIN" && <Button type="button" outlined icon="pi pi-trash" severity="danger" onClick={() => confirmarAnulacion(rowData)} rounded data-pr-tooltip="Eliminar" />}
+        {user?.rol.nombre === "ADMIN" && <Button type="button" outlined icon={anulados ? 'pi pi-replay' : 'pi pi-minus-circle'} className='hover:bg-red-500 hover:text-white'  severity="danger" onClick={() => confirmarAnulacion(rowData)} rounded data-pr-tooltip="Eliminar" />}
       </div>
     );
   };
@@ -128,7 +130,7 @@ export default function ClientePage() {
   useEffect(() => {
     const fetchClientes = async () => {
       try {
-        const clientes = await ClienteService.getAll();
+        const clientes = await ClienteService.getAll(anulados);
 
         setClientes(clientes);
         setLoading(false);
@@ -138,15 +140,15 @@ export default function ClientePage() {
     };
 
     fetchClientes();
-  }, []);
+  }, [anulados]);
 
   const aceptarAnular = async (cliente: Cliente) => {
     try {
       const response = await ClienteService.updateActivo(cliente.id);
       if (response) {
-        const clientes = await ClienteService.getAll();
+        const clientes = await ClienteService.getAll(anulados);
         setClientes(clientes);
-        mostrarToast('Cliente eliminado.', 'success');
+        mostrarToast(anulados ? 'Cliente activado.' : 'Cliente anulado.', 'success');
       }
     } catch (error) {
       console.error('Error eliminando cliente:', error);
@@ -155,8 +157,9 @@ export default function ClientePage() {
   };
 
   const confirmarAnulacion = (cliente: Cliente) => {
+    const mensaje = !anulados ? '¿Estás seguro de anular el registro?' : '¿Estás seguro de activar el registro?';
     confirmDialog({
-      message: '¿Estás seguro de eliminar?',
+      message: mensaje,
       header: 'Confirmación',
       icon: 'pi pi-exclamation-triangle',
       defaultFocus: 'accept',
