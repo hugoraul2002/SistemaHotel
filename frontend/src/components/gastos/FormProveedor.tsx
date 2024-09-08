@@ -52,6 +52,7 @@ const ProveedorDialog: React.FC<ProveedorDialogProps> = ({ editar, id, onHide, v
     const newErrors: { [key: string]: string } = {};
     if (!data.nit) newErrors.nit = 'El nit es obligatorio';
     if (!data.nombre) newErrors.nombre = 'El nombre del proveedor es obligatorio';
+    if (data.email && !/\S+@\S+\.\S+/.test(data.email)) newErrors.email = 'El email es inválido.';
     return newErrors;
   };
 
@@ -66,8 +67,7 @@ const ProveedorDialog: React.FC<ProveedorDialogProps> = ({ editar, id, onHide, v
     setIsSubmitting(true);
     try {
       const proveedor: Proveedor = { id: id || 0, ...data, anulado: false };
-      console
-      await onSave(proveedor);
+      onSave(proveedor);
       onHide();
     } catch (error) {
       console.error('Error al guardar proveedor:', error);

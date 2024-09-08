@@ -22,7 +22,10 @@ export interface Usuario {
     id: number;
     nombre: string;
   }
-
+  export interface MetodoPago {
+    metodo: string;
+    monto: number;
+  }
   export interface Nivel {
     id: number;
     nombre: string;
@@ -155,6 +158,16 @@ export interface Usuario {
     fecha: Date;
     monto: number;
     anulado: boolean;
+  }
+
+  export interface OpcionPago {
+    id: number;
+    aperturaId: number;
+    tipoDocumento: string;
+    documentoId: number;
+    metodo: string;
+    monto: number;
+    fecha: Date;
   }
   //INTERFACES PARA PROPS DE COMPONENTES
   export interface HabitacionDialogProps {

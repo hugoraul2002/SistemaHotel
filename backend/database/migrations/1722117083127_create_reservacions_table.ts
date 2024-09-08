@@ -23,6 +23,7 @@ export default class extends BaseSchema {
       table.integer('numero_adultos').notNullable()
       table.integer('numero_ninos').notNullable()
       table.string('observaciones').nullable()
+      table.boolean('pagado').defaultTo(false)
       table.boolean('anulado').defaultTo(false)
     })
   }

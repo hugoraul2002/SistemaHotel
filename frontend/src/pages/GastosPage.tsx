@@ -8,11 +8,13 @@ import { InputIcon } from 'primereact/inputicon';
 import { InputText } from 'primereact/inputtext';
 import { Button } from 'primereact/button';
 import { Toast } from 'primereact/toast';
-import { Gasto } from '../types/types';
+import { Gasto, MetodoPago } from '../types/types';
 import { ConfirmDialog, confirmDialog } from 'primereact/confirmdialog';
 import { formatDate } from '../helpers/formatDate';
-// import GastoDialog from '../components/gastos/GastoDialog';
+import GastoDialog from '../components/gastos/FormGasto';
 import { useUser } from '../hooks/UserContext';
+import RegistroPago from '../components/opcionesPago/OpcionPago'
+import { Dialog } from 'primereact/dialog';
 
 const GastosPage: React.FC = () => {
   const toast = useRef<Toast>(null);
@@ -22,7 +24,7 @@ const GastosPage: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const [globalFilterValue, setGlobalFilterValue] = useState<string>('');
   const [selectedGasto, setSelectedGasto] = useState<Gasto | null>(null);
-
+  const [metodosPago, setMetodosPago] = useState<MetodoPago[]>([]);
   const [filters, setFilters] = useState<DataTableFilterMeta>({
     global: { value: null, matchMode: FilterMatchMode.CONTAINS },
     descripcion: { value: null, matchMode: FilterMatchMode.STARTS_WITH },
@@ -96,6 +98,7 @@ const GastosPage: React.FC = () => {
   const handleSaveGasto = async (gasto: Gasto) => {
     try {
       if (isEditing && editingGastoId !== null) {
+        console.log(gasto);
         const response = await GastoService.updateGasto(editingGastoId, gasto);
         if (response) {
           const gastos = await GastoService.getAllGastos(anulados);
@@ -103,6 +106,9 @@ const GastosPage: React.FC = () => {
           mostrarToast('Gasto actualizado.', 'success');
         }
       } else {
+        console.log(user);
+        console.log(gasto);
+        gasto= {...gasto ,userId: user!.id};
         const response = await GastoService.createGasto(gasto);
         if (response) {
           const gastos = await GastoService.getAllGastos(anulados);
@@ -141,6 +147,7 @@ const GastosPage: React.FC = () => {
             severity="danger"
             onClick={() => confirmarAnulacion(rowData)}
             rounded
+            disabled={rowData.anulado}
             data-pr-tooltip={anulados ? "Reactivar" : "Anular"}
           />
         )}
@@ -152,6 +159,7 @@ const GastosPage: React.FC = () => {
     const fetchGastos = async () => {
       try {
         const gastos = await GastoService.getAllGastos(anulados);
+        console.log(gastos);
         setGastos(gastos);
         setLoading(false);
       } catch (error) {
@@ -218,7 +226,7 @@ const GastosPage: React.FC = () => {
         onSelectionChange={(e) => setSelectedGasto(e.value)}
         selectionMode="single"
         selection={selectedGasto!}
-        globalFilterFields={['descripcion', 'monto', 'fecha', 'proveedor.nombre', 'tipoGasto.nombre', 'user.fullName']}
+        globalFilterFields={['descripcion', 'monto', 'fecha', 'proveedor.nombre', 'tipoGasto.tipo','usuario.fullName']}
         paginator
         rows={10}
         rowsPerPageOptions={[5, 10, 25, 50]}
@@ -226,22 +234,22 @@ const GastosPage: React.FC = () => {
         header={header}
         emptyMessage="No se encuentran gastos."
       >
-        <Column field="descripcion" sortable header="Descripción" style={{ width: '20%' }}></Column>
-        <Column field="monto" sortable header="Monto" style={{ width: '15%' }}></Column>
+        <Column field="descripcion" sortable header="Descripción" style={{ width: 'auto' }}></Column>
+        <Column field="monto" sortable header="Monto" style={{ width: 'auto' }}></Column>
         <Column
           field="fecha"
-          body={(rowData: Gasto) => formatDate(new Date(rowData.fecha))}
+          body={rowData => formatDate(rowData.fecha)}
           sortable
           header="Fecha"
-          style={{ width: '15%' }}
+          style={{ width: 'auto' }}
         ></Column>
-        <Column field="proveedor.nombre" sortable header="Proveedor" style={{ width: '15%' }}></Column>
-        <Column field="tipoGasto.nombre" sortable header="Tipo de Gasto" style={{ width: '15%' }}></Column>
-        <Column field="user.fullName" sortable header="Usuario" style={{ width: '15%' }}></Column>
+        <Column field="tipoGasto.tipo" sortable header="Tipo Gasto" style={{ width: 'auto' }}></Column>
+        <Column field="proveedor.nombre" sortable header="Proveedor" style={{ width: 'auto' }}></Column>
+        <Column field="usuario.fullName" sortable header="Usuario" style={{ width: 'auto' }}></Column>
         <Column
           body={actionBodyTemplate}
           header="Acciones"
-          bodyStyle={{ width: '15%', textAlign: 'center' }}
+          bodyStyle={{ width: 'auto', textAlign: 'center' }}
           exportable={false}
         ></Column>
       </DataTable>
@@ -251,7 +259,12 @@ const GastosPage: React.FC = () => {
         visible={dialogVisible}
         onHide={handleDialogHide}
         onSave={handleSaveGasto}
+        mostrarToast={mostrarToast}
       /> */}
+      <Dialog visible={dialogVisible} onHide={handleDialogHide}>
+      <RegistroPago idDocumento={1} tipoDocumento="G" setOpcionesPago={setMetodosPago} onSave={()=> console.log('onSave')} 
+      mostrarToast={mostrarToast}/>
+      </Dialog>
     </div>
   );
 };

@@ -26,6 +26,7 @@ const CierreCajasController = () => import('#controllers/cierre_cajas_controller
 const GastosController = () => import('#controllers/gastos_controller')
 const TiposGastosController = () => import('#controllers/tipogastos_controller')
 const ProveedoresController = () => import('#controllers/proveedors_controller')
+const FacturacionFelController = () => import('#controllers/facturacion_fels_controller')
 // Rutas de autenticación
 router
   .group(() => {
@@ -226,3 +227,10 @@ router
   })
   .prefix('proveedores')
   .use(middleware.auth())
+
+router
+  .group(() => {
+    router.post('/consultaNit/', [FacturacionFelController, 'consultarNIT'])
+    router.post('/facturar/', [FacturacionFelController, 'facturar'])
+  })
+  .prefix('fel')

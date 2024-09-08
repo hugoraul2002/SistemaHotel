@@ -8,9 +8,9 @@ export default class extends BaseSchema {
       table.increments('id')
       table.string('nit', 255).notNullable()
       table.string('nombre', 255).notNullable()
-      table.string('telefono', 255).notNullable()
-      table.string('direccion', 255).notNullable()
-      table.string('email', 255).notNullable()
+      table.string('telefono', 255).nullable()
+      table.string('direccion', 255).nullable()
+      table.string('email', 255).nullable()
       table.boolean('anulado').defaultTo(false)
     })
   }

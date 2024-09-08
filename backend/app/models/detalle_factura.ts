@@ -1,14 +1,15 @@
 import { BaseModel, column, belongsTo } from '@adonisjs/lucid/orm'
-import Hospedaje from '#models/hospedaje'
 import type { BelongsTo } from '@adonisjs/lucid/types/relations'
+import Factura from '#models/factura'
 import Producto from '#models/producto'
-export default class DetalleHospedaje extends BaseModel {
-  static table = 'detalle_hospedajes'
+
+export default class DetalleFactura extends BaseModel {
+  static tableName = 'detalle_factura'
   @column({ isPrimary: true })
   declare id: number
 
   @column()
-  declare hospedajeId: number
+  declare facturaId: number
 
   @column()
   declare productoId: number
@@ -20,15 +21,15 @@ export default class DetalleHospedaje extends BaseModel {
   declare costo: number
 
   @column()
-  declare precioVenta: number
+  declare precio: number
 
   @column()
-  declare pagado: boolean
+  declare descuento: number
 
-  @belongsTo(() => Hospedaje, {
-    foreignKey: 'hospedajeId',
+  @belongsTo(() => Factura, {
+    foreignKey: 'facturaId',
   })
-  declare hospedaje: BelongsTo<typeof Hospedaje>
+  declare factura: BelongsTo<typeof Factura>
 
   @belongsTo(() => Producto, {
     foreignKey: 'productoId',

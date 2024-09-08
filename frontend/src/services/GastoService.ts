@@ -1,5 +1,6 @@
 import axios from 'axios';
 import { Gasto } from '../types/types';
+import dayjs from 'dayjs';
 
 const API_URL = 'http://localhost:3333/gastos';
 
@@ -21,8 +22,20 @@ export class GastoService {
 
   static async createGasto(gastoData: Gasto) {
     try {
+      console.log(gastoData);
+      const data = {id:gastoData.id, 
+
+    userId: JSON.parse(localStorage.getItem('auth')!).id,
+    tipoGastoId: gastoData.tipoGastoId,
+    proveedorId: gastoData.proveedorId,
+    descripcion: gastoData.descripcion,
+    monto: gastoData.monto,
+    fecha:dayjs(gastoData.fecha).add(6, 'hour').format('YYYY-MM-DD'),
+    anulado: false
+      }
+      console.log(data);
       const token = localStorage.getItem('token');
-      const response = await axios.post(`${API_URL}/store`, gastoData, {
+      const response = await axios.post(`${API_URL}/store`, data, {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
@@ -53,7 +66,18 @@ export class GastoService {
   static async updateGasto(gastoId: number, gastoData: Partial<Gasto>) {
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.put(`${API_URL}/update/${gastoId}`, gastoData, {
+      const data = {id:gastoData.id, 
+
+        userId: JSON.parse(localStorage.getItem('auth')!).id,
+        tipoGastoId: gastoData.tipoGastoId,
+        proveedorId: gastoData.proveedorId,
+        descripcion: gastoData.descripcion,
+        monto: gastoData.monto,
+        fecha:dayjs(gastoData.fecha).format('YYYY-MM-DD'),
+        anulado: false
+          }
+          console.log('data',data, 'gastoData',gastoData);
+      const response = await axios.put(`${API_URL}/update/${gastoId}`, data, {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'

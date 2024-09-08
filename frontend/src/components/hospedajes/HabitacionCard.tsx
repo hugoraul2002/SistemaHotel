@@ -47,7 +47,7 @@ export const HabitacionCard: React.FC<HabitacionCardProps> = ({ idHabitacion, nu
                 'backdrop-blur-md',
                 'flex flex-col justify-between',
                 'p-3',
-                'flex-grow max-w-[240px] max-h-[210px]',
+                'flex-grow max-w-[210px] max-h-[210px]',
                 'min-w-[175px]',
                 'min-h-[120px]'
             )}

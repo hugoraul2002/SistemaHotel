@@ -5,7 +5,11 @@ export default class GastosController {
   async index({ request, response }: HttpContext) {
     try {
       const anulados = request.input('anulados')
-      const gastos = await Gasto.query().where('anulado', anulados).preload('usuario')
+      const gastos = await Gasto.query()
+        .where('anulado', anulados)
+        .preload('usuario')
+        .preload('proveedor')
+        .preload('tipoGasto')
       return response.ok(gastos)
     } catch (error) {
       return response.internalServerError({ message: 'Error fetching expenses', error })
@@ -23,6 +27,7 @@ export default class GastosController {
         'fecha',
         'anulado',
       ])
+      console.log(data)
       const gasto = await Gasto.create(data)
       await gasto.load('tipoGasto')
       await gasto.load('proveedor')

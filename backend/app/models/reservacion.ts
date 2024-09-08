@@ -44,6 +44,9 @@ export default class Reservacion extends BaseModel {
   declare observaciones: string
 
   @column()
+  declare pagado: boolean
+
+  @column()
   declare anulado: boolean
 
   @belongsTo(() => Habitacion, {

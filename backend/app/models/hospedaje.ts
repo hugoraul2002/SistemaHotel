@@ -68,5 +68,5 @@ export default class Hospedaje extends BaseModel {
   @hasMany(() => DetalleHospedaje, {
     foreignKey: 'hospedajeId',
   })
-  declare reservaciones: HasMany<typeof DetalleHospedaje>
+  declare detalles: HasMany<typeof DetalleHospedaje>
 }
