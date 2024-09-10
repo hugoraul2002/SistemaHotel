@@ -1,5 +1,6 @@
 import axios from 'axios';
-import { AperturaCaja } from '../types/types';
+import { AperturaCaja, Usuario } from '../types/types';
+import {me} from '../services/AuthService';
 import dayjs from 'dayjs';
 
 const API_URL = 'http://localhost:3333/aperturaCaja';
@@ -59,6 +60,23 @@ export class AperturaCajaService {
       return response.data;
     } catch (error) {
       console.error(`Error fetching apertura with id ${aperturaId}:`, error);
+      throw error;
+    }
+  }
+
+  static async getAperturaUsuario() {
+    try {
+
+      const token = localStorage.getItem('token');
+      const usuario : Usuario = await me();
+      const response = await axios.get(`${API_URL}/aperturaActiva/${usuario.id}`, {
+        headers: { 
+          'Authorization': `Bearer ${token}`
+        }
+      });
+      return response.data;
+    } catch (error) {
+      console.error(`Error fetching apertura.`, error);
       throw error;
     }
   }

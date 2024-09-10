@@ -25,6 +25,7 @@ export interface Usuario {
   export interface MetodoPago {
     metodo: string;
     monto: number;
+    idApertura ?: number | null;
   }
   export interface Nivel {
     id: number;
@@ -162,7 +163,7 @@ export interface Usuario {
 
   export interface OpcionPago {
     id: number;
-    aperturaId: number;
+    aperturaId ?: number | null;
     tipoDocumento: string;
     documentoId: number;
     metodo: string;

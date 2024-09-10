@@ -8,13 +8,13 @@ import { InputIcon } from 'primereact/inputicon';
 import { InputText } from 'primereact/inputtext';
 import { Button } from 'primereact/button';
 import { Toast } from 'primereact/toast';
-import { Gasto, MetodoPago } from '../types/types';
+import { Gasto, MetodoPago, OpcionPago } from '../types/types';
 import { ConfirmDialog, confirmDialog } from 'primereact/confirmdialog';
 import { formatDate } from '../helpers/formatDate';
-import GastoDialog from '../components/gastos/FormGasto';
+import { createOpcionPago } from '../services/OpcionPagoService';
+// import GastoDialog from '../components/gastos/FormGasto';
+import GastoDialog from '../components/gastos/GastoDialog';
 import { useUser } from '../hooks/UserContext';
-import RegistroPago from '../components/opcionesPago/OpcionPago'
-import { Dialog } from 'primereact/dialog';
 
 const GastosPage: React.FC = () => {
   const toast = useRef<Toast>(null);
@@ -108,9 +108,20 @@ const GastosPage: React.FC = () => {
       } else {
         console.log(user);
         console.log(gasto);
-        gasto= {...gasto ,userId: user!.id};
+        gasto = { ...gasto, userId: user!.id };
         const response = await GastoService.createGasto(gasto);
         if (response) {
+          const { id } = response;
+          const opcionPago: OpcionPago = {
+            id: 0;
+            aperturaId: number;
+            tipoDocumento: string;
+            documentoId: number;
+            metodo: string;
+            monto: number;
+            fecha: Date;
+
+          };
           const gastos = await GastoService.getAllGastos(anulados);
           setGastos(gastos);
           mostrarToast('Gasto creado.', 'success');
@@ -226,7 +237,7 @@ const GastosPage: React.FC = () => {
         onSelectionChange={(e) => setSelectedGasto(e.value)}
         selectionMode="single"
         selection={selectedGasto!}
-        globalFilterFields={['descripcion', 'monto', 'fecha', 'proveedor.nombre', 'tipoGasto.tipo','usuario.fullName']}
+        globalFilterFields={['descripcion', 'monto', 'fecha', 'proveedor.nombre', 'tipoGasto.tipo', 'usuario.fullName']}
         paginator
         rows={10}
         rowsPerPageOptions={[5, 10, 25, 50]}
@@ -253,18 +264,18 @@ const GastosPage: React.FC = () => {
           exportable={false}
         ></Column>
       </DataTable>
-      {/* <GastoDialog
+      <GastoDialog
         editar={isEditing}
         id={editingGastoId!}
         visible={dialogVisible}
         onHide={handleDialogHide}
         onSave={handleSaveGasto}
         mostrarToast={mostrarToast}
-      /> */}
-      <Dialog visible={dialogVisible} onHide={handleDialogHide}>
+      />
+      {/* <Dialog visible={dialogVisible} onHide={handleDialogHide}>
       <RegistroPago idDocumento={1} tipoDocumento="G" setOpcionesPago={setMetodosPago} onSave={()=> console.log('onSave')} 
       mostrarToast={mostrarToast}/>
-      </Dialog>
+      </Dialog> */}
     </div>
   );
 };

@@ -84,91 +84,6 @@ export default class FacturacionFelController {
     }
   }
 
-  // async facturar({ request, response }: HttpContext) {
-  //   const { cliente, usuario, clave, nitemisor, xmldoc } = request.only([
-  //     'cliente',
-  //     'usuario',
-  //     'clave',
-  //     'nitemisor',
-  //     'xmldoc',
-  //   ])
-
-  //   try {
-  //     // Crear el cliente SOAP para la facturación
-  //     const soapClient = await soap.createClientAsync(this.wsdUrlFactura)
-
-  //     // Definir los parámetros que se enviarán en la petición
-  //     const args = {
-  //       Cliente: cliente,
-  //       Usuario: usuario,
-  //       Clave: clave,
-  //       Nitemisor: nitemisor,
-  //       Xmldoc: xmldoc,
-  //     }
-
-  //     // Ejecutar la función SOAP usando Promesas
-  //     const resultado: any = await new Promise((resolve, reject) => {
-  //       soapClient.Documento.DocumentoSoapPort.Execute(args, (err: any, result: any) => {
-  //         if (err) {
-  //           reject(err)
-  //         } else {
-  //           resolve(result)
-  //         }
-  //       })
-  //     })
-  //     console.log('resultado', resultado)
-  //     // Extraer la cadena XML contenida en el resultado
-  //     const xml = resultado?.Respuesta
-
-  //     if (!xml) {
-  //       return response.status(500).json({
-  //         success: false,
-  //         message: 'No se recibió información válida desde el servicio SOAP',
-  //       })
-  //     }
-
-  //     // Usar xml2js para convertir el XML a JSON
-  //     const parser = new xml2js.Parser()
-  //     const parsedResult = await parser.parseStringPromise(xml)
-  //     const DTE = parsedResult?.DTE
-  //     if (!DTE) {
-  //       const errores = parsedResult?.Errores
-  //       const error = errores?.Error?.[0]
-  //       return response.status(500).json({
-  //         success: false,
-  //         error: error['_'],
-  //         codigoError: error['$']['Codigo'],
-  //       })
-  //     }
-  //     const fechaEmision = DTE['$']['FechaEmision']
-  //     const fechaCertificacion = DTE['$']['FechaCertificacion']
-  //     const numeroAutorizacion = DTE['$']['NumeroAutorizacion']
-  //     const serie = DTE['$']['Serie']
-  //     const numero = DTE['$']['Numero']
-  //     const xmlDTE = DTE?.[0]
-  //     const pdfDTE = DTE?.[1]
-  //     // Retornar la respuesta con los datos extraídos
-  //     return response.status(200).json({
-  //       success: true,
-  //       data: {
-  //         fechaEmision,
-  //         fechaCertificacion,
-  //         numeroAutorizacion,
-  //         serie,
-  //         numero,
-  //         xmlDTE,
-  //         pdfDTE,
-  //       },
-  //     })
-  //   } catch (error) {
-  //     return response.status(500).json({
-  //       success: false,
-  //       message: 'Error al consumir el servicio SOAP',
-  //       error: error.message,
-  //     })
-  //   }
-  // }
-
   async facturar({ request, response }: HttpContext) {
     const { cliente, usuario, clave, nitemisor, xmldoc } = request.only([
       'cliente',
@@ -222,7 +137,7 @@ export default class FacturacionFelController {
         const error = errores?.Error?.[0]
         return response.status(500).json({
           success: false,
-          message: error['_'],
+          error: error['_'],
           codigoError: error['$']['Codigo'],
         })
       }
@@ -232,7 +147,7 @@ export default class FacturacionFelController {
       if (!DTE) {
         return response.status(500).json({
           success: false,
-          message: 'Formato de respuesta no esperado',
+          error: 'Formato de respuesta no esperado',
         })
       }
 

@@ -27,6 +27,7 @@ const GastosController = () => import('#controllers/gastos_controller')
 const TiposGastosController = () => import('#controllers/tipogastos_controller')
 const ProveedoresController = () => import('#controllers/proveedors_controller')
 const FacturacionFelController = () => import('#controllers/facturacion_fels_controller')
+const OpcionPagosController = () => import('#controllers/opcion_pagos_controller')
 // Rutas de autenticación
 router
   .group(() => {
@@ -168,6 +169,7 @@ router
     router.get('/', [AperturaCajasController, 'index'])
     router.post('/store', [AperturaCajasController, 'store'])
     router.get('/:id', [AperturaCajasController, 'show'])
+    router.get('/activa/:id', [AperturaCajasController, 'aperturaActiva'])
     router.put('/update/:id', [AperturaCajasController, 'update'])
     router.put('/updateAnulado/:id', [AperturaCajasController, 'updateAnulado'])
   })
@@ -234,3 +236,13 @@ router
     router.post('/facturar/', [FacturacionFelController, 'facturar'])
   })
   .prefix('fel')
+  .use(middleware.auth())
+
+router
+  .group(() => {
+    router.get('/', [OpcionPagosController, 'index'])
+    router.post('/store', [OpcionPagosController, 'store'])
+    router.get('/:id', [OpcionPagosController, 'show'])
+  })
+  .prefix('opcionPago')
+  .use(middleware.auth())

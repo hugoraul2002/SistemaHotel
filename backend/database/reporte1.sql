@@ -22,3 +22,42 @@ LEFT JOIN Gasto g ON pd.tipoDocumento = 'gasto' AND pd.documentoId = g.id
 LEFT JOIN Reservacion r ON pd.tipoDocumento = 'reservacion' AND pd.documentoId = r.id
 
 GROUP BY pd.tipoDocumento, pd.documentoId;
+
+
+
+
+
+
+
+
+
+SELECT * FROM usuarios
+SELECT * FROM apertura_caja
+SELECT * FROM Cajas WHERE user_id = 4 AND estado='Apertura' AND anulado=0
+SELECT * FROM Cajas 
+WHERE estado COLLATE utf8mb4_unicode_ci = 'Apertura' 
+AND anulado = 0 
+AND user_id = 4;
+
+SELECT * FROM Cajas WHERE estado='Apertura' AND anulado=0 AND user_id = 4
+-------------------------
+CREATE VIEW Cajas 
+AS
+SELECT ap.id AS id_apertura, ap.user_id, full_name AS usuario, ap.fecha, ap.observaciones,
+ap.monto, CASE WHEN ci.id IS NOT NULL THEN 'Cierre' WHEN ar.id IS NOT NULL THEN 'Arqueo' 
+ELSE 'Apertura' END AS estado,ap.anulado
+FROM apertura_caja ap
+LEFT JOIN arqueo_caja ar ON ap.id = ar.apertura_id
+LEFT JOIN cierre_caja ci ON ar.id = ci.arqueo_id
+LEFT JOIN usuarios u 	 ON ap.user_id = u.id
+
+
+
+
+
+
+
+
+
+
+

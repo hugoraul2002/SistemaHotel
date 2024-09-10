@@ -111,14 +111,6 @@ export default class HabitacionController {
         FROM habitaciones WHERE id= ${params.idHabitacion}
       `)
       response.status(200).json({ habitacion: habitacion, info: data[0][0] })
-      // console.log({
-      //   habitacion,
-      //   data,
-      // })
-      // return {
-      //   habitacion,
-      //   json(data[0]),
-      // }
     } catch (error) {
       response.status(500).json({ message: 'Error fetching habitaciones', error })
     }
