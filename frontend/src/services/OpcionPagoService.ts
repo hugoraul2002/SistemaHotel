@@ -23,7 +23,7 @@ const getAllPagos = async () => {
 const createOpcionPago = async (data: OpcionPago) => {
     try {
         const token = localStorage.getItem('token');
-        const dataWithDate = { ...data, fecha: dayjs(data.fecha).add(6, 'hour').format('YYYY-MM-DD') };
+        const dataWithDate = { ...data, fecha: dayjs(data.fecha).subtract(6, 'hour').format('YYYY-MM-DD') };
         const response = await axios.post<OpcionPago>(`${API_URL}/store`, dataWithDate,{    
             headers: {
                 'Authorization': `Bearer ${token}`,
@@ -53,4 +53,20 @@ const getOpcionPagoById = async (id: number) => {
     }
 }
 
-export { getAllPagos, createOpcionPago, getOpcionPagoById }
+const getOpcionPagoByDocumento = async (id: number, tipoDocumento: string) => {
+    try {
+        const token = localStorage.getItem('token');
+        const response = await axios.get<any>(`${API_URL}/documento/${tipoDocumento}/${id}`, {
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            }
+        });
+        return response.data;
+    } catch (error) {
+        console.error('Error fetching user:', error);
+        throw error;
+    }
+}
+
+export { getAllPagos, createOpcionPago, getOpcionPagoById , getOpcionPagoByDocumento}

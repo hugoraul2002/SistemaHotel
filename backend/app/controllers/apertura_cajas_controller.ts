@@ -18,7 +18,7 @@ export default class AperturaCajasController {
       `)
 
       if (data[0].length > 0) {
-        return response.status(200).json({ aperturaActiva: true, data: data[0] })
+        return response.status(200).json({ aperturaActiva: true, data: data[0][0] })
       }
       return response.status(200).json({ aperturaActiva: false })
     } catch (error) {

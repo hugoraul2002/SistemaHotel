@@ -9,15 +9,24 @@ export default class OpcionPagosController {
 
   async store({ request, response }: HttpContext) {
     try {
+      console.log(request.all())
       const data = request.only([
-        'apertura_caja_id',
-        'tipo_documento',
-        'documento_id',
+        'aperturaId',
+        'tipoDocumento',
+        'documentoId',
         'metodo',
         'monto',
         'fecha',
       ])
-      const pago = await OpcionPago.create(data)
+      const metodo = {
+        apertura_id: data.aperturaId,
+        tipo_documento: data.tipoDocumento,
+        documento_id: data.documentoId,
+        metodo: data.metodo,
+        monto: data.monto,
+        fecha: data.fecha,
+      }
+      const pago = await OpcionPago.create(metodo)
       return response.created(pago)
     } catch (error) {
       return response.internalServerError({ message: 'Error creating payment option', error })
@@ -28,6 +37,17 @@ export default class OpcionPagosController {
     try {
       const pago = await OpcionPago.findOrFail(params.id)
       return response.ok(pago)
+    } catch (error) {
+      return response.notFound({ message: 'Payment option not found', error })
+    }
+  }
+
+  async getByDocumento({ params, response }: HttpContext) {
+    try {
+      const pagos = await OpcionPago.query()
+        .where('tipo_documento', params.tipo)
+        .where('documento_id', params.id)
+      return response.ok(pagos)
     } catch (error) {
       return response.notFound({ message: 'Payment option not found', error })
     }

@@ -13,13 +13,13 @@ import { Stepper } from 'primereact/stepper';
 import { StepperPanel } from 'primereact/stepperpanel';
 import { Calendar } from 'primereact/calendar';
 import RegistroPago from '../opcionesPago/OpcionPago';
-
+import {getOpcionPagoByDocumento } from '../../services/OpcionPagoService';
 interface GastoDialogProps {
     visible: boolean;
     id?: number | null;
     editar: boolean;
     onHide: () => void;
-    onSave: (gasto: Gasto) => void;
+    onSave: (gasto: Gasto, metodosPago: MetodoPago[]) => Promise<void>;
     mostrarToast: (detalle: string, tipo: "success" | "info" | "warn" | "error") => void;
 }
 
@@ -43,7 +43,7 @@ const GastoDialog: React.FC<GastoDialogProps> = ({ visible, id, editar, onHide, 
         { metodo: 'TARJETA', monto: 0 },
     ]);
     const stepperRef = useRef(null);
-    
+
     useEffect(() => {
         const fetchProveedores = async () => {
             try {
@@ -92,6 +92,10 @@ const GastoDialog: React.FC<GastoDialogProps> = ({ visible, id, editar, onHide, 
             proveedor: {} as Proveedor,
             tipoGasto: {} as TipoGasto
         })
+        setMetodosPago([
+            { metodo: 'EFECTIVO', monto: 0 },
+            { metodo: 'TARJETA', monto: 0 },
+        ])
     }, [visible]);
 
     useEffect(() => {
@@ -105,31 +109,55 @@ const GastoDialog: React.FC<GastoDialogProps> = ({ visible, id, editar, onHide, 
                 }
             };
 
+            const fetchMetodosPago = async () => {
+                try {
+                    const response = await getOpcionPagoByDocumento(id, 'FG');
+                    console.log(response);
+                    if (response) {
+                        const metodos: MetodoPago[] = response.map((metodo: any) => ({
+                            idApertura: metodo.idApertura,
+                            metodo: metodo.metodo === 'EFECTIVO' ? 'EFECTIVO' : 'TARJETA',
+                            monto: metodo.monto,
+                          }));
+                          console.log("metodos del registro a editar",metodos);
+                          setMetodosPago(metodos);
+                    }
+                } catch (error) {
+                    console.error('Error fetching metodos de pago:', error);
+                }
+            };
+
             fetchGasto();
+            fetchMetodosPago();
         }
     }, [editar, id]);
-
+    const handleSave = () => {
+        onSave(gasto, metodosPago);
+    }
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
         setGasto({ ...gasto, [name]: value });
     };
 
-
-    const handleSave = () => {
-        if (!gasto.descripcion || !gasto.monto || !gasto.proveedorId) {
+    const validarGasto = () => {
+        if (!gasto.descripcion || !gasto.monto || !gasto.proveedorId || !gasto.tipoGastoId || gasto.monto <= 0) {
             mostrarToast('Por favor, complete todos los campos.', 'warn');
-            return;
+            return false;
         }
-        stepperRef.current.nextCallback()
-        // onSave(gasto);
+        return true;
+    }
+    const handleGasto = () => {
+        if (validarGasto()) {
+            stepperRef.current.nextCallback()
+        }
     };
 
-    const dialogFooter = (
-        <div>
-            <Button label="Cancelar" icon="pi pi-times" onClick={onHide} className="p-button-text" />
-            <Button label="Guardar" icon="pi pi-check" onClick={handleSave} autoFocus />
-        </div>
-    );
+    // const dialogFooter = (
+    //     <div>
+    //         <Button label="Cancelar" icon="pi pi-times" onClick={onHide} className="p-button-text" />
+    //         <Button label="Guardar" icon="pi pi-check" onClick={handleSave} autoFocus />
+    //     </div>
+    // );
 
     return (
         <Dialog
@@ -166,7 +194,7 @@ const GastoDialog: React.FC<GastoDialogProps> = ({ visible, id, editar, onHide, 
                                 required
                                 mode="currency"
                                 currency="GTQ"
-                                locale="en-US"
+                                disabled={editar}
                             />
                         </div>
 
@@ -206,12 +234,12 @@ const GastoDialog: React.FC<GastoDialogProps> = ({ visible, id, editar, onHide, 
                         </div>
                     </div>
                     <div className="flex pt-4 justify-content-end">
-                        <Button label="Siguiente" icon="pi pi-arrow-right" iconPos="right" onClick={ handleSave } />
+                        <Button label="Siguiente" icon="pi pi-arrow-right" iconPos="right" onClick={handleGasto} />
                     </div>
                 </StepperPanel>
                 <StepperPanel header="Método de pago">
                     <div className="p-fluid">
-                        <RegistroPago idDocumento={1} tipoDocumento="G" opcionesPago={metodosPago} setOpcionesPago={setMetodosPago} onSave={() => console.log('onSave')}
+                        <RegistroPago editar={editar} monto={gasto.monto} tipoDocumento="FG" opcionesPago={metodosPago} setOpcionesPago={setMetodosPago} onSave={handleSave}
                             mostrarToast={mostrarToast} />
                     </div>
                     <div className="flex pt-4 justify-content-start">

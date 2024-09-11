@@ -69,7 +69,9 @@ export class AperturaCajaService {
 
       const token = localStorage.getItem('token');
       const usuario : Usuario = await me();
-      const response = await axios.get(`${API_URL}/aperturaActiva/${usuario.id}`, {
+      console.log("USUARIO", usuario)
+      console.log("url",`${API_URL}/aperturaActiva/${usuario.id}`)
+      const response = await axios.get(`${API_URL}/activa/${usuario.id}`, {
         headers: { 
           'Authorization': `Bearer ${token}`
         }

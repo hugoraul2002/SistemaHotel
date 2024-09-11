@@ -243,6 +243,7 @@ router
     router.get('/', [OpcionPagosController, 'index'])
     router.post('/store', [OpcionPagosController, 'store'])
     router.get('/:id', [OpcionPagosController, 'show'])
+    router.get('/documento/:tipo/:id', [OpcionPagosController, 'getByDocumento'])
   })
   .prefix('opcionPago')
   .use(middleware.auth())

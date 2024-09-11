@@ -95,7 +95,7 @@ const GastosPage: React.FC = () => {
     setEditingGastoId(null);
   };
 
-  const handleSaveGasto = async (gasto: Gasto) => {
+  const handleSaveGasto = async (gasto: Gasto, metodosPago: MetodoPago[]): Promise<void> => {
     try {
       if (isEditing && editingGastoId !== null) {
         console.log(gasto);
@@ -108,20 +108,24 @@ const GastosPage: React.FC = () => {
       } else {
         console.log(user);
         console.log(gasto);
-        gasto = { ...gasto, userId: user!.id };
         const response = await GastoService.createGasto(gasto);
+        console.log(response);
         if (response) {
           const { id } = response;
-          const opcionPago: OpcionPago = {
-            id: 0;
-            aperturaId: number;
-            tipoDocumento: string;
-            documentoId: number;
-            metodo: string;
-            monto: number;
-            fecha: Date;
-
-          };
+          metodosPago.forEach(async (mp) => {
+            if (mp.monto > 0) {
+              const opcionPago: OpcionPago = {
+                id: 0,
+                aperturaId: mp.idApertura,
+                tipoDocumento: 'FG',
+                documentoId: id,
+                metodo: mp.metodo === 'EFECTIVO' ? 'EFE' : mp.metodo === 'TARJETA' ? 'TAR' : '',
+                monto: mp.monto,
+                fecha: new Date(),
+              }
+              await createOpcionPago(opcionPago);
+            }
+          })
           const gastos = await GastoService.getAllGastos(anulados);
           setGastos(gastos);
           mostrarToast('Gasto creado.', 'success');

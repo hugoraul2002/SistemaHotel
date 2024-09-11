@@ -10,7 +10,7 @@ export default class extends BaseSchema {
         .integer('apertura_id')
         .unsigned()
         .references('id')
-        .inTable('aperturas')
+        .inTable('apertura_caja')
         .onDelete('CASCADE')
         .nullable()
       table.string('tipo_documento').notNullable()
