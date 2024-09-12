@@ -31,12 +31,12 @@ export const HabitacionCard: React.FC<HabitacionCardProps> = ({ idHabitacion, nu
     const textEstado = estadoText[estado as keyof typeof estadoText] || 'Desconocido';
 
     const Recepcionar = () => {
-        navigate(`/registrohospedaje/${idHabitacion}`);
-    //     if (estado === 'R') {
-    //         navigate(`/registrohospedaje/${idHabitacion}`);
-    //     } else if (estado === 'D') {
-    //         navigate(`/registrohospedaje/${idHabitacion}`);
-    //     }
+        if (estado === 'R' || estado === 'D') {
+            navigate(`/registrohospedaje/${idHabitacion}`);        
+        }
+        if (estado === 'O' || estado === 'S') {
+            navigate(`/registrosalida/${idHabitacion}`);
+        }
     }
     return (
         <div

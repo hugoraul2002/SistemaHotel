@@ -32,6 +32,19 @@ export class HospedajeService {
         }
     }
 
+    static async getActivoByIdHabitacion(id: number) {
+        try {
+        const token = localStorage.getItem('token');
+        const response = await axios.get(`${API_URL}/activo/${id}`,{
+            headers: { 'Authorization': `Bearer ${token}` } 
+        });
+        return response.data;
+        } catch (error) {
+        console.error('Error fetching user:', error);
+        throw error;
+        }
+    }
+
     static async create(data: Hospedaje) {
         try {
         const token = localStorage.getItem('token');

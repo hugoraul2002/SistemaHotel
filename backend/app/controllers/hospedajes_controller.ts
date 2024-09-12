@@ -60,7 +60,25 @@ export default class HospedajesController {
   async show({ params, response }: HttpContext) {
     const { id } = params
     try {
-      const hospedaje = await Hospedaje.findOrFail(id)
+      const hospedaje = await Hospedaje.query()
+        .where('id', id)
+        .preload('habitacion')
+        .preload('cliente')
+      return response.ok(hospedaje)
+    } catch (error) {
+      return response.internalServerError({ message: 'Error fetching lodging', error })
+    }
+  }
+
+  async activoByIdHabitacion({ params, response }: HttpContext) {
+    const { id } = params
+    try {
+      const hospedaje = await Hospedaje.query()
+        .where('habitacionId', id)
+        .where('facturado', false)
+        .preload('habitacion')
+        .preload('cliente')
+        .first()
       return response.ok(hospedaje)
     } catch (error) {
       return response.internalServerError({ message: 'Error fetching lodging', error })
@@ -80,7 +98,7 @@ export default class HospedajesController {
       'total',
       'montoPenalidad',
       'montoDescuento',
-      'anulado',
+      'facturado',
     ])
     try {
       const hospedaje = await Hospedaje.findOrFail(id)
@@ -102,15 +120,15 @@ export default class HospedajesController {
       return response.internalServerError({ message: 'Error deleting lodging', error })
     }
   }
-  async updateAnulado({ params, response }: HttpContext) {
-    const { id } = params
-    try {
-      const hospedaje = await Hospedaje.findOrFail(id)
-      hospedaje.anulado = !hospedaje.anulado
-      await hospedaje.save()
-      return response.ok(hospedaje)
-    } catch (error) {
-      return response.internalServerError({ message: 'Error updating lodging', error })
-    }
-  }
+  // async updateAnulado({ params, response }: HttpContext) {
+  //   const { id } = params
+  //   try {
+  //     const hospedaje = await Hospedaje.findOrFail(id)
+  //     hospedaje.anulado = !hospedaje.anulado
+  //     await hospedaje.save()
+  //     return response.ok(hospedaje)
+  //   } catch (error) {
+  //     return response.internalServerError({ message: 'Error updating lodging', error })
+  //   }
+  // }
 }

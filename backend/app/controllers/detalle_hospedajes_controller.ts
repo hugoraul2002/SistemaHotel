@@ -13,6 +13,17 @@ export default class DetalleHospedajesController {
     }
   }
 
+  async detallesByHospedaje({ params, response }: HttpContext) {
+    try {
+      const detalleHospedajes = await DetalleHospedaje.query()
+        .where('hospedajeId', params.id)
+        .preload('producto')
+      return response.ok(detalleHospedajes)
+    } catch (error) {
+      return response.internalServerError({ message: 'Error fetching lodging details', error })
+    }
+  }
+
   async store({ request, response }: HttpContext) {
     const data = request.only([
       'hospedajeId',

@@ -36,6 +36,7 @@ export default class extends BaseSchema {
         table.float('total').notNullable(),
         table.float('monto_penalidad').notNullable().defaultTo(0),
         table.float('monto_descuento').notNullable().defaultTo(0)
+      table.boolean('facturado').notNullable().defaultTo(false)
     })
   }
 

@@ -30,6 +30,19 @@ export class HabitacionService {
         }
     }
 
+    static async getHabitacionesSalida(idNivel:number) {
+        try {
+        const token = localStorage.getItem('token');
+        const response = await axios.get(`${API_URL}/salidas/${idNivel}`,{
+            headers: { 'Authorization': `Bearer ${token}` } 
+        });
+        return response.data;
+        } catch (error) {   
+        console.error('Error fetching users:', error);
+        throw error;
+        }
+    }
+
     static async getReservacionProxima(idHabitacion:number) {
         try {
         const token = localStorage.getItem('token');

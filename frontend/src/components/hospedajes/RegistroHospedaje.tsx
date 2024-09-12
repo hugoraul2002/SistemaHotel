@@ -46,12 +46,13 @@ const RegistrarHospedaje: React.FC = () => {
 
   useEffect(() => {
     if (idHabitacion) {
+      
       const fetchHabitacion = async () => {
         try {
           const response = await HabitacionService.getReservacionProxima(Number(idHabitacion));
           if (response) {
             setHabitacion(response.habitacion);
-            const clientes = await ClienteService.getAll();
+            const clientes = await ClienteService.getAll(false);
             setClientes(clientes);
 
             if (response.info.estado === 'R') {

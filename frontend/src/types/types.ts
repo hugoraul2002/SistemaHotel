@@ -111,6 +111,17 @@ export interface Usuario {
     monto_penalidad: number;
   }
 
+  export interface DetalleHospedaje {
+    id: number;
+    hospedajeId: number;
+    productoId: number;
+    cantidad: number;
+    costo: number;
+    precioVenta: number;
+    pagado: boolean;
+    producto: Producto;
+  }
+
   export interface AperturaCaja {
     id: number;
     userId: number;

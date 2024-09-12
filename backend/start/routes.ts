@@ -118,6 +118,7 @@ router
   .group(() => {
     router.get('/', [HabitacionsController, 'index'])
     router.get('/recepcion/:id', [HabitacionsController, 'recepcion'])
+    router.get('/salidas/:id', [HabitacionsController, 'habitacionesSalidas'])
     router.get('/getReservacionProxima/:idHabitacion', [
       HabitacionsController,
       'getReservacionProxima',
@@ -136,8 +137,9 @@ router
     router.get('/', [HospedajesController, 'index'])
     router.post('/store', [HospedajesController, 'store'])
     router.get('/:id', [HospedajesController, 'show'])
+    router.get('/activo/:id', [HospedajesController, 'activoByIdHabitacion'])
     router.put('/update/:id', [HospedajesController, 'update'])
-    router.put('/updateAnulado/:id', [HospedajesController, 'updateAnulado'])
+    // router.put('/updateAnulado/:id', [HospedajesController, 'updateAnulado'])
   })
   .prefix('hospedajes')
   .use(middleware.auth())
@@ -147,6 +149,7 @@ router
     router.get('/', [DetalleHospedaje, 'index'])
     router.post('/store', [DetalleHospedaje, 'store'])
     router.get('/:id', [DetalleHospedaje, 'show'])
+    router.get('/hospedaje/:id', [DetalleHospedaje, 'detallesByHospedaje'])
     router.put('/update/:id', [DetalleHospedaje, 'update'])
     router.delete('/:id', [DetalleHospedaje, 'destroy'])
   })

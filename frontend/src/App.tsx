@@ -18,6 +18,8 @@ import CajaPage from './pages/CajaPage';
 import ProveedoresPage from './pages/ProveedoresPage';
 import TiposGastosPage from './pages/TiposGastosPage';
 import GastosPage from './pages/GastosPage';
+import CheckOutPage from './pages/CheckOutPage';
+import RegistroSalida from './components/facturacion/RegistroSalida';
 function App() {
   return (
     
@@ -41,6 +43,8 @@ function App() {
               <Route path="/tiposgastos" element={<TiposGastosPage />} />
               <Route path="/proveedores" element={<ProveedoresPage />} />
               <Route path="/gastos" element={<GastosPage />} />
+              <Route path="/checkout" element={<CheckOutPage />} />
+              <Route path="/registrosalida/:idHabitacion" element={<RegistroSalida />} />
 
             </Route>
           </Route>

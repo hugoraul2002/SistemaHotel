@@ -54,7 +54,9 @@ LEFT JOIN usuarios u 	 ON ap.user_id = u.id
 
 
 
-
+SELECT habitaciones.id, habitaciones.nombre, obtener_estado_habitacion(habitaciones.id,NOW()) AS estado, obtenerInfoEstado(habitaciones.id,estado,NOW()) AS numMinutos, clases_habitaciones.nombre AS clase, habitaciones.tarifa
+	      FROM habitaciones	INNER JOIN clases_habitaciones ON clases_habitaciones.id = habitaciones.clase_habitacion_id
+	      WHERE obtener_estado_habitacion(habitaciones.id,NOW())<>'D' AND habitaciones.anulado=0 AND habitaciones.nivel_id=1
 
 
 
