@@ -107,7 +107,6 @@ export interface Usuario {
     fechaFin: Date;
     fechaRegistro: Date;
     total: number;
-    monto_descuento: number;
     monto_penalidad: number;
   }
 
@@ -118,8 +117,22 @@ export interface Usuario {
     cantidad: number;
     costo: number;
     precioVenta: number;
+    descuento: number;
     pagado: boolean;
-    producto: Producto;
+  }
+
+  export interface DetalleHospedajeFactura {
+    id: number;
+    hospedajeId: number;
+    productoId: number;
+    cantidad: number;
+    costo: number;
+    precioVenta: number;
+    descuento: number;
+    subtotal: number;
+    pagado: boolean;
+    descripcion: string;
+    servicio: boolean;
   }
 
   export interface AperturaCaja {

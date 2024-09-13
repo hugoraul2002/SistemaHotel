@@ -23,6 +23,9 @@ export default class DetalleHospedaje extends BaseModel {
   declare precioVenta: number
 
   @column()
+  declare descuento: number
+
+  @column()
   declare pagado: boolean
 
   @belongsTo(() => Hospedaje, {

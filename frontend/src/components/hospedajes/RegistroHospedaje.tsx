@@ -54,10 +54,11 @@ const RegistrarHospedaje: React.FC = () => {
             setHabitacion(response.habitacion);
             const clientes = await ClienteService.getAll(false);
             setClientes(clientes);
-
+            console.log('clientes',clientes);
             if (response.info.estado === 'R') {
               setEsReservada(true);
               const reservacion = await ReservacionService.getById(Number(response.info.idReservacion));
+              console.log('reservacion',reservacion);
               setReservacion(reservacion);
               setNumeroDocumento(reservacion.cliente.numDocumento);
               setFechaInicio(dayjs(reservacion.fechaInicio).add(6, 'hours').toDate());

@@ -149,7 +149,7 @@ router
     router.get('/', [DetalleHospedaje, 'index'])
     router.post('/store', [DetalleHospedaje, 'store'])
     router.get('/:id', [DetalleHospedaje, 'show'])
-    router.get('/hospedaje/:id', [DetalleHospedaje, 'detallesByHospedaje'])
+    router.get('/hospedaje/:id', [DetalleHospedaje, 'detallesByIdHospedaje'])
     router.put('/update/:id', [DetalleHospedaje, 'update'])
     router.delete('/:id', [DetalleHospedaje, 'destroy'])
   })

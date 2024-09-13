@@ -1,5 +1,6 @@
 import type { HttpContext } from '@adonisjs/core/http'
 import DetalleFactura from '#models/detalle_factura'
+import Producto from '#models/producto'
 export default class DetalleFacturasController {
   async index({ params, response }: HttpContext) {
     try {
@@ -67,7 +68,15 @@ export default class DetalleFacturasController {
     const { id } = params
     try {
       const detalleFactura = await DetalleFactura.findOrFail(id)
+      const cantidad = detalleFactura.cantidad
+      const producto = await Producto.findOrFail(detalleFactura.productoId)
       await detalleFactura.delete()
+
+      if (!producto.esServicio) {
+        producto.existencia += cantidad
+        await producto.save()
+      }
+
       return response.ok({ message: 'Detalle eliminado' })
     } catch (error) {
       return response.internalServerError({ message: 'Error deleting detalle', error })

@@ -34,8 +34,7 @@ export default class extends BaseSchema {
         table.dateTime('fecha_fin').notNullable(),
         table.dateTime('fecha_registro').notNullable(),
         table.float('total').notNullable(),
-        table.float('monto_penalidad').notNullable().defaultTo(0),
-        table.float('monto_descuento').notNullable().defaultTo(0)
+        table.float('monto_penalidad').notNullable().defaultTo(0)
       table.boolean('facturado').notNullable().defaultTo(false)
     })
   }

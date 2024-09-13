@@ -21,6 +21,7 @@ export default class extends BaseSchema {
       table.float('cantidad').notNullable()
       table.float('costo').notNullable()
       table.float('precio_venta').notNullable()
+      table.float('descuento').notNullable()
     })
   }
 

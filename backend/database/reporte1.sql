@@ -58,8 +58,12 @@ SELECT habitaciones.id, habitaciones.nombre, obtener_estado_habitacion(habitacio
 	      FROM habitaciones	INNER JOIN clases_habitaciones ON clases_habitaciones.id = habitaciones.clase_habitacion_id
 	      WHERE obtener_estado_habitacion(habitaciones.id,NOW())<>'D' AND habitaciones.anulado=0 AND habitaciones.nivel_id=1
 
-
-
+CREATE VIEW vdetalle_hospedaje
+AS
+SELECT d.id, hospedaje_id, producto_id, cantidad, d.costo, d.precio_venta, d.pagado, 
+	p.nombre AS descripcion, p.es_servicio AS servicio
+ 	FROM detalle_hospedajes  d
+	INNER JOIN productos p ON d.producto_id = p.id
 
 
 

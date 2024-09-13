@@ -12,16 +12,17 @@ export default class extends BaseSchema {
         .unsigned()
         .references('id')
         .inTable('hospedajes')
-        .onDelete('CASCADE'),
-        table
-          .integer('producto_id')
-          .unsigned()
-          .references('id')
-          .inTable('productos')
-          .onDelete('CASCADE'),
-        table.float('cantidad').notNullable(),
-        table.float('costo').notNullable(),
-        table.float('precio_venta').notNullable()
+        .onDelete('CASCADE')
+      table
+        .integer('producto_id')
+        .unsigned()
+        .references('id')
+        .inTable('productos')
+        .onDelete('CASCADE')
+      table.float('cantidad').notNullable()
+      table.float('costo').notNullable()
+      table.float('precio_venta').notNullable()
+      table.float('descuento').notNullable()
       table.boolean('pagado').notNullable().defaultTo(false)
     })
   }

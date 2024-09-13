@@ -40,9 +40,6 @@ export default class Hospedaje extends BaseModel {
   declare montoPenalidad: number
 
   @column()
-  declare montoDescuento: number
-
-  @column()
   declare facturado: boolean
 
   @belongsTo(() => Habitacion, {

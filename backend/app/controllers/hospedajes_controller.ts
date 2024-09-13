@@ -29,7 +29,6 @@ export default class HospedajesController {
       'fechaRegistro',
       'total',
       'montoPenalidad',
-      'montoDescuento',
     ])
     console.log(data)
     try {
@@ -40,6 +39,8 @@ export default class HospedajesController {
         cantidad: 1,
         costo: 1,
         precioVenta: data.total,
+        descuento: 0,
+        pagado: false,
       })
       const habitacion = await Habitacion.findOrFail(data.habitacionId)
       habitacion.estado = 'O'
@@ -97,7 +98,6 @@ export default class HospedajesController {
       'fechaRegistro',
       'total',
       'montoPenalidad',
-      'montoDescuento',
       'facturado',
     ])
     try {
