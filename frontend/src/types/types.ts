@@ -69,6 +69,11 @@ export interface Usuario {
     activo: boolean;
     usuario: Usuario;
   }
+  export interface ClienteFactura {
+    nit: string;
+    nombre: string;
+    direccion: string;
+}
 
   export interface Reservacion {
     id: number;

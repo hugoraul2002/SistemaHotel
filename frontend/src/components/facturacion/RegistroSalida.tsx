@@ -6,7 +6,7 @@ import { Column } from 'primereact/column';
 import { Button } from 'primereact/button';
 import { Card } from 'primereact/card';
 import { useParams } from 'react-router-dom';
-import { DetalleHospedaje, DetalleHospedajeFactura, Hospedaje, MetodoPago, Producto } from '../../types/types';
+import { ClienteFactura, DetalleHospedaje, DetalleHospedajeFactura, Hospedaje, MetodoPago, Producto } from '../../types/types';
 import { HospedajeService } from '../../services/HospedajeService';
 import { formatDateTime } from '../../helpers/formatDate';
 import { getDetallesByHospedaje, create,deleteDetalle } from '../../services/DetalleHospedajeService';
@@ -273,9 +273,8 @@ const RegistroSalida = () => {
             <Button icon="pi pi-times" className="p-button-rounded p-button-warning" onClick={handleCancel} />
         </React.Fragment>
     );
-    const handleFacturar = () => {
-
-        setFormFacturarVisible(true);
+    const handleFacturar = (cliente: ClienteFactura, opcionesPago: MetodoPago[]) => {
+        
     }
     return (
         <div className="p-4 flex flex-col md:flex-row gap-4">
@@ -388,7 +387,7 @@ const RegistroSalida = () => {
                     </div>
 
                     <div className="flex justify-end mt-4">
-                        <Button label="Facturar" className="p-button-primary mr-2" onClick={handleFacturar}/>
+                        <Button label="Facturar" className="p-button-primary mr-2" onClick={() => setFormFacturarVisible(true)}/>
                         <Button label="Cancelar" className="p-button-secondary" />
                     </div>
                 </Panel>

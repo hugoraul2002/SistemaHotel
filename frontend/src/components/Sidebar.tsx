@@ -40,6 +40,12 @@ export default function Barra({ visible, setVisible }: { visible: boolean, setVi
     );
 
     const items: MenuItem[] = [
+        { 
+            label: 'Dashboard', 
+            icon: 'pi pi-chart-bar', 
+            command: () => navegar('/inicio'), 
+            template: itemRenderer 
+        },
         {
             label: 'Reservaciones', 
             icon: 'pi pi-calendar', 
@@ -103,7 +109,7 @@ export default function Barra({ visible, setVisible }: { visible: boolean, setVi
 
 
     const filteredItems = items.filter(item => {
-        if (item.label === 'Usuarios' || item.label === 'Mantenimientos' || item.label === 'Reservaciones' || item.label === 'Clientes' || item.label === 'Catálogos' || item.label === 'Productos' ) {
+        if (item.label === 'Usuarios' || item.label === 'Mantenimientos' || item.label === 'Reservaciones' || item.label === 'Clientes' || item.label === 'Catálogos' || item.label === 'Productos'   || item.label === 'Check In' || item.label === 'Check Out' || item.label === 'Cajas' || item.label === 'Gastos' || item.label === 'Dashboard') {
             return user?.rol.nombre != 'CLIENTE';
         }
         return true;

@@ -6,20 +6,15 @@ import { Stepper } from 'primereact/stepper';
 import { StepperPanel } from 'primereact/stepperpanel';
 import RegistroPago from '../opcionesPago/OpcionPago';
 import consultaNit from '../../services/FacturacionFelService';
-interface Cliente {
-    nit: string;
-    nombre: string;
-    direccion: string;
-}
-
+import { ClienteFactura } from '../../types/types';
 interface FacturaDialogProps {
     visible: boolean;
-    cliente: Cliente;
+    cliente: ClienteFactura;
     total: number;
     opcionesPago: any;
     setOpcionesPago: React.Dispatch<React.SetStateAction<any>>;
     onHide: () => void;
-    onSave: (cliente: Cliente, opcionesPago: any) => void;
+    onSave: (cliente: ClienteFactura, opcionesPago: any) => void;
     mostrarToast: (detalle: string, tipo: "success" | "info" | "warn" | "error") => void;
 }
 
@@ -80,7 +75,10 @@ const FormRegistraFactura: React.FC<FacturaDialogProps> = ({ visible, cliente, t
         getApiResponseNit().then((valida) => {
             if (!valida) return;
             if (nit && nombre && errorNit === '') {
+                cliente = { nit, nombre, direccion };
+                console.log(nit, nombre, direccion);
                 stepperRef.current.nextCallback();
+                console.log(cliente);
             }
         }).catch((error) => {
             console.error('Error:', error);
@@ -88,7 +86,7 @@ const FormRegistraFactura: React.FC<FacturaDialogProps> = ({ visible, cliente, t
     };
 
     const handleSave = () => {
-        const clienteData: Cliente = { nit, nombre, direccion };
+        const clienteData: ClienteFactura = { nit, nombre, direccion };
         onSave(clienteData, opcionesPago);
     };
 
@@ -123,14 +121,14 @@ const FormRegistraFactura: React.FC<FacturaDialogProps> = ({ visible, cliente, t
                 </StepperPanel>
 
                 <StepperPanel header="Métodos de Pago">
-                    <RegistroPago mostrarToast={mostrarToast} tipoDocumento="V" monto={total} opcionesPago={opcionesPago} setOpcionesPago={setOpcionesPago}  editar={false} onSave={() => onSave(cliente, opcionesPago)} />
+                    <RegistroPago mostrarToast={mostrarToast} tipoDocumento="V" monto={total} opcionesPago={opcionesPago} setOpcionesPago={setOpcionesPago}  editar={false} onSave={handleSave} />
 
                     <div className="flex justify-content-start pt-3">
                         <Button label="Regresar" icon="pi pi-arrow-left" onClick={() => stepperRef.current.prevCallback()} />
                     </div>
-                    <div className="flex justify-content-end pt-3">
+                    {/* <div className="flex justify-content-end pt-3">
                         <Button label="Guardar" icon="pi pi-check" onClick={handleSave} />
-                    </div>
+                    </div> */}
                 </StepperPanel>
             </Stepper>
         </Dialog>
