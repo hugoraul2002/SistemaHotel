@@ -262,3 +262,4 @@ export interface Usuario {
   export type LayoutConfig = {
     theme: string;
 };
+

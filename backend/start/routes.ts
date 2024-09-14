@@ -235,7 +235,7 @@ router
 
 router
   .group(() => {
-    router.post('/consultaNit/', [FacturacionFelController, 'consultarNIT'])
+    router.get('/consultaNit/:nit', [FacturacionFelController, 'consultarNIT'])
     router.post('/facturar/', [FacturacionFelController, 'facturar'])
   })
   .prefix('fel')

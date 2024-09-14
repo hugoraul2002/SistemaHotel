@@ -14,6 +14,7 @@ import { StepperPanel } from 'primereact/stepperpanel';
 import { Calendar } from 'primereact/calendar';
 import RegistroPago from '../opcionesPago/OpcionPago';
 import {getOpcionPagoByDocumento } from '../../services/OpcionPagoService';
+
 interface GastoDialogProps {
     visible: boolean;
     id?: number | null;

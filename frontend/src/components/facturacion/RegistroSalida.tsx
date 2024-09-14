@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Panel } from 'primereact/panel';
 import { Divider } from 'primereact/divider';
 import { DataTable } from 'primereact/datatable';
@@ -6,7 +6,7 @@ import { Column } from 'primereact/column';
 import { Button } from 'primereact/button';
 import { Card } from 'primereact/card';
 import { useParams } from 'react-router-dom';
-import { DetalleHospedaje, DetalleHospedajeFactura, Hospedaje, Producto } from '../../types/types';
+import { DetalleHospedaje, DetalleHospedajeFactura, Hospedaje, MetodoPago, Producto } from '../../types/types';
 import { HospedajeService } from '../../services/HospedajeService';
 import { formatDateTime } from '../../helpers/formatDate';
 import { getDetallesByHospedaje, create,deleteDetalle } from '../../services/DetalleHospedajeService';
@@ -15,30 +15,42 @@ import { InputNumber } from 'primereact/inputnumber';
 import { Toolbar } from 'primereact/toolbar';
 import { Dialog } from 'primereact/dialog';
 import BusquedaProducto from './BusquedaProducto';
+import FormRegistraFactura from './FormRegistraFactura';
+import { Toast } from 'primereact/toast';
 const RegistroSalida = () => {
+    const toast = useRef<Toast>(null);
     const [hospedaje, setHospedaje] = useState<Hospedaje | null>(null);
     const [detallesHospedaje, setDetallesHospedaje] = useState<DetalleHospedajeFactura[]>([]);
     const [servicioHospedaje, setServicioHospedaje] = useState<DetalleHospedajeFactura[]>([]);
     const [dialogVisible, setDialogVisible] = useState(false); // Estado para controlar el diálogo
     const [selectedProduct, setSelectedProduct] = useState<Producto | null>(null); // Estado para el producto seleccionado
-
+    const [formFacturarVisible, setFormFacturarVisible] = useState(false);
     const [description, setDescription] = useState('');
     const [quantity, setQuantity] = useState<number | null>(null);
     const [price, setPrice] = useState<number | null>(null);
     const [discount, setDiscount] = useState<number | null>(null);
     const [subtotal, setSubtotal] = useState<number | null>(null);
-
+    const [metodosPago, setMetodosPago] = useState<MetodoPago[]>([
+        { metodo: 'EFECTIVO', monto: 0 },
+        { metodo: 'TARJETA', monto: 0 },
+    ]);
     const { idHabitacion } = useParams();
+
     const calcularTotales = () => {
-        const totalSubtotales = detallesHospedaje.reduce((total, item) => total + item.subtotal, 0);
-        const totalPagado = detallesHospedaje
+        const detalles = [...detallesHospedaje, ...servicioHospedaje];
+
+        const totalSubtotales = detalles.reduce((total, item) => total + item.subtotal, 0);
+        const totalPagado = detalles
             .filter(item => !item.pagado)
             .reduce((total, item) => total + item.subtotal, 0);
         return { totalSubtotales, totalPagado };
     };
 
     const { totalSubtotales, totalPagado } = calcularTotales();
-
+    const mostrarToast = (detalle: string, tipo: "success" | "info" | "warn" | "error") => {
+        toast.current?.show({ severity: tipo, detail: detalle, life: 3000 });
+      };
+    
 
     const handleProductSelect = (product: Producto) => {
         setSelectedProduct(product); // Guardar el producto seleccionado
@@ -191,6 +203,10 @@ const RegistroSalida = () => {
         );
     };
 
+    const renderRowNumber = (rowData: DetalleHospedajeFactura, { rowIndex }: { rowIndex: number }) => {
+        return rowIndex + 1; // Ajusta la numeración
+    };
+
     // Clear all fields
     const handleCancel = () => {
         setDescription('');
@@ -257,9 +273,13 @@ const RegistroSalida = () => {
             <Button icon="pi pi-times" className="p-button-rounded p-button-warning" onClick={handleCancel} />
         </React.Fragment>
     );
+    const handleFacturar = () => {
 
+        setFormFacturarVisible(true);
+    }
     return (
         <div className="p-4 flex flex-col md:flex-row gap-4">
+            <Toast ref={toast} />
             {/* Sección Izquierda */}
             <Card className="w-full md:w-1/3 mb-4 md:mb-0">
                 <Panel header="Habitación" className="text-md mb-3">
@@ -334,7 +354,7 @@ const RegistroSalida = () => {
                 {/* Tabla de Hospedaje */}
                 <Panel header="Detalles del Hospedaje" className="mb-3 text-sm">
                     <DataTable value={servicioHospedaje} className="p-datatable-sm text-sm" emptyMessage="No hay registros de productos/servicios consumidos.">
-                        <Column field="descripcion" header="Habitación" />
+                        <Column field="descripcion" header="Descripción" />
                         <Column field="cantidad" header="Cantidad" />
                         <Column field="precio_venta" header="Precio Unitario" />
                         <Column field="descuento" header="Descuento" />
@@ -350,7 +370,7 @@ const RegistroSalida = () => {
                         <Toolbar start={centerContent} end={endContent} />
                     </div>
                     <DataTable value={detallesHospedaje} className="p-datatable-sm text-sm" emptyMessage="No hay registros de productos/servicios consumidos.">
-                        <Column field="item" header="#" />
+                        <Column field="item" header="#" body={renderRowNumber} />
                         <Column field="descripcion" header="Producto" />
                         <Column field="cantidad" header="Cantidad" />
                         <Column field="precio_venta" header="Precio Unitario" />
@@ -359,13 +379,16 @@ const RegistroSalida = () => {
                         <Column body={actionBodyTemplate} header="Acciones" />
                         {/* <Column field="pagado" header="Pagado" body={(rowData) => (rowData.pagado ? 'Sí' : 'No')} /> */}
                     </DataTable>
-                    <div className="flex justify-between mt-3">
-                        <div><strong>Total Subtotales:</strong> Q. {totalSubtotales}</div>
+                    <div className="flex justify-end mt-3">
+                        <div><strong>Total:</strong> Q. {totalSubtotales}</div>
+                    </div>
+
+                    <div className="flex justify-end mt-1">
                         <div><strong>Total a Cancelar:</strong> Q. {totalPagado}</div>
                     </div>
 
                     <div className="flex justify-end mt-4">
-                        <Button label="Facturar" className="p-button-primary mr-2" />
+                        <Button label="Facturar" className="p-button-primary mr-2" onClick={handleFacturar}/>
                         <Button label="Cancelar" className="p-button-secondary" />
                     </div>
                 </Panel>
@@ -373,6 +396,7 @@ const RegistroSalida = () => {
             <Dialog maximizable visible={dialogVisible} onHide={() => setDialogVisible(false)} header="Buscar Producto" style={{ width: '60vw' }}>
                 <BusquedaProducto onProductSelect={handleProductSelect} /> {/* Pasar la función de selección al componente */}
             </Dialog>
+            <FormRegistraFactura  mostrarToast={mostrarToast} cliente={ hospedaje ? {nit:hospedaje!.cliente?.numDocumento, nombre: hospedaje!.cliente?.nombre, direccion: hospedaje!.cliente?.direccion} : {nit: '', nombre: '', direccion: ''}} total={totalPagado} onSave={handleFacturar} visible={formFacturarVisible}  opcionesPago={metodosPago} setOpcionesPago={setMetodosPago} onHide={() => setFormFacturarVisible(false)}  />
         </div>
     );
 };

@@ -6,13 +6,18 @@ export default class FacturacionFelController {
   private wsdlUrlConsultaNIT: string =
     'http://pruebas.ecofactura.com.gt:8080/fel/areceptorinfo?wsdl'
   private wsdUrlFactura: string = 'http://pruebas.ecofactura.com.gt:8080/fel/adocumento?wsdl'
-  async consultarNIT({ request, response }: HttpContext) {
-    const { cliente, usuario, clave, receptorId } = request.only([
-      'cliente',
-      'usuario',
-      'clave',
-      'receptorId',
-    ])
+  private cliente: string = '114957703'
+  private usuario: string = 'ADMIN'
+  private clave: string = 'Msuper@_0822'
+
+  async consultarNIT({ params, response }: HttpContext) {
+    // const { cliente, usuario, clave, receptorId } = request.only([
+    //   'cliente',
+    //   'usuario',
+    //   'clave',
+    //   'receptorId',
+    // ])
+    const receptorId = params.nit
 
     try {
       // Crear el cliente SOAP
@@ -20,9 +25,9 @@ export default class FacturacionFelController {
 
       // Definir los parámetros que se enviarán en la petición
       const args = {
-        Cliente: cliente,
-        Usuario: usuario,
-        Clave: clave,
+        Cliente: this.cliente,
+        Usuario: this.usuario,
+        Clave: this.clave,
         Receptorid: receptorId,
       }
 
@@ -56,7 +61,7 @@ export default class FacturacionFelController {
       if (!receptorInfo) {
         const errores = parsedResult?.Errores
         const error = errores?.Error?.[0]
-        return response.status(500).json({
+        return response.status(200).json({
           success: false,
           error: error['_'],
           codigoError: error['$']['Codigo'],

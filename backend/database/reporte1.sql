@@ -66,4 +66,6 @@ SELECT d.id, hospedaje_id, producto_id, cantidad, d.costo, d.precio_venta, d.pag
 	INNER JOIN productos p ON d.producto_id = p.id
 
 
+SELECT * FROM vdetalle_hospedaje WHERE hospedaje_id=
+
 
