@@ -7,9 +7,10 @@ interface HabitacionCardProps {
     clase: string;
     estado: string;
     horas: number;
+    recepcion:boolean;
 }
 
-export const HabitacionCard: React.FC<HabitacionCardProps> = ({ idHabitacion, numeroHabitacion, clase, estado, horas }) => {
+export const HabitacionCard: React.FC<HabitacionCardProps> = ({ idHabitacion, numeroHabitacion, clase, estado, horas, recepcion }) => {
     const [isDarkMode, setIsDarkMode] = useState(false);
     const navigate = useNavigate();
     const estadoStyles = {
@@ -34,7 +35,7 @@ export const HabitacionCard: React.FC<HabitacionCardProps> = ({ idHabitacion, nu
         if (estado === 'R' || estado === 'D') {
             navigate(`/registrohospedaje/${idHabitacion}`);        
         }
-        if (estado === 'O' || estado === 'S') {
+        if (!recepcion &&(estado === 'O' || estado === 'S' )) {
             navigate(`/registrosalida/${idHabitacion}`);
         }
     }

@@ -1,4 +1,6 @@
 import type { HttpContext } from '@adonisjs/core/http'
+import * as fs from 'node:fs'
+import * as path from 'node:path'
 import env from '#start/env'
 import * as soap from 'soap'
 import * as xml2js from 'xml2js'
@@ -6,7 +8,15 @@ import Factura from '#models/factura'
 import DetalleFactura from '#models/detalle_factura'
 import Hospedaje from '#models/hospedaje'
 import DetalleHospedaje from '#models/detalle_hospedaje'
+import { DateTime } from 'luxon'
+import { fileURLToPath } from 'node:url'
+import { dirname } from 'node:path'
+import Habitacion from '#models/habitacion'
 
+// eslint-disable-next-line @typescript-eslint/naming-convention
+const __filename = fileURLToPath(import.meta.url)
+// eslint-disable-next-line @typescript-eslint/naming-convention
+const __dirname = dirname(__filename)
 interface ItemFactura {
   TrnLiNum: number
   TrnArtCod: string
@@ -21,9 +31,8 @@ interface ItemFactura {
 }
 
 export default class FacturacionFelController {
-  private wsdlUrlConsultaNIT: string =
-    'http://pruebas.ecofactura.com.gt:8080/fel/areceptorinfo?wsdl'
-  private wsdUrlFactura: string = 'http://pruebas.ecofactura.com.gt:8080/fel/adocumento?wsdl'
+  private wsdlUrlConsultaNIT: string | undefined = env.get('wsdlUrlConsultaNIT')
+  private wsdUrlFactura: string | undefined = env.get('wsdUrlFactura')
   private cliente: string | undefined = env.get('CLIENTE_FEL')
   private usuario: string | undefined = env.get('USUARIO_FEL')
   private clave: string | undefined = env.get('CLAVE_FEL')
@@ -39,7 +48,7 @@ export default class FacturacionFelController {
 
     try {
       // Crear el cliente SOAP
-      const soapClient = await soap.createClientAsync(this.wsdlUrlConsultaNIT)
+      const soapClient = await soap.createClientAsync(this.wsdlUrlConsultaNIT!)
 
       // Definir los parámetros que se enviarán en la petición
       const args = {
@@ -118,7 +127,7 @@ export default class FacturacionFelController {
 
     try {
       // Crear el cliente SOAP para la facturación
-      const soapClient = await soap.createClientAsync(this.wsdUrlFactura)
+      const soapClient = await soap.createClientAsync(this.wsdUrlFactura!)
 
       // Definir los parámetros que se enviarán en la petición
       const args = {
@@ -204,10 +213,10 @@ export default class FacturacionFelController {
     }
   }
 
-  async facturarHospedaje(xmldoc: string) {
+  async facturarHospedaje(xmldoc: string, numFactura: number) {
     try {
       // Crear el cliente SOAP para la facturación
-      const soapClient = await soap.createClientAsync(this.wsdUrlFactura)
+      const soapClient = await soap.createClientAsync(this.wsdUrlFactura!)
 
       // Definir los parámetros que se enviarán en la petición
       const args = {
@@ -222,45 +231,31 @@ export default class FacturacionFelController {
       const resultado: any = await new Promise((resolve, reject) => {
         soapClient.Documento.DocumentoSoapPort.Execute(args, (err: any, result: any) => {
           if (err) {
+            console.log(err)
             reject(err)
           } else {
             resolve(result)
           }
         })
       })
-
       // Extraer la cadena XML contenida en el resultado
       const xml = resultado?.Respuesta
 
       if (!xml) {
-        return response.status(500).json({
+        return {
           success: false,
           message: 'No se recibió información válida desde el servicio SOAP',
-        })
+        }
       }
-
-      // Usar xml2js para convertir el XML a JSON
       const parser = new xml2js.Parser()
       const parsedResult = await parser.parseStringPromise(xml)
 
-      // Manejo de error basado en el ejemplo de XML de error
-      const errores = parsedResult?.Errores
-      if (errores) {
-        const error = errores?.Error?.[0]
-        return response.status(500).json({
-          success: false,
-          error: error['_'],
-          codigoError: error['$']['Codigo'],
-        })
-      }
-
-      // Manejo de respuesta correcta basado en el ejemplo de XML exitoso
       const DTE = parsedResult?.DTE
       if (!DTE) {
-        return response.status(500).json({
+        return {
           success: false,
           error: 'Formato de respuesta no esperado',
-        })
+        }
       }
 
       const fechaEmision = DTE['$']['FechaEmision']
@@ -268,35 +263,29 @@ export default class FacturacionFelController {
       const numeroAutorizacion = DTE['$']['NumeroAutorizacion']
       const serie = DTE['$']['Serie']
       const numero = DTE['$']['Numero']
-      const xmlDTE = DTE?.Xml?.[0] || ''
-      const pdfDTE = DTE?.Pdf?.[0] || ''
 
-      // Retornar la respuesta con los datos extraídos
-      return response.status(200).json({
+      const factura = await Factura.findByOrFail('numFactura', numFactura)
+      factura.numeroFel = numero
+      factura.autorizacionFel = numeroAutorizacion
+      factura.serieFel = serie
+      await factura.save()
+      // Guardar el XML en la carpeta `xmlFel` con el número de factura
+      const filePath = path.join(__dirname, '..', 'xmlFel', `${numFactura}.xml`)
+      fs.writeFileSync(filePath, xml, 'utf8')
+
+      return {
         success: true,
-        data: {
-          fechaEmision,
-          fechaCertificacion,
-          numeroAutorizacion,
-          serie,
-          numero,
-          xmlDTE,
-          pdfDTE,
-        },
-      })
+        message: 'Hospedaje facturado correctamente',
+      }
     } catch (error) {
-      return response.status(500).json({
-        success: false,
-        message: 'Error al consumir el servicio SOAP',
-        error: error.message,
-      })
+      console.log('Error al consumir el servicio SOAP:', error)
+      console.error('Error al facturar hospedaje:', error)
     }
   }
 
   async registraFacturaFromHospedaje({ request, response }: HttpContext) {
     try {
       const hospedajeId = request.input('hospedajeId')
-      const hospedaje = await Hospedaje.findOrFail(hospedajeId)
       const detalles = await DetalleHospedaje.query().where('hospedajeId', hospedajeId)
 
       const { nit, nombre, direccion, fecha, usuarioId } = request.only([
@@ -306,13 +295,30 @@ export default class FacturacionFelController {
         'fecha',
         'usuarioId',
       ])
+
       let total = 0
       for (const detalle of detalles) {
-        total += detalle.precioVenta * detalle.cantidad
+        total += detalle.precioVenta * detalle.cantidad - detalle.descuento
       }
 
       const numFactura = await Factura.getNextNumFactura()
-      console.log(numFactura)
+      const dataFactura = {
+        hospedajeId: hospedajeId,
+        nit: nit,
+        numFactura: numFactura,
+        userId: usuarioId,
+        nombreFacturado: nombre,
+        direccionFacturado: direccion,
+        total: total,
+        fechaRegistro: fecha,
+        anulado: false,
+      }
+
+      const fechaRegistroFEL = DateTime.fromFormat(fecha, 'dd/MM/yyyy HH:mm:ss').toFormat(
+        'yyyy-MM-dd'
+      )
+      console.log(dataFactura)
+      // Crear factura
       const factura = await Factura.create({
         hospedajeId: hospedajeId,
         nit: nit,
@@ -324,26 +330,42 @@ export default class FacturacionFelController {
         fechaRegistro: fecha,
         anulado: false,
       })
-      let detallasFactura: DetalleFactura[] = []
-      for (const detalle of detalles) {
-        const detalleFactura = await DetalleFactura.create({
-          facturaId: factura.id,
-          productoId: detalle.productoId,
-          cantidad: detalle.cantidad,
-          costo: detalle.costo,
-          descuento: detalle.descuento,
-          precio: detalle.precioVenta,
+
+      const detallesFactura: DetalleFactura[] = await Promise.all(
+        detalles.map(async (detalle) => {
+          const detalleFactura = await DetalleFactura.create({
+            facturaId: factura.id,
+            productoId: detalle.productoId,
+            cantidad: detalle.cantidad,
+            costo: detalle.costo,
+            descuento: detalle.descuento,
+            precioVenta: detalle.precioVenta,
+          })
+          await detalleFactura.load('producto')
+          return detalleFactura
         })
-        console.log(detalleFactura)
-        await detalleFactura.load('producto')
-        detallasFactura.push(detalleFactura)
+      )
+
+      const hospedaje = await Hospedaje.query().where('id', hospedajeId).first()
+      console.log(hospedaje)
+      if (hospedaje) {
+        hospedaje.facturado = true
+        await hospedaje.save()
+        const habitacion = await Habitacion.query().where('id', hospedaje.habitacionId).first()
+        if (habitacion) {
+          console.log(habitacion)
+          habitacion.estado = 'D'
+          await habitacion.save()
+        }
       }
 
+      console.log(fecha.split(' ')[0], fechaRegistroFEL)
+      // Datos generales de la factura
       const datosGenerales = {
         TrnEstNum: this.numEstablecimiento,
         TipTrnCod: 'FACT',
-        TrnNum: numFactura,
-        TrnFec: fecha.toISOString().substring(0, 10),
+        TrnNum: 444 + factura.id,
+        TrnFec: fecha.split(' ')[0],
         MonCod: 'GTQ',
         TrnBenConNIT: nit,
         TrnExp: 0,
@@ -351,31 +373,68 @@ export default class FacturacionFelController {
         TrnFraseTipo: 0,
         TrnEscCod: 0,
         TrnEFACECliNom: nombre,
-        TrnEFACECliDir: direccion,
+        TrnEFACECliDir: direccion.trim(),
       }
-      const items: ItemFactura[] = []
-      for (const [index, detalle] of detallasFactura.entries()) {
-        const item: ItemFactura = {
-          TrnLiNum: index + 1,
-          TrnArtCod: detalle.producto?.codigo,
-          TrnArtNom: detalle.producto?.nombre,
-          TrnCan: detalle.cantidad,
-          TrnVUn: detalle.precio,
-          TrnUniMed: 'UNI',
-          TrnVDes: detalle.descuento,
-          TrnArtBienSer: detalle.producto?.esServicio ? 'S' : 'B',
-          TrnArtImpAdiCod: 0,
-          TrnArtImpAdiUniGrav: 0,
-        }
 
-        items.push(item)
+      // Crear items de la factura
+      const items: ItemFactura[] = detallesFactura.map((detalle, index) => ({
+        TrnLiNum: index + 1,
+        TrnArtCod: detalle.producto?.codigo,
+        TrnArtNom: detalle.producto?.nombre,
+        TrnCan: detalle.cantidad,
+        TrnVUn: detalle.precioVenta,
+        TrnUniMed: 'UNI',
+        TrnVDes: detalle.descuento,
+        TrnArtBienSer: detalle.producto?.esServicio ? 'S' : 'B',
+        TrnArtImpAdiCod: 0,
+        TrnArtImpAdiUniGrav: 0,
+      }))
+      console.log('ITEMS PARA XMLDOC', items)
+      // Crear el XML para la facturación
+      const builder = new xml2js.Builder({ headless: true })
+      const xmlDoc = builder.buildObject({
+        stdTWS: {
+          $: { xmlns: 'FEL' }, // Especifica el espacio de nombres
+          TrnEstNum: datosGenerales.TrnEstNum,
+          TipTrnCod: datosGenerales.TipTrnCod,
+          TrnNum: datosGenerales.TrnNum,
+          TrnFec: datosGenerales.TrnFec,
+          MonCod: datosGenerales.MonCod,
+          TrnBenConNIT: datosGenerales.TrnBenConNIT,
+          TrnExp: datosGenerales.TrnExp,
+          TrnExento: datosGenerales.TrnExento,
+          TrnFraseTipo: datosGenerales.TrnFraseTipo,
+          TrnEscCod: datosGenerales.TrnEscCod,
+          TrnEFACECliNom: datosGenerales.TrnEFACECliNom,
+          TrnEFACECliDir: datosGenerales.TrnEFACECliDir,
+          stdTWSD: {
+            'stdTWS.stdTWSCIt.stdTWSDIt': items.map((item) => ({
+              TrnLiNum: item.TrnLiNum,
+              TrnArtCod: item.TrnArtCod,
+              TrnArtNom: item.TrnArtNom,
+              TrnCan: item.TrnCan,
+              TrnVUn: item.TrnVUn,
+              TrnUniMed: item.TrnUniMed,
+              TrnVDes: item.TrnVDes,
+              TrnArtBienSer: item.TrnArtBienSer,
+              TrnArtImpAdiCod: item.TrnArtImpAdiCod,
+              TrnArtImpAdiUniGrav: item.TrnArtImpAdiUniGrav,
+            })),
+          },
+        },
+      })
+
+      // Registrar la facturación
+      const certificar = await this.facturarHospedaje(xmlDoc, numFactura)
+      if (certificar?.success) {
+        return response.status(200).json({
+          success: true,
+          message: 'Facturación registrada exitosamente',
+          numFactura: numFactura,
+        })
       }
-      //Crear el XML para la facturación
-      const xmlDoc: string = ''
-
-      //Registrar la facturación
-      await this.facturarHospedaje(xmlDoc)
     } catch (error) {
+      console.log(error)
       return response.status(500).json({
         success: false,
         message: 'Error al registrar la facturación',

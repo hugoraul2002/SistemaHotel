@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { Dialog } from 'primereact/dialog';
 import { InputText } from 'primereact/inputtext';
 import { Button } from 'primereact/button';
@@ -29,13 +29,13 @@ const FormRegistraFactura: React.FC<FacturaDialogProps> = ({ visible, cliente, t
             const response = await consultaNit.consultaNit(nit);
             console.log('NIT RESPONSE', response);
             if (response) {
-                if (response.success) {
+                if (response.success && nit.toUpperCase()!== 'CF') {
                     setNombre(response.data.nombre);
                     setErrorNit('');
                 } else {
-                    setNombre('');
-                    setDireccion('');
-                    setErrorNit(response.error);
+                    setNombre(cliente.nombre);
+                    setDireccion(cliente.direccion);
+                    if (response.error) setErrorNit(response.error);
                 }
                 return response.success;
             }
@@ -62,7 +62,6 @@ const FormRegistraFactura: React.FC<FacturaDialogProps> = ({ visible, cliente, t
                     setErrorNit(response.error);
                 }
             } else {
-                // Show notification that NIT does not exist
                 console.error('NIT not found');
             }
         } catch (error) {
@@ -75,10 +74,7 @@ const FormRegistraFactura: React.FC<FacturaDialogProps> = ({ visible, cliente, t
         getApiResponseNit().then((valida) => {
             if (!valida) return;
             if (nit && nombre && errorNit === '') {
-                cliente = { nit, nombre, direccion };
-                console.log(nit, nombre, direccion);
                 stepperRef.current.nextCallback();
-                console.log(cliente);
             }
         }).catch((error) => {
             console.error('Error:', error);
@@ -89,6 +85,14 @@ const FormRegistraFactura: React.FC<FacturaDialogProps> = ({ visible, cliente, t
         const clienteData: ClienteFactura = { nit, nombre, direccion };
         onSave(clienteData, opcionesPago);
     };
+
+    useEffect(() => {
+        if (visible) {
+            setNit(cliente.nit);
+            setNombre(cliente.nombre);            
+            setDireccion(cliente.direccion);
+        }
+    }, [visible]);
 
     return (
         <Dialog visible={visible} style={{ width: '600px' }} header="Registro de Factura" modal onHide={onHide}>
@@ -121,10 +125,10 @@ const FormRegistraFactura: React.FC<FacturaDialogProps> = ({ visible, cliente, t
                 </StepperPanel>
 
                 <StepperPanel header="Métodos de Pago">
-                    <RegistroPago mostrarToast={mostrarToast} tipoDocumento="V" monto={total} opcionesPago={opcionesPago} setOpcionesPago={setOpcionesPago}  editar={false} onSave={handleSave} />
+                    <RegistroPago mostrarToast={mostrarToast} tipoDocumento="FV" monto={total} opcionesPago={opcionesPago} setOpcionesPago={setOpcionesPago}  editar={false} onSave={handleSave} />
 
                     <div className="flex justify-content-start pt-3">
-                        <Button label="Regresar" icon="pi pi-arrow-left" onClick={() => stepperRef.current.prevCallback()} />
+                        <Button label="Regresar" icon="pi pi-arrow-left" onClick={() =>  stepperRef.current.prevCallback()} />
                     </div>
                     {/* <div className="flex justify-content-end pt-3">
                         <Button label="Guardar" icon="pi pi-check" onClick={handleSave} />

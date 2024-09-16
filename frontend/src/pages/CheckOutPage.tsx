@@ -43,13 +43,14 @@ function CheckOutPage() {
   };
 
   return (
-    <Panel header='Check In' style={{ width: '100%' , height: '100vh'}}>
+    <Panel header='Check Out' style={{ width: '100%' , height: '100vh'}}>
 
     <div className='flex flex-col gap-2'>
       <Menubar model={items} className='lg:my-0 md:my-10 my-12' />
       <div className='flex flex-wrap gap-1'>
         {habitaciones.map((habitacion: HabitacionRecepcion) => (
           <HabitacionCard
+            recepcion={false}
             key={habitacion.id}
             idHabitacion={habitacion.id}
             numeroHabitacion={habitacion.nombre}

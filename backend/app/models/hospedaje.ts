@@ -42,6 +42,9 @@ export default class Hospedaje extends BaseModel {
   @column()
   declare facturado: boolean
 
+  @column()
+  declare anulado: boolean
+
   @belongsTo(() => Habitacion, {
     foreignKey: 'habitacionId',
   })

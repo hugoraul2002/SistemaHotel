@@ -50,6 +50,7 @@ function CheckInPage() {
       <div className='flex flex-wrap gap-1'>
         {habitaciones.map((habitacion: HabitacionRecepcion) => (
           <HabitacionCard
+            recepcion={true}
             key={habitacion.id}
             idHabitacion={habitacion.id}
             numeroHabitacion={habitacion.nombre}

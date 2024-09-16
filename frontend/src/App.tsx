@@ -20,6 +20,7 @@ import TiposGastosPage from './pages/TiposGastosPage';
 import GastosPage from './pages/GastosPage';
 import CheckOutPage from './pages/CheckOutPage';
 import RegistroSalida from './components/facturacion/RegistroSalida';
+import ReporteFacturasPage from './pages/ReporteFacturacionPage';
 function App() {
   return (
     
@@ -45,6 +46,7 @@ function App() {
               <Route path="/gastos" element={<GastosPage />} />
               <Route path="/checkout" element={<CheckOutPage />} />
               <Route path="/registrosalida/:idHabitacion" element={<RegistroSalida />} />
+              <Route path="/reporteFacturacion" element={<ReporteFacturasPage />} />
 
             </Route>
           </Route>

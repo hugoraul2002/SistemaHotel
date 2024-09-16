@@ -40,12 +40,6 @@ export default function Barra({ visible, setVisible }: { visible: boolean, setVi
     );
 
     const items: MenuItem[] = [
-        { 
-            label: 'Dashboard', 
-            icon: 'pi pi-chart-bar', 
-            command: () => navegar('/inicio'), 
-            template: itemRenderer 
-        },
         {
             label: 'Reservaciones', 
             icon: 'pi pi-calendar', 
@@ -104,7 +98,17 @@ export default function Barra({ visible, setVisible }: { visible: boolean, setVi
             icon: 'pi pi-shopping-cart', 
             command: () => navegar('/productos'), 
             template: itemRenderer 
-        }
+        },
+        {
+            label: 'Reportes', 
+            icon: 'pi pi-chart-line', 
+            template: itemRenderer,
+            items: [
+                { label: 'Dashboard', icon: 'pi pi-chart-bar', command: () => navegar('/inicio'), template: itemRenderer },
+                { label: 'Reporte de Facturación', icon: 'pi pi-shopping-cart', command: () => navegar('/reporteFacturacion'), template: itemRenderer },
+                { label: 'Reporte de Gastos', icon: 'pi pi-shopping-cart', command: () => navegar('/gastos'), template: itemRenderer }
+            ]
+        },
     ];
 
 

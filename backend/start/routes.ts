@@ -9,6 +9,7 @@
 
 import router from '@adonisjs/core/services/router'
 import { middleware } from './kernel.js'
+const FacturasController = () => import('#controllers/facturas_controller')
 const ProductosController = () => import('#controllers/productos_controller')
 const DetalleHospedaje = () => import('#controllers/detalle_hospedajes_controller')
 const HospedajesController = () => import('#controllers/hospedajes_controller')
@@ -237,8 +238,16 @@ router
   .group(() => {
     router.get('/consultaNit/:nit', [FacturacionFelController, 'consultarNIT'])
     router.post('/facturar/', [FacturacionFelController, 'facturar'])
+    router.post('/facturarHospedaje/', [FacturacionFelController, 'registraFacturaFromHospedaje'])
   })
   .prefix('fel')
+  .use(middleware.auth())
+
+router
+  .group(() => {
+    router.post('/reporteFactura/', [FacturasController, 'reporteFactura'])
+  })
+  .prefix('facturas')
   .use(middleware.auth())
 
 router

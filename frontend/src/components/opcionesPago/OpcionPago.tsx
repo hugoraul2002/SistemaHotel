@@ -9,7 +9,7 @@ import { RadioButton, RadioButtonChangeEvent } from 'primereact/radiobutton';
 
 interface RegistroPagoProps {
   monto: number;
-  tipoDocumento: 'R' | 'H' | 'V' | 'FG';
+  tipoDocumento: 'R' | 'H' | 'FV' | 'FG';
   setOpcionesPago: React.Dispatch<React.SetStateAction<MetodoPago[]>>;
   onSave: () => void;
   mostrarToast: (detalle: string, tipo: "success" | "info" | "warn" | "error") => void;
@@ -23,7 +23,7 @@ const RegistroPago: React.FC<RegistroPagoProps> = ({ monto, tipoDocumento, setOp
   const [tieneApertura, setTieneApertura] = React.useState<boolean>(false);
   useEffect(() => {
     if (editar) {
-      if (opcionesPago.some((pago) => pago.idApertura!==null && pago.idApertura!== undefined)) {
+      if (opcionesPago.some((pago) => pago.idApertura !== null && pago.idApertura !== undefined)) {
         setAplicaApertura('Caja');
       } else {
         setAplicaApertura('Otros fondos');
@@ -44,19 +44,21 @@ const RegistroPago: React.FC<RegistroPagoProps> = ({ monto, tipoDocumento, setOp
           mostrarToast('Error al obtener apertura activa', 'error');
         }
       }
-  
+
       getAperturaActiva();
     }
   }, [opcionesPago, setOpcionesPago]);
 
-
   const onRowEditComplete = (e: DataTableRowEditCompleteEvent) => {
     const _pagos = [...opcionesPago];
     const { newData, index } = e;
-    _pagos[index] = newData;
+    const metodoPago: MetodoPago = {
+      metodo: newData.metodo,
+      monto: newData.monto,
+    };
+    _pagos[index] = metodoPago;
     setOpcionesPago(_pagos);
   };
-
   const montoEditor = (options: ColumnEditorOptions) => {
     return (
       <InputNumber
@@ -106,7 +108,7 @@ const RegistroPago: React.FC<RegistroPagoProps> = ({ monto, tipoDocumento, setOp
         return 'Reservación';
       case 'H':
         return 'Hospedaje';
-      case 'V':
+      case 'FV':
         return 'Venta';
       case 'FG':
         return 'Gasto';
@@ -124,28 +126,30 @@ const RegistroPago: React.FC<RegistroPagoProps> = ({ monto, tipoDocumento, setOp
         <Column
           field="monto"
           header="Monto"
-          editor={ montoEditor}
+          editor={montoEditor}
           style={{ width: '50%' }}
           body={(rowData: MetodoPago) => `Q. ${rowData.monto.toFixed(2)}`}
         />
         {!editar &&
-        <Column rowEditor bodyStyle={{ textAlign: 'center' }}></Column>
+          <Column rowEditor bodyStyle={{ textAlign: 'center' }}></Column>
         }
       </DataTable>
       <div className="flex flex-col gap-4 my-4 justify-end">
         <p>Pagado: Q. {opcionesPago.reduce((acumulado, pago) => acumulado + pago.monto, 0).toFixed(2)}</p>
         <p>Total: Q. {monto.toFixed(2)}</p>
       </div>
-      <div className="flex flex-wrap gap-4 my-4 justify-end">
-        <div className="flex align-items-center">
-          <RadioButton inputId="caja" disabled={!tieneApertura} name="caja" value="Caja" onChange={(e: RadioButtonChangeEvent) => setAplicaApertura(e.value)} checked={aplicaApertura === 'Caja'} />
-          <label htmlFor="caja" className="ml-2">Caja</label>
+      {tipoDocumento == 'FG' &&
+        <div className="flex flex-wrap gap-4 my-4 justify-end">
+          <div className="flex align-items-center">
+            <RadioButton inputId="caja" disabled={!tieneApertura} name="caja" value="Caja" onChange={(e: RadioButtonChangeEvent) => setAplicaApertura(e.value)} checked={aplicaApertura === 'Caja'} />
+            <label htmlFor="caja" className="ml-2">Caja</label>
+          </div>
+          <div className="flex align-items-center">
+            <RadioButton inputId="otrosfondos" name="pizza" value="Otros fondos" onChange={(e: RadioButtonChangeEvent) => setAplicaApertura(e.value)} checked={aplicaApertura === 'Otros fondos'} />
+            <label htmlFor="otrosfondos" className="ml-2">Otros fondos</label>
+          </div>
         </div>
-        <div className="flex align-items-center">
-          <RadioButton inputId="otrosfondos" name="pizza" value="Otros fondos" onChange={(e: RadioButtonChangeEvent) => setAplicaApertura(e.value)} checked={aplicaApertura === 'Otros fondos'} />
-          <label htmlFor="otrosfondos" className="ml-2">Otros fondos</label>
-        </div>
-      </div>
+      }
       <Button label="Guardar" icon="pi pi-check" onClick={handleSave} className="mt-3" />
     </div>
   );

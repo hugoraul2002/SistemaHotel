@@ -70,7 +70,7 @@ export default class Factura extends BaseModel {
   // Método estático para obtener el próximo número de factura
   static async getNextNumFactura(): Promise<number> {
     // Busca el máximo número de factura
-    const result = await this.query().max('numFactura as max').first()
+    const result = await this.query().max('num_factura as max').first()
 
     // Si no hay facturas, devuelve 1; de lo contrario, devuelve el máximo + 1
     return result?.$extras?.max ? result.$extras.max + 1 : 1

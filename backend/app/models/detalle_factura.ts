@@ -21,7 +21,7 @@ export default class DetalleFactura extends BaseModel {
   declare costo: number
 
   @column()
-  declare precio: number
+  declare precioVenta: number
 
   @column()
   declare descuento: number

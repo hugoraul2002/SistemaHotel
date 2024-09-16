@@ -75,6 +75,15 @@ export interface Usuario {
     direccion: string;
 }
 
+export interface ReporteFactura {
+  fecha: string; 
+  numFactura: string;
+  nit: string;
+  cliente: string;
+  total: number;
+  usuario: string;
+}
+
   export interface Reservacion {
     id: number;
     habitacion: Habitacion;

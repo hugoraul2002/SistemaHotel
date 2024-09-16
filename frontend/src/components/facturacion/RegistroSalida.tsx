@@ -5,8 +5,8 @@ import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
 import { Button } from 'primereact/button';
 import { Card } from 'primereact/card';
-import { useParams } from 'react-router-dom';
-import { ClienteFactura, DetalleHospedaje, DetalleHospedajeFactura, Hospedaje, MetodoPago, Producto } from '../../types/types';
+import { useNavigate, useParams } from 'react-router-dom';
+import { ClienteFactura, DetalleHospedaje, DetalleHospedajeFactura, Hospedaje, MetodoPago, OpcionPago, Producto } from '../../types/types';
 import { HospedajeService } from '../../services/HospedajeService';
 import { formatDateTime } from '../../helpers/formatDate';
 import { getDetallesByHospedaje, create,deleteDetalle } from '../../services/DetalleHospedajeService';
@@ -17,8 +17,11 @@ import { Dialog } from 'primereact/dialog';
 import BusquedaProducto from './BusquedaProducto';
 import FormRegistraFactura from './FormRegistraFactura';
 import { Toast } from 'primereact/toast';
+import facturarHospedaje from '../../services/FacturacionFelService';
+import { createOpcionPago } from '../../services/OpcionPagoService';
 const RegistroSalida = () => {
     const toast = useRef<Toast>(null);
+    const navigate = useNavigate();
     const [hospedaje, setHospedaje] = useState<Hospedaje | null>(null);
     const [detallesHospedaje, setDetallesHospedaje] = useState<DetalleHospedajeFactura[]>([]);
     const [servicioHospedaje, setServicioHospedaje] = useState<DetalleHospedajeFactura[]>([]);
@@ -53,14 +56,13 @@ const RegistroSalida = () => {
     
 
     const handleProductSelect = (product: Producto) => {
-        setSelectedProduct(product); // Guardar el producto seleccionado
-        setDescription(product.nombre); // Setear la descripción del producto seleccionado
-        setPrice(product.precioVenta); // Setear el precio del producto seleccionado
-        setQuantity(1); // Setear la cantidad del producto seleccionado
-        setDiscount(0); // Setear el descuento del producto seleccionado
-        setSubtotal(product.precioVenta); // Setear el subtotal del producto seleccionado
-        setDialogVisible(false); // Cerrar el diálogo
-        console.log('producto existencia:', product.existencia);
+        setSelectedProduct(product); 
+        setDescription(product.nombre); 
+        setPrice(product.precioVenta); 
+        setQuantity(1); 
+        setDiscount(0); 
+        setSubtotal(product.precioVenta); 
+        setDialogVisible(false); 
     };
 
     useEffect(() => {
@@ -71,12 +73,12 @@ const RegistroSalida = () => {
                     if (response) {
                         setHospedaje(response);
                         const detalles = await getDetallesByHospedaje(response.id);
-                        if (detalles) {
-                            console.log(detalles);
-                            setServicioHospedaje(detalles.filter(d => d.id === 1 && d.servicio == true));
-                            setDetallesHospedaje(detalles.filter(d => d.id !== 1));
-                        }
-
+                        if (detalles && detalles.length > 0) {
+                            // Asignar el primer elemento a servicioHospedaje
+                            setServicioHospedaje([detalles[0]]);                         
+                            // Asignar el resto de los elementos a detallesHospedaje
+                            setDetallesHospedaje(detalles.slice(1));
+                        }                
                     }
                     console.log(response);
 
@@ -131,8 +133,9 @@ const RegistroSalida = () => {
         }
     };
     const handleAddProduct = async () => {
+        
         if (!selectedProduct) {
-            console.error('No hay producto seleccionado');
+            mostrarToast('Debe seleccionar un producto', 'warn');
             return;
         }
 
@@ -160,15 +163,16 @@ const RegistroSalida = () => {
 
             if (response) {
                 const detalles = await getDetallesByHospedaje(hospedaje!.id);
-                if (detalles) {
-                    setServicioHospedaje(detalles.filter(d => d.servicio == true && d.id === 1));
-                    setDetallesHospedaje(detalles.filter(d =>  d.id !== 1));
-                }
+                if (detalles && detalles.length > 0) {
+                    // Asignar el primer elemento a servicioHospedaje
+                    setServicioHospedaje([detalles[0]]);                         
+                    // Asignar el resto de los elementos a detallesHospedaje
+                    setDetallesHospedaje(detalles.slice(1));
+                }   
             }
 
             // Limpiar los campos
             handleCancel();
-            // Recargar los detalles del hospedaje para que aparezca en la tabla
         } catch (error) {
             console.error('Error al agregar producto:', error);
         }
@@ -214,6 +218,7 @@ const RegistroSalida = () => {
         setPrice(null);
         setDiscount(null);
         setSubtotal(null);
+        setSelectedProduct(null);
     };
 
     const centerContent = (
@@ -273,8 +278,42 @@ const RegistroSalida = () => {
             <Button icon="pi pi-times" className="p-button-rounded p-button-warning" onClick={handleCancel} />
         </React.Fragment>
     );
-    const handleFacturar = (cliente: ClienteFactura, opcionesPago: MetodoPago[]) => {
-        
+    const handleFacturar = async (cliente: ClienteFactura) => {
+        const data = {
+            hospedajeId: hospedaje!.id,
+            nit: cliente.nit,
+            nombre: cliente.nombre,
+            direccion: cliente.direccion,
+        }
+        try
+        {
+            const response = await facturarHospedaje.facturarHospedaje(data)
+            if (response) {
+                console.log('response', response);
+                toast.current?.show({ severity: 'success', summary: 'Facturación', detail: 'Hospedaje facturado exitosamente', life: 3000 });
+
+                const idFactura= response.numFactura;
+                metodosPago.forEach(async (mp) => {
+                    console.log(mp)
+                    if (mp.monto > 0) {
+                      const opcionPago: OpcionPago = {
+                        id: 0,
+                        aperturaId: mp.idApertura,
+                        tipoDocumento: 'V',
+                        documentoId: idFactura,
+                        metodo: mp.metodo === 'EFECTIVO' ? 'EFE' : mp.metodo === 'TARJETA' ? 'TAR' : '',
+                        monto: mp.monto,
+                        fecha: new Date(),
+                      }
+                      await createOpcionPago(opcionPago);
+                    }
+                  })
+                  setFormFacturarVisible(false);
+                  navigate('/checkout')
+            }
+        } catch (error) {
+            console.error('Error al facturar hospedaje:', error);
+        }
     }
     return (
         <div className="p-4 flex flex-col md:flex-row gap-4">
@@ -388,7 +427,7 @@ const RegistroSalida = () => {
 
                     <div className="flex justify-end mt-4">
                         <Button label="Facturar" className="p-button-primary mr-2" onClick={() => setFormFacturarVisible(true)}/>
-                        <Button label="Cancelar" className="p-button-secondary" />
+                        <Button label="Cancelar" className="p-button-secondary" onClick={() => navigate(-1)}/>
                     </div>
                 </Panel>
             </div>
@@ -401,3 +440,4 @@ const RegistroSalida = () => {
 };
 
 export default RegistroSalida;
+

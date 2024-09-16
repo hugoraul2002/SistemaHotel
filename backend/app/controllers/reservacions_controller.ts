@@ -32,7 +32,7 @@ export default class ReservacionesController {
         'observaciones',
         'anulado',
       ])
-
+      console.log(reservacionData)
       const reservacion = await Reservacion.create(reservacionData)
       await reservacion.load('habitacion')
       await reservacion.load('cliente')
@@ -59,6 +59,7 @@ export default class ReservacionesController {
         'observaciones',
         'anulado',
       ])
+      console.log(reservacionData)
 
       const existeConflicto = await Reservacion.query()
         .where('habitacionId', reservacionData.habitacionId)

@@ -68,4 +68,37 @@ SELECT d.id, hospedaje_id, producto_id, cantidad, d.costo, d.precio_venta, d.pag
 
 SELECT * FROM vdetalle_hospedaje WHERE hospedaje_id=
 
+SELECT 
+    p.codigo, 
+    p.nombre, 
+    d.cantidad, 
+    d.precio_venta,
+    d.descuento, 
+    CASE WHEN p.es_servicio = 1 THEN 'S' ELSE 'B' END AS servicio
+FROM 
+    detalle_facturas d
+INNER JOIN 
+    productos p ON d.producto_id = p.id;
 
+DELETE from detalle_facturas
+DELETE from facturas
+SELECT IFNULL(MAX(numFactura) + 1, 1) AS nextNumFactura
+FROM facturas;
+ALTER VIEW rptFacturas 
+AS
+SELECT DATE(f.fecha_registro) AS fecha, f.num_factura AS numFactura, f.nit, f.nombre_facturado AS cliente, 
+SUM((d.cantidad * d.precio_venta) - d.descuento) AS total, u.full_name AS usuario
+FROM facturas f 
+INNER JOIN detalle_facturas d ON f.id = d.factura_id
+INNER JOIN usuarios u ON u.id = f.user_id
+WHERE f.anulado = 0
+GROUP BY f.id, f.fecha_registro, f.num_factura, f.nit, f.nombre_facturado, u.full_name;
+
+SELECT g.id, g.fecha, g.descripcion, g.monto, p.nombre, u.full_name AS usuario
+FROM gastos g INNER JOIN proveedores p ON p.id = g.proveedor_id
+INNER JOIN tipogastos t ON t.id=g.tipo_gasto_id
+INNER JOIN usuarios u ON u.id = g.user_id
+
+
+SELECT * FROM rptFacturas WHERE fecha >= '2024/09/01'
+AND fecha <= '2024/09/14'
