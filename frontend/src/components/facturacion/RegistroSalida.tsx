@@ -18,6 +18,7 @@ import BusquedaProducto from './BusquedaProducto';
 import FormRegistraFactura from './FormRegistraFactura';
 import { Toast } from 'primereact/toast';
 import facturarHospedaje from '../../services/FacturacionFelService';
+import getPDF from '../../services/FacturacionFelService';
 import { createOpcionPago } from '../../services/OpcionPagoService';
 const RegistroSalida = () => {
     const toast = useRef<Toast>(null);
@@ -141,20 +142,20 @@ const RegistroSalida = () => {
 
         // Si el producto no es un servicio, validar existencia
         if (!selectedProduct.esServicio && quantity! > selectedProduct.existencia!) {
-            console.error('Cantidad mayor que la existencia');
+            mostrarToast('No hay suficiente existencia.', 'warn');
             return;
         }
 
-        // Crear el objeto DetalleHospedaje basado en la interface proporcionada
+       
         const detalleHospedaje: DetalleHospedaje = {
             id: 0, // Esto lo asigna la base de datos automáticamente
-            hospedajeId: hospedaje!.id, // Debes asegurar que el hospedaje está seleccionado
+            hospedajeId: hospedaje!.id, 
             productoId: selectedProduct.id,
             cantidad: quantity!,
             costo: selectedProduct.costo,
             precioVenta: price!,
             descuento: discount || 0,
-            pagado: false // Asume que inicialmente no está pagado
+            pagado: false 
         };
 
         try {
@@ -280,41 +281,56 @@ const RegistroSalida = () => {
     );
     const handleFacturar = async (cliente: ClienteFactura) => {
         const data = {
-            hospedajeId: hospedaje!.id,
-            nit: cliente.nit,
-            nombre: cliente.nombre,
-            direccion: cliente.direccion,
+          hospedajeId: hospedaje!.id,
+          nit: cliente.nit,
+          nombre: cliente.nombre,
+          direccion: cliente.direccion,
         }
-        try
-        {
-            const response = await facturarHospedaje.facturarHospedaje(data)
-            if (response) {
-                console.log('response', response);
-                toast.current?.show({ severity: 'success', summary: 'Facturación', detail: 'Hospedaje facturado exitosamente', life: 3000 });
-
-                const idFactura= response.numFactura;
-                metodosPago.forEach(async (mp) => {
-                    console.log(mp)
-                    if (mp.monto > 0) {
-                      const opcionPago: OpcionPago = {
-                        id: 0,
-                        aperturaId: mp.idApertura,
-                        tipoDocumento: 'V',
-                        documentoId: idFactura,
-                        metodo: mp.metodo === 'EFECTIVO' ? 'EFE' : mp.metodo === 'TARJETA' ? 'TAR' : '',
-                        monto: mp.monto,
-                        fecha: new Date(),
-                      }
-                      await createOpcionPago(opcionPago);
-                    }
-                  })
-                  setFormFacturarVisible(false);
-                  navigate('/checkout')
-            }
+      
+        try {
+          const response = await facturarHospedaje.facturarHospedaje(data)
+      
+          if (response) {
+            console.log('response', response)
+            toast.current?.show({
+              severity: 'success',
+              summary: 'Facturación',
+              detail: 'Hospedaje facturado exitosamente',
+              life: 3000,
+            })
+      
+            const idFactura = response.numFactura
+      
+            // Registrar métodos de pago
+            await Promise.all(
+              metodosPago.map(async (mp) => {
+                if (mp.monto > 0) {
+                  const opcionPago: OpcionPago = {
+                    id: 0,
+                    aperturaId: mp.idApertura,
+                    tipoDocumento: 'V',
+                    documentoId: idFactura,
+                    metodo: mp.metodo === 'EFECTIVO' ? 'EFE' : mp.metodo === 'TARJETA' ? 'TAR' : '',
+                    monto: mp.monto,
+                    fecha: new Date(),
+                  }
+                  await createOpcionPago(opcionPago)
+                }
+              })
+            )
+      
+            // Descargar el PDF de la factura
+            await getPDF.getPDF(idFactura)
+      
+            // Cerrar el formulario y redirigir al checkout
+            setFormFacturarVisible(false)
+            navigate('/checkout')
+          }
         } catch (error) {
-            console.error('Error al facturar hospedaje:', error);
+          console.error('Error al facturar hospedaje:', error)
         }
-    }
+      }
+      
     return (
         <div className="p-4 flex flex-col md:flex-row gap-4">
             <Toast ref={toast} />

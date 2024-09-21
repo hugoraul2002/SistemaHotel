@@ -184,8 +184,8 @@ function CajaPage() {
                     </div>
                     <div className="flex gap-2">
                         <Button type="button" icon="pi pi-plus" rounded data-pr-tooltip="Nueva Apertura" onClick={handleNuevo} />
-                        <Button type="button" icon="pi pi-file-excel" severity="success" rounded data-pr-tooltip="XLS" />
-                        <Button type="button" icon="pi pi-file-pdf" severity="warning" rounded data-pr-tooltip="PDF" />
+                        {/* <Button type="button" icon="pi pi-file-excel" severity="success" rounded data-pr-tooltip="XLS" />
+                        <Button type="button" icon="pi pi-file-pdf" severity="warning" rounded data-pr-tooltip="PDF" /> */}
                     </div>
                 </div>
             </>

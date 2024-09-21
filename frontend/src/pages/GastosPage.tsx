@@ -12,7 +12,6 @@ import { Gasto, MetodoPago, OpcionPago } from '../types/types';
 import { ConfirmDialog, confirmDialog } from 'primereact/confirmdialog';
 import { formatDate } from '../helpers/formatDate';
 import { createOpcionPago } from '../services/OpcionPagoService';
-// import GastoDialog from '../components/gastos/FormGasto';
 import GastoDialog from '../components/gastos/GastoDialog';
 import { useUser } from '../hooks/UserContext';
 
@@ -24,7 +23,6 @@ const GastosPage: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const [globalFilterValue, setGlobalFilterValue] = useState<string>('');
   const [selectedGasto, setSelectedGasto] = useState<Gasto | null>(null);
-  const [metodosPago, setMetodosPago] = useState<MetodoPago[]>([]);
   const [filters, setFilters] = useState<DataTableFilterMeta>({
     global: { value: null, matchMode: FilterMatchMode.CONTAINS },
     descripcion: { value: null, matchMode: FilterMatchMode.STARTS_WITH },
@@ -66,8 +64,6 @@ const GastosPage: React.FC = () => {
           </div>
           <div className="flex gap-2">
             <Button type="button" icon="pi pi-plus" rounded data-pr-tooltip="Nuevo" onClick={() => handleNuevo()} />
-            <Button type="button" icon="pi pi-file-excel" severity="success" rounded data-pr-tooltip="XLS" onClick={() => exportToExcel()} />
-            <Button type="button" icon="pi pi-file-pdf" severity="warning" rounded data-pr-tooltip="PDF" onClick={() => exportToPDF()} />
             <Button type="button" label={anulados ? 'Inactivos' : 'Activos'} rounded onClick={() => setAnulados(!anulados)} size='small' />
           </div>
         </div>
@@ -98,7 +94,6 @@ const GastosPage: React.FC = () => {
   const handleSaveGasto = async (gasto: Gasto, metodosPago: MetodoPago[]): Promise<void> => {
     try {
       if (isEditing && editingGastoId !== null) {
-        console.log(gasto);
         const response = await GastoService.updateGasto(editingGastoId, gasto);
         if (response) {
           const gastos = await GastoService.getAllGastos(anulados);
@@ -106,10 +101,7 @@ const GastosPage: React.FC = () => {
           mostrarToast('Gasto actualizado.', 'success');
         }
       } else {
-        console.log(user);
-        console.log(gasto);
         const response = await GastoService.createGasto(gasto);
-        console.log(response);
         if (response) {
           const { id } = response;
           metodosPago.forEach(async (mp) => {
@@ -217,15 +209,6 @@ const GastosPage: React.FC = () => {
   };
 
   // Funciones para exportar a Excel y PDF (opcional)
-  const exportToExcel = () => {
-    // Implementa la lógica para exportar a Excel
-    mostrarToast('Exportado a Excel (funcionalidad no implementada).', 'info');
-  };
-
-  const exportToPDF = () => {
-    // Implementa la lógica para exportar a PDF
-    mostrarToast('Exportado a PDF (funcionalidad no implementada).', 'info');
-  };
 
   return (
     <div className="card md:mx-4">

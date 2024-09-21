@@ -1,27 +1,27 @@
 SELECT 
-  pd.tipoDocumento,
+  pd.tipo_documento,
   COALESCE(h.id, f.id, g.id) AS documentoId, -- El id del hospedaje, factura o gasto
-  SUM(CASE WHEN pd.metodoPago = 'efectivo' THEN pd.monto ELSE 0 END) AS totalEfectivo,
-  SUM(CASE WHEN pd.metodoPago = 'tarjeta' THEN pd.monto ELSE 0 END) AS totalTarjeta,
+  SUM(CASE WHEN pd.metodo = 'EFE' THEN pd.monto ELSE 0 END) AS totalEfectivo,
+  SUM(CASE WHEN pd.metodo = 'TAR' THEN pd.monto ELSE 0 END) AS totalTarjeta,
   SUM(pd.monto) AS total,
   
   -- Información de la reservación
-  COALESCE(r.id, h.idReservacion) AS idReservacion, -- El id de la reservación (de la tabla Reservacion)
+  COALESCE(r.id, h.reservacion_id) AS idReservacion, -- El id de la reservación (de la tabla Reservacion)
   CASE 
-    WHEN r.pagado = 1 OR h.idReservacion IS NOT NULL AND EXISTS (SELECT 1 FROM Reservacion r2 WHERE r2.id = h.idReservacion AND r2.pagado = 1) 
+    WHEN r.pagado = 1 OR h.reservacion_id IS NOT NULL AND EXISTS (SELECT 1 FROM reservaciones r2 WHERE r2.id = h.reservacion_id AND r2.pagado = 1) 
     THEN 'Sí' ELSE 'No' 
   END AS reservacionPagada -- Indica si la reservación fue pagada
 
-FROM PagoDetalle pd
+FROM opciones_pagos pd
 -- Join con las tablas principales: Hospedaje, Factura y Gasto
-LEFT JOIN Hospedaje h ON pd.tipoDocumento = 'hospedaje' AND pd.documentoId = h.id
-LEFT JOIN Factura f ON pd.tipoDocumento = 'factura' AND pd.documentoId = f.id
-LEFT JOIN Gasto g ON pd.tipoDocumento = 'gasto' AND pd.documentoId = g.id
+LEFT JOIN hospedajes h ON pd.tipo_documento = 'H' AND pd.documento_id = h.id
+LEFT JOIN facturas f ON pd.tipo_documento = 'FV' AND pd.documento_id = f.id
+LEFT JOIN gastos g ON pd.tipo_documento = 'FG' AND pd.documento_id = g.id
 
 -- Join con la tabla de Reservaciones, para obtener el idReservacion y verificar si fue pagada
-LEFT JOIN Reservacion r ON pd.tipoDocumento = 'reservacion' AND pd.documentoId = r.id
+LEFT JOIN reservaciones r ON pd.tipo_documento = 'R' AND pd.documento_id = r.id
 
-GROUP BY pd.tipoDocumento, pd.documentoId;
+GROUP BY pd.tipo_documento, pd.documento_id;
 
 
 
@@ -94,7 +94,7 @@ INNER JOIN usuarios u ON u.id = f.user_id
 WHERE f.anulado = 0
 GROUP BY f.id, f.fecha_registro, f.num_factura, f.nit, f.nombre_facturado, u.full_name;
 
-SELECT g.id, g.fecha, g.descripcion, g.monto, p.nombre, u.full_name AS usuario
+SELECT g.id, g.fecha, g.descripcion AS gasto, g.monto, p.nombre AS proveedor,t.tipo AS tipogasto, u.full_name AS usuario
 FROM gastos g INNER JOIN proveedores p ON p.id = g.proveedor_id
 INNER JOIN tipogastos t ON t.id=g.tipo_gasto_id
 INNER JOIN usuarios u ON u.id = g.user_id

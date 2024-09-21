@@ -14,6 +14,7 @@ import { StepperPanel } from 'primereact/stepperpanel';
 import { Calendar } from 'primereact/calendar';
 import RegistroPago from '../opcionesPago/OpcionPago';
 import {getOpcionPagoByDocumento } from '../../services/OpcionPagoService';
+import { getDate } from '../../helpers/formatDate';
 
 interface GastoDialogProps {
     visible: boolean;
@@ -104,6 +105,7 @@ const GastoDialog: React.FC<GastoDialogProps> = ({ visible, id, editar, onHide, 
             const fetchGasto = async () => {
                 try {
                     const gasto = await GastoService.getGastoById(id);
+                    console.log("gasto", gasto);
                     setGasto(gasto);
                 } catch (error) {
                     console.error('Error fetching gasto:', error);
@@ -204,7 +206,7 @@ const GastoDialog: React.FC<GastoDialogProps> = ({ visible, id, editar, onHide, 
                             <Calendar
 
                                 id="fecha"
-                                value={new Date(gasto.fecha)}
+                                value={getDate(gasto.fecha)}
                                 onChange={(e) => setGasto({ ...gasto, fecha: e.value || new Date() })}
                                 dateFormat="dd/mm/yy"
                                 showIcon

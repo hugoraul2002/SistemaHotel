@@ -84,6 +84,17 @@ export interface ReporteFactura {
   usuario: string;
 }
 
+export interface ReporteGasto {
+  fecha: string; 
+  gasto: string;
+  total: number;
+  efectivo: number;
+  tarjeta: number;
+  proveedor: string;
+  tipogasto: string;
+  usuario: string;
+}
+
   export interface Reservacion {
     id: number;
     habitacion: Habitacion;

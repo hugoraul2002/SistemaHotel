@@ -1,14 +1,15 @@
 import axios from 'axios';
-import { Gasto } from '../types/types';
+import { Gasto, Usuario } from '../types/types';
 import dayjs from 'dayjs';
-
+import {me} from './AuthService'
 const API_URL = 'http://localhost:3333/gastos';
 
 export class GastoService {
   static async getAllGastos(anulados:boolean) {
     try {
-      const token = localStorage.getItem('token');
-      const response = await axios.post(`${API_URL}/`,{anulados}, {
+      const token = localStorage.getItem('token');    
+      const user: Usuario = await me()
+      const response = await axios.post(`${API_URL}/`,{anulados,opcion:user.rol.nombre =='ADMIN' ? 1 : 2, userId:user.id, fecha: dayjs(new Date()).format('YYYY-MM-DD')}, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -105,6 +106,22 @@ export class GastoService {
       throw error;
     }
   }
+
+  static reporteGasto = async (data : any) => {
+    try {
+        const token = localStorage.getItem('token');
+        const reportData = {
+            fechaInicio : dayjs(data.fechaInicio).format('YYYY-MM-DD'),
+            fechaFin : dayjs(data.fechaFin).format('YYYY-MM-DD'),
+        }
+        const response = await axios.post(`${API_URL}/reporteGastos/`,reportData,{
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+        return response.data;
+    } catch (error) {
+      console.error('Error fetching users:', error);
+    }
+}
 
   static async deleteGasto(gastoId: number) {
     try {

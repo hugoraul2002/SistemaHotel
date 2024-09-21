@@ -52,14 +52,9 @@ export default class FacturasController {
     try {
       const fechaInicio = request.input('fechaInicio')
       const fechaFin = request.input('fechaFin')
-      console.log(fechaInicio, fechaFin)
-      console.log(`
-        SELECT * FROM rptFacturas WHERE fecha >= '${fechaInicio}' AND fecha <= '${fechaFin}'
-      `)
       const facturas = await db.rawQuery(`
         SELECT * FROM rptFacturas WHERE fecha >= '${fechaInicio}' AND fecha <= '${fechaFin}'
       `)
-      console.log(facturas)
       response.status(200).json(facturas[0])
     } catch (error) {
       return response.internalServerError({ message: 'Error fetching factura', error })

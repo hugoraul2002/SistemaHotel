@@ -317,7 +317,7 @@ export default class FacturacionFelController {
       const fechaRegistroFEL = DateTime.fromFormat(fecha, 'dd/MM/yyyy HH:mm:ss').toFormat(
         'yyyy-MM-dd'
       )
-      console.log(dataFactura)
+
       // Crear factura
       const factura = await Factura.create({
         hospedajeId: hospedajeId,
@@ -347,7 +347,6 @@ export default class FacturacionFelController {
       )
 
       const hospedaje = await Hospedaje.query().where('id', hospedajeId).first()
-      console.log(hospedaje)
       if (hospedaje) {
         hospedaje.facturado = true
         await hospedaje.save()
@@ -359,7 +358,6 @@ export default class FacturacionFelController {
         }
       }
 
-      console.log(fecha.split(' ')[0], fechaRegistroFEL)
       // Datos generales de la factura
       const datosGenerales = {
         TrnEstNum: this.numEstablecimiento,
@@ -389,7 +387,7 @@ export default class FacturacionFelController {
         TrnArtImpAdiCod: 0,
         TrnArtImpAdiUniGrav: 0,
       }))
-      console.log('ITEMS PARA XMLDOC', items)
+
       // Crear el XML para la facturación
       const builder = new xml2js.Builder({ headless: true })
       const xmlDoc = builder.buildObject({
@@ -438,6 +436,53 @@ export default class FacturacionFelController {
       return response.status(500).json({
         success: false,
         message: 'Error al registrar la facturación',
+        error: error.message,
+      })
+    }
+  }
+
+  async extraerPDF({ params, response }: HttpContext) {
+    try {
+      // Ruta del archivo XML generado previamente (ubicado en xmlFel)
+      const numFactura = params.numFactura
+      const filePath = path.join(__dirname, '..', 'xmlFel', `${numFactura}.xml`)
+
+      // Verificar si el archivo XML existe
+      if (!fs.existsSync(filePath)) {
+        return response.status(404).json({
+          success: false,
+          message: 'Archivo XML no encontrado',
+        })
+      }
+
+      // Leer el archivo XML
+      const xmlData = fs.readFileSync(filePath, 'utf8')
+
+      // Convertir el XML a JSON usando xml2js
+      const parser = new xml2js.Parser()
+      const parsedResult = await parser.parseStringPromise(xmlData)
+
+      // Extraer el PDF en base64 del XML
+      const pdfBase64 = parsedResult?.DTE?.Pdf?.[0]
+      if (!pdfBase64) {
+        return response.status(404).json({
+          success: false,
+          message: 'El PDF no se encontró en el XML',
+        })
+      }
+
+      // Decodificar el base64 si es necesario y enviarlo como respuesta
+      const pdfBuffer = Buffer.from(pdfBase64, 'base64')
+
+      // Devolver el PDF en la respuesta (enviándolo como archivo PDF)
+      response.header('Content-Type', 'application/pdf')
+      response.header('Content-Disposition', `attachment; filename="Factura_${numFactura}.pdf"`)
+      return response.send(pdfBuffer)
+    } catch (error) {
+      console.error('Error al extraer el PDF del XML:', error)
+      return response.status(500).json({
+        success: false,
+        message: 'Error al procesar el archivo XML',
         error: error.message,
       })
     }

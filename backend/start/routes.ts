@@ -217,6 +217,7 @@ router
     router.post('/', [GastosController, 'index'])
     router.post('/store', [GastosController, 'store'])
     router.get('/:id', [GastosController, 'show'])
+    router.post('/reporteGastos', [GastosController, 'reporteGastos'])
     router.put('/update/:id', [GastosController, 'update'])
     router.put('/updateAnulado/:id', [GastosController, 'updateAnulado'])
   })
@@ -237,6 +238,7 @@ router
 router
   .group(() => {
     router.get('/consultaNit/:nit', [FacturacionFelController, 'consultarNIT'])
+    router.get('/extraerPDF/:numFactura', [FacturacionFelController, 'extraerPDF'])
     router.post('/facturar/', [FacturacionFelController, 'facturar'])
     router.post('/facturarHospedaje/', [FacturacionFelController, 'registraFacturaFromHospedaje'])
   })

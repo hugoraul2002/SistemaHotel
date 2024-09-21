@@ -31,6 +31,7 @@ const RegistrarHospedaje: React.FC = () => {
   const [reservacion, setReservacion] = useState<Reservacion | null>(null);
   const [numeroDocumento, setNumeroDocumento] = useState<string>('');
   const navigate = useNavigate();
+  const [submmiting, setSubmmiting] = useState(false);
   const { idHabitacion } = useParams();
 
   addLocale('es', {
@@ -90,6 +91,7 @@ const RegistrarHospedaje: React.FC = () => {
   };
 
   const handleRegister = async () => {
+    setSubmmiting(true);
     if (!cliente) {
       mostrarToast('Debe seleccionar un cliente.', 'warn');
       return;
@@ -128,7 +130,9 @@ const RegistrarHospedaje: React.FC = () => {
           navigate('/checkin');
         }, 1000);
       }
+      setSubmmiting(false);      
     } catch (error) {
+      setSubmmiting(false);
       console.error('Error registering hospedaje:', error);
     }
   };
@@ -247,7 +251,7 @@ const RegistrarHospedaje: React.FC = () => {
               <InputText defaultValue={0} type='number' id="total" value={total.toString()} />
             </div>
             <div className="flex flex-row justify-end space-x-2 mt-3">
-              <Button label="Registrar" icon="pi pi-save" className="p-button-success" onClick={handleRegister} />
+              <Button label="Registrar" icon="pi pi-save" className="p-button-success" disabled={submmiting} onClick={handleRegister} />
               <Button label="Cancelar" icon="pi pi-times" className="p-button-secondary" onClick={() => navigate(-1)} />
             </div>
           </Panel>

@@ -5,34 +5,32 @@ import { Button } from 'primereact/button';
 import { InputText } from 'primereact/inputtext';
 import { Toast } from 'primereact/toast';
 import { Calendar } from 'primereact/calendar';
-import { reporteFactura } from '../services/FacturaService';
-import { ReporteFactura } from '../types/types';
-import { formatDate } from '../helpers/formatDate';
-import { IconField } from 'primereact/iconfield';
-import { InputIcon } from 'primereact/inputicon';
+import { GastoService } from '../services/GastoService'; // Suponiendo que tienes un servicio para obtener los datos
+import { ReporteGasto } from '../types/types';
 import * as XLSX from 'xlsx';
+import { formatDate } from '../helpers/formatDate';
 
-const ReporteFacturasPage: React.FC = () => {
+const ReporteGastosPage: React.FC = () => {
     const toast = useRef<Toast>(null);
-    const [facturas, setFacturas] = useState<ReporteFactura[]>([]);
+    const [gastos, setGastos] = useState<ReporteGasto[]>([]);
     const [loading, setLoading] = useState<boolean>(false);
     const [globalFilterValue, setGlobalFilterValue] = useState<string>('');
     const [fechaInicio, setFechaInicio] = useState<Date | null>(new Date());
     const [fechaFin, setFechaFin] = useState<Date | null>(new Date());
 
-    const fetchFacturas = async (data: { fechaInicio: string; fechaFin: string }) => {
+    const fetchGastos = async (data: { fechaInicio: string; fechaFin: string }) => {
         try {
             setLoading(true);
-            const response = await reporteFactura(data);
-            setFacturas(response);
-            toast.current?.show({ severity: 'info', detail: 'Facturas consultadas correctamente.', life: 3000 });
+            const response = await GastoService.reporteGasto(data);
+            setGastos(response);
+            toast.current?.show({ severity: 'info', detail: 'Gastos consultados correctamente.', life: 3000 });
             setLoading(false);
         } catch (error) {
             toast.current?.show({ severity: 'error', detail: 'Error al cargar los datos del reporte.', life: 3000 });
             setLoading(false);
         }
     };
-    
+
     const handleGenerarReporte = () => {
         if (!fechaInicio || !fechaFin) {
             toast.current?.show({ severity: 'warn', detail: 'Por favor, selecciona ambas fechas.', life: 3000 });
@@ -44,7 +42,9 @@ const ReporteFacturasPage: React.FC = () => {
             fechaFin: fechaFin.toISOString().split('T')[0],
         };
 
-        fetchFacturas(data);
+        console.log(data);
+
+        fetchGastos(data);
     };
 
     const onGlobalFilterChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -53,35 +53,38 @@ const ReporteFacturasPage: React.FC = () => {
     };
 
     const exportToExcel = () => {
-        if (facturas.length <= 0){
-            toast.current?.show({ severity: 'info', detail: 'No existen registros de facturas a exportar.', life: 3000 });
+        if (gastos.length <= 0) {
+            toast.current?.show({ severity: 'info', detail: 'No existen registros de gastos a exportar.', life: 3000 });
             return;
         }
-        const ws = XLSX.utils.json_to_sheet(facturas.map(factura => ({
-            Fecha: formatDate(new Date(factura.fecha)),
-            'Número de Factura': factura.numFactura,
-            NIT: factura.nit,
-            Cliente: factura.cliente,
-            Total: factura.total.toFixed(2),
-            'Usuario que registra': factura.usuario
+
+        const ws = XLSX.utils.json_to_sheet(gastos.map(gasto => ({
+            Fecha: formatDate(new Date(gasto.fecha)),
+            Gasto: gasto.gasto,
+            Total: gasto.total.toFixed(2),
+            Efectivo: gasto.efectivo.toFixed(2),
+            Tarjeta: gasto.tarjeta.toFixed(2),
+            Proveedor: gasto.proveedor,
+            'Tipo de Gasto': gasto.tipogasto,
+            Usuario: gasto.usuario
         })));
 
         const wb = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(wb, ws, 'Facturas');
-        XLSX.writeFile(wb, 'Reporte de Facturas.xlsx');
+        XLSX.utils.book_append_sheet(wb, ws, 'Gastos');
+        XLSX.writeFile(wb, 'Reporte de Gastos.xlsx');
     };
 
     const renderHeader = () => {
         return (
-            <div className="flex flex-col  justify-content-between align-items-center">
+            <div className="flex flex-col justify-content-between align-items-center">
                 <div className="flex justify-between items-center w-full">
-                    <h2 className="text-lg font-semibold mb-4 md:mb-0">Reporte de Facturas</h2>
+                    <h2 className="text-lg font-semibold mb-4 md:mb-0">Reporte de Gastos</h2>
                     <Button label='Exportar' severity='success' icon="pi pi-file-excel" onClick={exportToExcel} />
                 </div>
-                <IconField iconPosition="left">
-                    <InputIcon className="pi pi-search"> </InputIcon>
+                <span className="p-input-icon-left">
+                    <i className="pi pi-search" />
                     <InputText value={globalFilterValue} onChange={onGlobalFilterChange} placeholder="Buscar" />
-                </IconField>
+                </span>
             </div>
         );
     };
@@ -106,17 +109,20 @@ const ReporteFacturasPage: React.FC = () => {
                 />
                 <Button label="Generar Reporte" icon="pi pi-file" onClick={handleGenerarReporte} />
             </div>
-            <DataTable value={facturas} paginator rows={10} loading={loading} dataKey="numFactura"
-                globalFilter={globalFilterValue} header={renderHeader()} emptyMessage="No se encontraron facturas.">
-                <Column field="fecha" body={(rowData: ReporteFactura) => formatDate(new Date(rowData.fecha))} header="Fecha" sortable></Column>
-                <Column field="numFactura" header="Número de Factura" sortable></Column>
-                <Column field="nit" header="NIT" sortable></Column>
-                <Column field="cliente" header="Cliente" sortable></Column>
-                <Column field="total" header="Total" sortable body={(rowData) => rowData.total.toFixed(2)}></Column>
-                <Column field="usuario" header="Usuario que registra" sortable></Column>
+            <DataTable value={gastos} paginator rows={10} loading={loading} dataKey="fecha"
+                globalFilter={globalFilterValue} header={renderHeader()} emptyMessage="No se encontraron gastos.">
+                <Column field="fecha" body={(rowData: ReporteGasto) => formatDate(new Date(rowData.fecha))} header="Fecha" sortable></Column>
+                <Column field="gasto" header="Gasto" sortable></Column>
+                <Column field="efectivo" header="Efectivo" body={(rowData) => (rowData.efectivo ? rowData.efectivo.toFixed(2) : '0.00')} sortable></Column>
+                <Column field="tarjeta" header="Tarjeta" body={(rowData) => (rowData.tarjeta ? rowData.tarjeta.toFixed(2) : '0.00')} sortable></Column>
+                <Column field="total" header="Total" body={(rowData) => (rowData.total ? rowData.total.toFixed(2) : '0.00')} sortable></Column>
+
+                <Column field="proveedor" header="Proveedor" sortable></Column>
+                <Column field="tipogasto" header="Tipo de Gasto" sortable></Column>
+                <Column field="usuario" header="Usuario" sortable></Column>
             </DataTable>
         </div>
     );
 };
 
-export default ReporteFacturasPage;
+export default ReporteGastosPage;

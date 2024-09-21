@@ -57,4 +57,34 @@ const reporteFactura = async (data: any) => {
     }
 }
 
-export default {consultaNit , facturar , facturarHospedaje, reporteFactura}
+
+const getPDF = async (numFactura: string) => {
+    try {
+      const token = localStorage.getItem('token');
+      
+      // Configura la solicitud para que el servidor devuelva un blob (binario)
+      const response = await axios.get(`${API_URL}/extraerPDF/${numFactura}`, {
+        headers: { 
+          'Authorization': `Bearer ${token}`,
+        },
+        responseType: 'blob', // Importante para recibir el PDF en formato binario
+      });
+  
+      // Crear un enlace para descargar el PDF
+      const pdfBlob = new Blob([response.data], { type: 'application/pdf' });
+      const pdfURL = window.URL.createObjectURL(pdfBlob);
+      
+      // Crear un enlace dinámico para descargar o abrir el PDF
+      const link = document.createElement('a');
+      link.href = pdfURL;
+      link.setAttribute('download', `Factura_${numFactura}.pdf`); // Nombre del archivo PDF
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+  
+    } catch (error) {
+      console.error('Error fetching PDF:', error);
+    }
+}
+
+export default {consultaNit , facturar , facturarHospedaje, reporteFactura, getPDF}

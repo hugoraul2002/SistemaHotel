@@ -106,7 +106,7 @@ export default function Barra({ visible, setVisible }: { visible: boolean, setVi
             items: [
                 { label: 'Dashboard', icon: 'pi pi-chart-bar', command: () => navegar('/inicio'), template: itemRenderer },
                 { label: 'Reporte de Facturación', icon: 'pi pi-shopping-cart', command: () => navegar('/reporteFacturacion'), template: itemRenderer },
-                { label: 'Reporte de Gastos', icon: 'pi pi-shopping-cart', command: () => navegar('/gastos'), template: itemRenderer }
+                { label: 'Reporte de Gastos', icon: 'pi pi-shopping-cart', command: () => navegar('/reporteGastos'), template: itemRenderer }
             ]
         },
     ];

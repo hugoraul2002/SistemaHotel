@@ -63,7 +63,6 @@ export class HospedajeService {
             fechaRegistro: formatDateTime(dayjs().subtract(6,'hours').toDate()),
             total: data.total,
             montoPenalidad: data.monto_penalidad,
-            montoDescuento: data.monto_descuento,
         }
         let newData2 = {            
         }

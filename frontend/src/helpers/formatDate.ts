@@ -16,3 +16,9 @@ export const formatDateTime = (date: Date) => {
     const fecha = dayjs(date).add(6, 'hour').format('DD/MM/YYYY');
       return fecha
     };
+
+  export const getDate = (date: Date) => {
+    const fecha = dayjs(date).add(6, 'hour').toDate();
+    console.log(fecha)
+      return fecha
+    };
