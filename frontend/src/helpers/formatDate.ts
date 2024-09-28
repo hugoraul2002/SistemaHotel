@@ -10,7 +10,11 @@ export const formatDateTime = (date: Date) => {
     return fecha
     
   }
-  
+
+
+   export const fechaHoraFormato = (date: string) => {
+      return date.slice(0, 16).replace('T', ' ');
+    };
 
   export const formatDate = (date: Date) => {
     const fecha = dayjs(date).add(6, 'hour').format('DD/MM/YYYY');

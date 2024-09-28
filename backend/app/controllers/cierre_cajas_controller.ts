@@ -1,6 +1,6 @@
 import type { HttpContext } from '@adonisjs/core/http'
 import CierreCaja from '#models/cierre_caja'
-
+import db from '@adonisjs/lucid/services/db'
 export default class CierreCajasController {
   async index({ response }: HttpContext) {
     const cierres = await CierreCaja.query().where('anulado', false).preload('arqueo')
@@ -10,7 +10,7 @@ export default class CierreCajasController {
   async store({ request, response }: HttpContext) {
     const data = request.only([
       'arqueoId',
-      'usuarioId',
+      'userId',
       'fecha',
       'montoSistema',
       'observaciones',
@@ -49,5 +49,27 @@ export default class CierreCajasController {
     cierre.anulado = request.input('anulado')
     await cierre.save()
     return response.status(200).json(cierre)
+  }
+
+  async transaccionesCierre({ params, response }: HttpContext) {
+    try {
+      const habitaciones = await db.rawQuery(`
+        SELECT * FROM transacciones_caja WHERE apertura_id= ${params.idApertura}
+      `)
+      response.status(200).json(habitaciones[0])
+    } catch (error) {
+      response.status(500).json({ message: 'Error fetching transacciones', error })
+    }
+  }
+
+  async encabezadoCierre({ params, response }: HttpContext) {
+    try {
+      const habitaciones = await db.rawQuery(`
+        SELECT id_apertura as idApertura,id_arqueo as idArqueo, usuario, fecha_apertura as fechaApertura, monto as montoApertura, monto_arqueo as montoArqueo, existe_cierre as existeCierre, observacionesCierre,aplicaCierre FROM cajas WHERE id_apertura= ${params.idApertura}
+      `)
+      response.status(200).json(habitaciones[0])
+    } catch (error) {
+      response.status(500).json({ message: 'Error fetching encabezado', error })
+    }
   }
 }

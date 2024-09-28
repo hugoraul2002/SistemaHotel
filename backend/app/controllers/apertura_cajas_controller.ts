@@ -2,13 +2,23 @@ import type { HttpContext } from '@adonisjs/core/http'
 import AperturaCaja from '#models/apertura_caja'
 import db from '@adonisjs/lucid/services/db'
 export default class AperturaCajasController {
-  async index({ response }: HttpContext) {
-    const aperturas = await AperturaCaja.query()
-      .where('anulado', false)
-      .preload('user')
-      .preload('arqueoCaja')
-    console.log(aperturas)
-    return response.status(200).json(aperturas)
+  async index({ request, response }: HttpContext) {
+    try {
+      const data = request.only(['userId', 'userRol'])
+      let aperturas = []
+
+      if (data.userRol === 'ADMIN') {
+        aperturas = await AperturaCaja.query().preload('user').preload('arqueoCaja')
+      } else {
+        aperturas = await AperturaCaja.query()
+          .where('userId', data.userId)
+          .preload('user')
+          .preload('arqueoCaja')
+      }
+      return response.status(200).json(aperturas)
+    } catch (error) {
+      response.status(500).json({ message: 'Error fetching aperturas de caja', error })
+    }
   }
 
   async aperturaActiva({ params, response }: HttpContext) {

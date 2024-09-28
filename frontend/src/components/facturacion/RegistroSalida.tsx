@@ -308,7 +308,7 @@ const RegistroSalida = () => {
                   const opcionPago: OpcionPago = {
                     id: 0,
                     aperturaId: mp.idApertura,
-                    tipoDocumento: 'V',
+                    tipoDocumento: 'FH',
                     documentoId: idFactura,
                     metodo: mp.metodo === 'EFECTIVO' ? 'EFE' : mp.metodo === 'TARJETA' ? 'TAR' : '',
                     monto: mp.monto,
@@ -448,7 +448,7 @@ const RegistroSalida = () => {
                 </Panel>
             </div>
             <Dialog maximizable visible={dialogVisible} onHide={() => setDialogVisible(false)} header="Buscar Producto" style={{ width: '60vw' }}>
-                <BusquedaProducto onProductSelect={handleProductSelect} /> {/* Pasar la función de selección al componente */}
+                <BusquedaProducto onProductSelect={handleProductSelect} /> 
             </Dialog>
             <FormRegistraFactura  mostrarToast={mostrarToast} cliente={ hospedaje ? {nit:hospedaje!.cliente?.numDocumento, nombre: hospedaje!.cliente?.nombre, direccion: hospedaje!.cliente?.direccion} : {nit: '', nombre: '', direccion: ''}} total={totalPagado} onSave={handleFacturar} visible={formFacturarVisible}  opcionesPago={metodosPago} setOpcionesPago={setMetodosPago} onHide={() => setFormFacturarVisible(false)}  />
         </div>

@@ -95,6 +95,19 @@ export interface ReporteGasto {
   usuario: string;
 }
 
+export interface TransaccionesCaja {
+  fecha: string; 
+  tipo: string;
+  razon: number;
+  documentoId: number;
+  totalEfectivo: number;
+  totalTarjeta: number;
+  totalTransferencia: number;
+  totalCheque: number;
+  total: number;
+  anulado: boolean;
+}
+
   export interface Reservacion {
     id: number;
     habitacion: Habitacion;
@@ -179,6 +192,18 @@ export interface ReporteGasto {
     monto: number;
     observaciones: string;
     anulado: boolean;
+  }
+
+  export interface EncabezadoCierre {
+    idApertura: number;
+    idArqueo: number;
+    usuario: string;
+    fechaApertura: string;
+    montoApertura: number;
+    montoArqueo: number;
+    observacionesCierre: string;
+    aplicaCierre: number;
+    existeCierre: boolean;
   }
 
   export interface TipoGasto{

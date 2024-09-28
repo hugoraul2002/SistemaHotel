@@ -170,7 +170,7 @@ router
 
 router
   .group(() => {
-    router.get('/', [AperturaCajasController, 'index'])
+    router.post('/', [AperturaCajasController, 'index'])
     router.post('/store', [AperturaCajasController, 'store'])
     router.get('/:id', [AperturaCajasController, 'show'])
     router.get('/activa/:id', [AperturaCajasController, 'aperturaActiva'])
@@ -195,6 +195,8 @@ router
     router.get('/', [CierreCajasController, 'index'])
     router.post('/store', [CierreCajasController, 'store'])
     router.get('/:id', [CierreCajasController, 'show'])
+    router.get('/transaccionesCierre/:idApertura', [CierreCajasController, 'transaccionesCierre'])
+    router.get('/encabezadoCierre/:idApertura', [CierreCajasController, 'encabezadoCierre'])
     router.put('/update/:id', [CierreCajasController, 'update'])
     router.put('/updateAnulado/:id', [CierreCajasController, 'updateAnulado'])
   })

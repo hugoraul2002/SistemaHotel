@@ -1,7 +1,7 @@
 import axios from 'axios';
-
+import {me} from './AuthService'
 const API_URL = 'http://localhost:3333/cierreCaja';
-
+import { formatDateTime } from '../helpers/formatDate';
 export class CierreCajaService {
   static async getAllCierres() {
     try {
@@ -18,9 +18,13 @@ export class CierreCajaService {
     }
   }
 
-  static async createCierre(cierreData: { arqueoId: number; usuarioId: number; fecha: string; montoSistema: number; observaciones: string; anulado: boolean }) {
+  static async createCierre(cierreData: any) {
     try {
       const token = localStorage.getItem('token');
+      const user = await me();
+
+      cierreData.userId = user.id;
+      cierreData.fecha = (new Date()).toISOString().slice(0, 19).replace('T', ' ');
       const response = await axios.post(`${API_URL}/store`, cierreData, {
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -45,6 +49,38 @@ export class CierreCajaService {
       return response.data;
     } catch (error) {
       console.error(`Error fetching cierre with id ${cierreId}:`, error);
+      throw error;
+    }
+  }
+
+  static async getEncabezadoCierre(idApertura: number) {
+    try {
+      const token = localStorage.getItem('token');
+      const response = await axios.get(`${API_URL}/encabezadoCierre/${idApertura}`, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+      console.log(response.data);
+      return response.data;
+    } catch (error) {
+      console.error(`Error fetching cierre with id ${idApertura}:`, error);
+      console.error(`Error fetching cierre with id ${idApertura}:`, error);
+      throw error;
+    }
+  }
+
+  static async getTransaccionesCierre(idApertura: number) {
+    try {
+      const token = localStorage.getItem('token');
+      const response = await axios.get(`${API_URL}/transaccionesCierre/${idApertura}`, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+      return response.data;
+    } catch (error) {
+      console.error(`Error fetching cierre with id ${idApertura}:`, error);
       throw error;
     }
   }

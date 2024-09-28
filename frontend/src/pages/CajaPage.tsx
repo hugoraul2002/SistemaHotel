@@ -15,12 +15,14 @@ import { AperturaCajaService } from '../services/AperturaCajaService';
 import { AperturaCaja, ArqueoCaja } from '../types/types';
 import { ArqueoCajaService } from '../services/ArqueoCajaService';
 import {formatDateTime} from '../helpers/formatDate';
+import { useNavigate } from 'react-router-dom';
 function CajaPage() {
     const [aperturasCaja, setAperturasCaja] = useState<AperturaCaja[]>([]);
     const [selectedApertura, setSelectedApertura] = useState<AperturaCaja | null>(null);
     const [dialogVisible, setDialogVisible] = useState(false);
     const [arqueoDialogVisible, setArqueoDialogVisible] = useState(false);
     const [loading, setLoading] = useState<boolean>(true);
+    const navigate = useNavigate();
     const [globalFilterValue, setGlobalFilterValue] = useState<string>('');
     const [filters, setFilters] = useState<DataTableFilterMeta>({
         global: { value: null, matchMode: FilterMatchMode.CONTAINS },
@@ -89,7 +91,7 @@ function CajaPage() {
 
     const confirmarAnulacion = (apertura: AperturaCaja) => {
         confirmDialog({
-            message: '¿Estás seguro de anular esta apertura?',
+            message: '¿Estás seguro de anular esta apertura? (Una vez anulada no podrá revertirla)',
             header: 'Confirmación',
             icon: 'pi pi-exclamation-triangle',
             defaultFocus: 'accept',
@@ -196,11 +198,14 @@ function CajaPage() {
         return (
             <div className="flex align-items-center justify-content-end gap-2">
                 <Button type="button" icon="pi pi-wallet" rounded data-pr-tooltip="Registrar Arqueo"
-                    onClick={() => handleArqueo(rowData)} disabled={!!rowData.arqueoCaja} />
+                    onClick={() => handleArqueo(rowData)} disabled={!!rowData.arqueoCaja || rowData.anulado} />
                 {user?.rol.nombre === "ADMIN" && (
                     <Button type="button" outlined icon="pi pi-trash" severity="danger" rounded data-pr-tooltip="Anular"
-                        onClick={() => confirmarAnulacion(rowData)} />
+                        onClick={() => confirmarAnulacion(rowData)} disabled={rowData.anulado} />
+                        
                 )}
+                <Button type="button" outlined icon="pi pi-eye" severity="secondary" rounded data-pr-tooltip="Cierre"
+                        onClick={() => navigate("/cierreCaja/" +rowData.id)} disabled={(user?.rol.nombre !== "ADMIN" && !rowData.anulado) || (user?.rol.nombre !== "ADMIN" && !rowData.arqueoCaja?.monto)}/>
             </div>
         );
     };
@@ -222,6 +227,7 @@ function CajaPage() {
                 <Column  field="fecha" body={(rowData: AperturaCaja) => formatDateTime(new Date(rowData.fecha))} header="Fecha Apertura" sortable style={{ flexGrow: 1, flexBasis: '20%' }} />
                 <Column field="observaciones" header="Observaciones" sortable style={{ flexGrow: 1, flexBasis: '20%' }} />
                 <Column field="arqueoCaja.monto" body={arqueoColumnTemplate} header="Arqueo de Caja" style={{ flexGrow: 1, flexBasis: '15%' }} />
+                <Column field="arqueoCaja.monto" body={(rowData: AperturaCaja) => rowData.anulado ? 'Anulada' : ''} header="Anulada" style={{ flexGrow: 1, flexBasis: '15%' }} />
                 <Column header="Acciones" body={actionBodyTemplate} exportable={false} style={{ flexGrow: 1, flexBasis: '15%', minWidth: '8rem' }} />
             </DataTable>
 

@@ -11,7 +11,7 @@ import { formatDate } from '../helpers/formatDate';
 import { IconField } from 'primereact/iconfield';
 import { InputIcon } from 'primereact/inputicon';
 import * as XLSX from 'xlsx';
-
+import getPDF from '../services/FacturacionFelService';
 const ReporteFacturasPage: React.FC = () => {
     const toast = useRef<Toast>(null);
     const [facturas, setFacturas] = useState<ReporteFactura[]>([]);
@@ -86,6 +86,27 @@ const ReporteFacturasPage: React.FC = () => {
         );
     };
 
+    const downloadPDF = async (numFactura: string) => {
+        try {
+            await getPDF.getPDF(numFactura); // Llamada al servicio que descarga el PDF
+        } catch (error) {
+            toast.current?.show({ severity: 'error', detail: 'Error al descargar el PDF.', life: 3000 });
+            console.error('Error al descargar PDF:', error);
+        }
+    };
+
+    const pdfButtonTemplate = (rowData: ReporteFactura) => {
+        return (
+            <Button 
+                icon="pi pi-file-pdf" 
+                className="p-button-rounded p-button-danger" 
+                onClick={() => downloadPDF(rowData.numFactura)} 
+                tooltip="Descargar PDF"
+                tooltipOptions={{ position: 'top' }} 
+            />
+        );
+    };
+
     return (
         <div className="card">
             <Toast ref={toast} />
@@ -114,6 +135,7 @@ const ReporteFacturasPage: React.FC = () => {
                 <Column field="cliente" header="Cliente" sortable></Column>
                 <Column field="total" header="Total" sortable body={(rowData) => rowData.total.toFixed(2)}></Column>
                 <Column field="usuario" header="Usuario que registra" sortable></Column>
+                <Column body={pdfButtonTemplate} header="Descargar PDF"></Column>
             </DataTable>
         </div>
     );

@@ -91,6 +91,13 @@ const GastosPage: React.FC = () => {
     setEditingGastoId(null);
   };
 
+  const metodoMap = {
+    EFECTIVO: 'EFE',
+    TARJETA: 'TAR',
+    CHEQUE: 'CHE',
+    TRANSFERENCIA: 'TRA',
+  };
+
   const handleSaveGasto = async (gasto: Gasto, metodosPago: MetodoPago[]): Promise<void> => {
     try {
       if (isEditing && editingGastoId !== null) {
@@ -111,7 +118,7 @@ const GastosPage: React.FC = () => {
                 aperturaId: mp.idApertura,
                 tipoDocumento: 'FG',
                 documentoId: id,
-                metodo: mp.metodo === 'EFECTIVO' ? 'EFE' : mp.metodo === 'TARJETA' ? 'TAR' : '',
+                metodo: metodoMap[mp.metodo as keyof typeof metodoMap] || '',
                 monto: mp.monto,
                 fecha: new Date(),
               }

@@ -43,9 +43,16 @@ const GastoDialog: React.FC<GastoDialogProps> = ({ visible, id, editar, onHide, 
     const [metodosPago, setMetodosPago] = useState<MetodoPago[]>([
         { metodo: 'EFECTIVO', monto: 0 },
         { metodo: 'TARJETA', monto: 0 },
+        { metodo: 'TRANSFERENCIA', monto: 0 },
+        { metodo: 'CHEQUE', monto: 0 },
     ]);
     const stepperRef = useRef(null);
-
+    const metodoMap = {
+        EFE: 'EFECTIVO',
+        TAR: 'TARJETA',
+        CHE: 'CHEQUE',
+        TRA: 'TRANSFERENCIA',
+      };
     useEffect(() => {
         const fetchProveedores = async () => {
             try {
@@ -97,6 +104,8 @@ const GastoDialog: React.FC<GastoDialogProps> = ({ visible, id, editar, onHide, 
         setMetodosPago([
             { metodo: 'EFECTIVO', monto: 0 },
             { metodo: 'TARJETA', monto: 0 },
+            { metodo: 'TRANSFERENCIA', monto: 0 },
+            { metodo: 'CHEQUE', monto: 0 },
         ])
     }, [visible]);
 
@@ -119,7 +128,7 @@ const GastoDialog: React.FC<GastoDialogProps> = ({ visible, id, editar, onHide, 
                     if (response) {
                         const metodos: MetodoPago[] = response.map((metodo: any) => ({
                             idApertura: metodo.idApertura,
-                            metodo: metodo.metodo === 'EFECTIVO' ? 'EFECTIVO' : 'TARJETA',
+                            metodo:metodoMap[metodo.metodo as keyof typeof metodoMap] || '' ,
                             monto: metodo.monto,
                           }));
                           console.log("metodos del registro a editar",metodos);

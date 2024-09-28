@@ -9,7 +9,7 @@ import { RadioButton, RadioButtonChangeEvent } from 'primereact/radiobutton';
 
 interface RegistroPagoProps {
   monto: number;
-  tipoDocumento: 'R' | 'H' | 'FV' | 'FG';
+  tipoDocumento: 'R' | 'H' | 'FH' | 'FG';
   setOpcionesPago: React.Dispatch<React.SetStateAction<MetodoPago[]>>;
   onSave: () => void;
   mostrarToast: (detalle: string, tipo: "success" | "info" | "warn" | "error") => void;
@@ -33,10 +33,9 @@ const RegistroPago: React.FC<RegistroPagoProps> = ({ monto, tipoDocumento, setOp
         try {
           const apertura = await AperturaCajaService.getAperturaUsuario();
           if (apertura) {
-            console.log('apertura', apertura);
-            console.log('aperturaActiva', apertura.aperturaActiva);
             if (apertura.aperturaActiva) {
               setAperturaId(apertura.data.id_apertura);
+              setAplicaApertura('Caja');
               setTieneApertura(true);
             }
           }
@@ -93,7 +92,11 @@ const RegistroPago: React.FC<RegistroPagoProps> = ({ monto, tipoDocumento, setOp
       console.log('pagos', opcionesPago);
       const opciones_de_pago = opcionesPago
         .map(pago => {
-          pago.idApertura = aplicaApertura === 'Caja' ? aperturaId : null;
+          if (tipoDocumento == 'FH' && aplicaApertura == 'Caja' && aperturaId > 0) {
+            pago.idApertura = aperturaId;
+          } else{
+            pago.idApertura = aplicaApertura === 'Caja' ? aperturaId : null;
+          }
           return pago;
         })
       console.log('opciones_de_pago', opciones_de_pago);
@@ -108,8 +111,8 @@ const RegistroPago: React.FC<RegistroPagoProps> = ({ monto, tipoDocumento, setOp
         return 'Reservación';
       case 'H':
         return 'Hospedaje';
-      case 'FV':
-        return 'Venta';
+      case 'FH':
+        return 'Factura de Hospedaje';
       case 'FG':
         return 'Gasto';
       default:

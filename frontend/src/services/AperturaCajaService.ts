@@ -9,7 +9,8 @@ export class AperturaCajaService {
   static async getAllAperturas() {
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.get(`${API_URL}/`, {
+      const user = await me();
+      const response = await axios.post(`${API_URL}/`,{userId:user.id,userRol:user.rol.nombre} ,{
         headers: {
           'Authorization': `Bearer ${token}`
         }

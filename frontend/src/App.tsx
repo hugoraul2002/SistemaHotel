@@ -22,6 +22,7 @@ import CheckOutPage from './pages/CheckOutPage';
 import RegistroSalida from './components/facturacion/RegistroSalida';
 import ReporteFacturasPage from './pages/ReporteFacturacionPage';
 import ReporteGastosPage from './pages/ReporteGastos';
+import CierreCaja from './pages/CierreCajaPage';
 function App() {
   return (
     
@@ -49,6 +50,7 @@ function App() {
               <Route path="/registrosalida/:idHabitacion" element={<RegistroSalida />} />
               <Route path="/reporteFacturacion" element={<ReporteFacturasPage />} />
               <Route path="/reporteGastos" element={<ReporteGastosPage />} />
+              <Route path="/cierreCaja/:idApertura" element={<CierreCaja />} />
 
             </Route>
           </Route>

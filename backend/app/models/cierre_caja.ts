@@ -12,7 +12,7 @@ export default class CierreCaja extends BaseModel {
   declare arqueoId: number
 
   @column()
-  declare usuarioId: number
+  declare userId: number
 
   @column()
   declare fecha: DateTime

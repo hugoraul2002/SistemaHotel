@@ -374,7 +374,6 @@ export default class FacturacionFelController {
         TrnEFACECliDir: direccion.trim(),
       }
 
-      // Crear items de la factura
       const items: ItemFactura[] = detallesFactura.map((detalle, index) => ({
         TrnLiNum: index + 1,
         TrnArtCod: detalle.producto?.codigo,
@@ -388,11 +387,10 @@ export default class FacturacionFelController {
         TrnArtImpAdiUniGrav: 0,
       }))
 
-      // Crear el XML para la facturación
       const builder = new xml2js.Builder({ headless: true })
       const xmlDoc = builder.buildObject({
         stdTWS: {
-          $: { xmlns: 'FEL' }, // Especifica el espacio de nombres
+          $: { xmlns: 'FEL' },
           TrnEstNum: datosGenerales.TrnEstNum,
           TipTrnCod: datosGenerales.TipTrnCod,
           TrnNum: datosGenerales.TrnNum,

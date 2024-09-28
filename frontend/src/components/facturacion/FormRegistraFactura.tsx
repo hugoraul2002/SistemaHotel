@@ -125,7 +125,7 @@ const FormRegistraFactura: React.FC<FacturaDialogProps> = ({ visible, cliente, t
                 </StepperPanel>
 
                 <StepperPanel header="Métodos de Pago">
-                    <RegistroPago mostrarToast={mostrarToast} tipoDocumento="FV" monto={total} opcionesPago={opcionesPago} setOpcionesPago={setOpcionesPago}  editar={false} onSave={handleSave} />
+                    <RegistroPago mostrarToast={mostrarToast} tipoDocumento="FH" monto={total} opcionesPago={opcionesPago} setOpcionesPago={setOpcionesPago}  editar={false} onSave={handleSave} />
 
                     <div className="flex justify-content-start pt-3">
                         <Button label="Regresar" icon="pi pi-arrow-left" onClick={() =>  stepperRef.current.prevCallback()} />
