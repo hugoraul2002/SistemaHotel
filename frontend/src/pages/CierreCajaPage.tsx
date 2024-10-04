@@ -23,7 +23,7 @@ import { ConfirmDialog, confirmDialog } from 'primereact/confirmdialog';
 
 const CierreCaja: React.FC = () => {
     const op = useRef(null);
-    const toast = useRef(null);
+    const toast = useRef<Toast>(null);
     const [observaciones, setObservaciones] = useState<string>('');
     const [transacciones, setTransacciones] = useState<TransaccionesCaja[]>([]);
     const [loading, setLoading] = useState<boolean>(true);

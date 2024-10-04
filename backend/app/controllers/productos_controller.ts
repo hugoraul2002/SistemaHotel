@@ -1,5 +1,6 @@
 import type { HttpContext } from '@adonisjs/core/http'
 import Producto from '#models/producto'
+import HojaVidaProducto from '#models/hoja_vida_producto'
 export default class ProductosController {
   async index({ request, response }: HttpContext) {
     try {
@@ -24,6 +25,19 @@ export default class ProductosController {
     ])
     try {
       const producto = await Producto.create(data)
+      const userId = request.input('userId')
+      await HojaVidaProducto.create({
+        costo: data.costo,
+        productoId: producto.id,
+        fecha: data.fechaIngreso,
+        userId: userId,
+        tipo: 'IS',
+        movimientoId: producto.id,
+        existenciaAnterior: 0,
+        cantidad: data.existencia,
+        existenciaActual: data.existencia,
+        detalle: 'Ingreso al sistema',
+      })
       return response.created(producto)
     } catch (error) {
       return response.internalServerError({ message: 'Error creating product', error })
@@ -52,8 +66,26 @@ export default class ProductosController {
     ])
     try {
       const producto = await Producto.findOrFail(id)
+      const existenciaAnterior: number = producto.existencia
       producto.merge(data)
       await producto.save()
+
+      if (existenciaAnterior !== data.existencia) {
+        const userId = request.input('userId')
+        const fecha = request.input('fecha')
+        await HojaVidaProducto.create({
+          costo: data.costo,
+          productoId: producto.id,
+          fecha: fecha,
+          userId: userId,
+          tipo: 'AE',
+          movimientoId: producto.id,
+          existenciaAnterior: existenciaAnterior,
+          cantidad: Math.abs(data.existencia - existenciaAnterior),
+          existenciaActual: data.existencia,
+          detalle: 'Actualización de existencia',
+        })
+      }
       return response.ok(producto)
     } catch (error) {
       return response.internalServerError({ message: 'Error updating product', error })

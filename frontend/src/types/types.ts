@@ -76,12 +76,15 @@ export interface Usuario {
 }
 
 export interface ReporteFactura {
+  id: number;
   fecha: string; 
   numFactura: string;
   nit: string;
   cliente: string;
   total: number;
   usuario: string;
+  autorizacionFel : string;
+  anulado: number;
 }
 
 export interface ReporteGasto {
@@ -90,6 +93,8 @@ export interface ReporteGasto {
   total: number;
   efectivo: number;
   tarjeta: number;
+  transferencia: number;
+  cheque: number;
   proveedor: string;
   tipogasto: string;
   usuario: string;

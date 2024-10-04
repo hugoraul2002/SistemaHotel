@@ -160,7 +160,8 @@ const RegistroSalida = () => {
 
         try {
             // Usar el servicio para crear el nuevo registro
-            const response = await create(detalleHospedaje);
+            const observaciones='Consumo en hospedaje #' + hospedaje!.id + ' habitación "' + hospedaje!.habitacion!.nombre  + '", cliente ' + hospedaje!.cliente!.nombre 
+            const response = await create(detalleHospedaje,observaciones);
 
             if (response) {
                 const detalles = await getDetallesByHospedaje(hospedaje!.id);
@@ -181,13 +182,16 @@ const RegistroSalida = () => {
 
     const handleDeleteDetalle = async (detalleId: number) => {
         try {
-            const response = await deleteDetalle(detalleId);
+            const observaciones = 'Eliminación de consumo en hospedaje #' + hospedaje!.id + ' habitación "' + hospedaje!.habitacion!.nombre  + '", cliente ' + hospedaje!.cliente!.nombre;
+            const response = await deleteDetalle(detalleId, observaciones);
             if (response) {
                 const detalles = await getDetallesByHospedaje(hospedaje!.id);
-                if (detalles) {
-                    setServicioHospedaje(detalles.filter(d => d.servicio == true && d.id === 1));
-                    setDetallesHospedaje(detalles.filter(d =>  d.id !== 1));
-                }
+                if (detalles && detalles.length > 0) {
+                    // Asignar el primer elemento a servicioHospedaje
+                    setServicioHospedaje([detalles[0]]);                         
+                    // Asignar el resto de los elementos a detallesHospedaje
+                    setDetallesHospedaje(detalles.slice(1));
+                }        
             }
         } catch (error) {
             console.error('Error al eliminar detalle:', error);

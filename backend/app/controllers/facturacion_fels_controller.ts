@@ -12,6 +12,9 @@ import { DateTime } from 'luxon'
 import { fileURLToPath } from 'node:url'
 import { dirname } from 'node:path'
 import Habitacion from '#models/habitacion'
+import BitacoraAnulacion from '#models/bitacora_anulacion'
+import Producto from '#models/producto'
+import HojaVidaProducto from '#models/hoja_vida_producto'
 
 // eslint-disable-next-line @typescript-eslint/naming-convention
 const __filename = fileURLToPath(import.meta.url)
@@ -33,24 +36,17 @@ interface ItemFactura {
 export default class FacturacionFelController {
   private wsdlUrlConsultaNIT: string | undefined = env.get('wsdlUrlConsultaNIT')
   private wsdUrlFactura: string | undefined = env.get('wsdUrlFactura')
+  private wsdUrlAnulacion: string | undefined = env.get('wsdUrlAnulacion')
   private cliente: string | undefined = env.get('CLIENTE_FEL')
   private usuario: string | undefined = env.get('USUARIO_FEL')
   private clave: string | undefined = env.get('CLAVE_FEL')
   private numEstablecimiento: string | undefined = env.get('ESTABLECIMIENTO_FEL')
   async consultarNIT({ params, response }: HttpContext) {
-    // const { cliente, usuario, clave, receptorId } = request.only([
-    //   'cliente',
-    //   'usuario',
-    //   'clave',
-    //   'receptorId',
-    // ])
     const receptorId = params.nit
 
     try {
-      // Crear el cliente SOAP
       const soapClient = await soap.createClientAsync(this.wsdlUrlConsultaNIT!)
 
-      // Definir los parámetros que se enviarán en la petición
       const args = {
         Cliente: this.cliente,
         Usuario: this.usuario,
@@ -58,7 +54,6 @@ export default class FacturacionFelController {
         Receptorid: receptorId,
       }
 
-      // Ejecutar la función SOAP usando Promesas
       const resultado: any = await new Promise((resolve, reject) => {
         soapClient.ReceptorInfo.ReceptorInfoSoapPort.Execute(args, (err: any, result: any) => {
           if (err) {
@@ -231,7 +226,6 @@ export default class FacturacionFelController {
       const resultado: any = await new Promise((resolve, reject) => {
         soapClient.Documento.DocumentoSoapPort.Execute(args, (err: any, result: any) => {
           if (err) {
-            console.log(err)
             reject(err)
           } else {
             resolve(result)
@@ -302,21 +296,6 @@ export default class FacturacionFelController {
       }
 
       const numFactura = await Factura.getNextNumFactura()
-      const dataFactura = {
-        hospedajeId: hospedajeId,
-        nit: nit,
-        numFactura: numFactura,
-        userId: usuarioId,
-        nombreFacturado: nombre,
-        direccionFacturado: direccion,
-        total: total,
-        fechaRegistro: fecha,
-        anulado: false,
-      }
-
-      const fechaRegistroFEL = DateTime.fromFormat(fecha, 'dd/MM/yyyy HH:mm:ss').toFormat(
-        'yyyy-MM-dd'
-      )
 
       // Crear factura
       const factura = await Factura.create({
@@ -352,7 +331,6 @@ export default class FacturacionFelController {
         await hospedaje.save()
         const habitacion = await Habitacion.query().where('id', hospedaje.habitacionId).first()
         if (habitacion) {
-          console.log(habitacion)
           habitacion.estado = 'D'
           await habitacion.save()
         }
@@ -430,7 +408,6 @@ export default class FacturacionFelController {
         })
       }
     } catch (error) {
-      console.log(error)
       return response.status(500).json({
         success: false,
         message: 'Error al registrar la facturación',
@@ -477,10 +454,120 @@ export default class FacturacionFelController {
       response.header('Content-Disposition', `attachment; filename="Factura_${numFactura}.pdf"`)
       return response.send(pdfBuffer)
     } catch (error) {
-      console.error('Error al extraer el PDF del XML:', error)
       return response.status(500).json({
         success: false,
         message: 'Error al procesar el archivo XML',
+        error: error.message,
+      })
+    }
+  }
+
+  async anularFactura({ request, response }: HttpContext) {
+    const data = request.only([
+      'idFactura',
+      'numAutorizacion',
+      'motivoAnulacion',
+      'idUsuario',
+      'fechaAnulacion',
+    ])
+
+    try {
+      const soapClient = await soap.createClientAsync(this.wsdUrlAnulacion!)
+
+      const args = {
+        Cliente: this.cliente,
+        Usuario: this.usuario,
+        Clave: this.clave,
+        Nitemisor: this.cliente,
+        Numautorizacionuuid: data.numAutorizacion,
+        Motivoanulacion: data.motivoAnulacion,
+      }
+      const resultado: any = await new Promise((resolve, reject) => {
+        soapClient.Anulacion.AnulacionSoapPort.Execute(args, (err: any, result: any) => {
+          if (err) {
+            reject(err)
+          } else {
+            resolve(result)
+          }
+        })
+      })
+      // Extraer la cadena XML contenida en el resultado
+      const xml = resultado?.Respuesta
+
+      if (!xml) {
+        return response.status(500).json({
+          success: false,
+          message: 'No se recibió información válida desde el servicio SOAP',
+        })
+      }
+
+      // Usar xml2js para convertir el XML a JSON
+      const parser = new xml2js.Parser()
+      const parsedResult = await parser.parseStringPromise(xml)
+
+      // Extraer los campos NIT, NOMBRE y DIRECCION
+      const receptorInfo = parsedResult?.DTE
+      if (!receptorInfo) {
+        const errores = parsedResult?.Errores
+        const error = errores?.Error?.[0]
+        return response.status(200).json({
+          success: false,
+          error: error['_'],
+          codigoError: error['$']['Codigo'],
+        })
+      }
+
+      const factura = await Factura.findOrFail(data.idFactura)
+      factura.anulado = true
+      factura.save()
+
+      await BitacoraAnulacion.create({
+        facturaId: data.idFactura,
+        userId: data.idUsuario,
+        motivo: data.motivoAnulacion,
+        fecha: data.fechaAnulacion,
+      })
+
+      // logica para regresar productos al inventario al anular
+      const detalles: DetalleFactura[] = await DetalleFactura.query().where(
+        'facturaId',
+        data.idFactura
+      )
+
+      for (const detalle of detalles) {
+        const producto = await Producto.findOrFail(detalle.productoId)
+        if (!producto.esServicio) {
+          const existenciaAnterior = producto.existencia
+          producto.existencia += detalle.cantidad
+          await producto.save()
+
+          await HojaVidaProducto.create({
+            costo: detalle.costo,
+            userId: data.idUsuario,
+            productoId: producto.id,
+            existenciaAnterior: existenciaAnterior,
+            cantidad: detalle.cantidad,
+            existenciaActual: existenciaAnterior + detalle.cantidad,
+            fecha: data.fechaAnulacion,
+            tipo: 'AFH',
+            movimientoId: data.idFactura,
+            detalle:
+              'Anulación de factura ' + factura.numFactura + ' por motivo: ' + data.motivoAnulacion,
+          })
+        }
+      }
+
+      // Retornar la respuesta con los datos extraídos
+      return response.status(200).json({
+        success: true,
+        data: {
+          mensaje: 'Factura anulada',
+        },
+      })
+    } catch (error) {
+      return response.status(500).json({
+        success: false,
+        message: 'Error al consumir el servicio SOAP',
         error: error.message,
       })
     }

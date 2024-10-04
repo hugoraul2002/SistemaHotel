@@ -251,7 +251,7 @@ const RegistrarHospedaje: React.FC = () => {
               <InputText defaultValue={0} type='number' id="total" value={total.toString()} />
             </div>
             <div className="flex flex-row justify-end space-x-2 mt-3">
-              <Button label="Registrar" icon="pi pi-save" className="p-button-success" disabled={submmiting} onClick={handleRegister} />
+              <Button label="Registrar" icon="pi pi-save" className="p-button-success" onClick={handleRegister} />
               <Button label="Cancelar" icon="pi pi-times" className="p-button-secondary" onClick={() => navigate(-1)} />
             </div>
           </Panel>

@@ -9,6 +9,8 @@ import { GastoService } from '../services/GastoService'; // Suponiendo que tiene
 import { ReporteGasto } from '../types/types';
 import * as XLSX from 'xlsx';
 import { formatDate } from '../helpers/formatDate';
+import { ColumnGroup } from 'primereact/columngroup';
+import { Row } from 'primereact/row';
 
 const ReporteGastosPage: React.FC = () => {
     const toast = useRef<Toast>(null);
@@ -89,6 +91,30 @@ const ReporteGastosPage: React.FC = () => {
         );
     };
 
+    // Calcular los totales
+    const totalGastos = gastos.reduce((acc, gasto) => acc + (gasto.total || 0), 0);
+    const totalEfectivo = gastos.reduce((acc, gasto) => acc + (gasto.efectivo || 0), 0);
+    const totalTarjeta = gastos.reduce((acc, gasto) => acc + (gasto.tarjeta || 0), 0);
+    const totalTransferencia = gastos.reduce((acc, gasto) => acc + (gasto.transferencia || 0), 0);
+    const totalCheque = gastos.reduce((acc, gasto) => acc + (gasto.cheque || 0), 0);
+
+    const footerGroup = (
+        <ColumnGroup>
+            <Row>
+                <Column footer="Totales:" colSpan={2} footerStyle={{ textAlign: 'right' }} />
+            
+                <Column footer={'Q ' + totalEfectivo} footerStyle={{ textAlign: 'center' }} />
+                <Column footer={'Q ' + totalTarjeta} footerStyle={{ textAlign: 'center' }} />
+                <Column footer={'Q ' + totalTransferencia} footerStyle={{ textAlign: 'center' }} />
+                <Column footer={'Q ' + totalCheque} footerStyle={{ textAlign: 'center' }} />
+                <Column footer={'Q ' + totalGastos} footerStyle={{ textAlign: 'center' }} />
+                <Column footer={''} />
+                <Column footer={''} />
+                <Column footer={''} />
+            </Row>
+        </ColumnGroup>
+    );
+
     return (
         <div className="card">
             <Toast ref={toast} />
@@ -110,11 +136,13 @@ const ReporteGastosPage: React.FC = () => {
                 <Button label="Generar Reporte" icon="pi pi-file" onClick={handleGenerarReporte} />
             </div>
             <DataTable value={gastos} paginator rows={10} loading={loading} dataKey="fecha"
-                globalFilter={globalFilterValue} header={renderHeader()} emptyMessage="No se encontraron gastos.">
+                globalFilter={globalFilterValue} header={renderHeader()} emptyMessage="No se encontraron gastos." footerColumnGroup={footerGroup} size='small'>
                 <Column field="fecha" body={(rowData: ReporteGasto) => formatDate(new Date(rowData.fecha))} header="Fecha" sortable></Column>
                 <Column field="gasto" header="Gasto" sortable></Column>
-                <Column field="efectivo" header="Efectivo" body={(rowData) => (rowData.efectivo ? rowData.efectivo.toFixed(2) : '0.00')} sortable></Column>
-                <Column field="tarjeta" header="Tarjeta" body={(rowData) => (rowData.tarjeta ? rowData.tarjeta.toFixed(2) : '0.00')} sortable></Column>
+                <Column field="efectivo" header="Efectivo" body={(rowData) => (rowData.efectivo ? rowData.efectivo.toFixed(2) : '0.00')} sortable style={{ textAlign: 'center' }}></Column>
+                <Column field="tarjeta" header="Tarjeta" body={(rowData) => (rowData.tarjeta ? rowData.tarjeta.toFixed(2) : '0.00')} sortable style={{ textAlign: 'center' }}></Column>
+                <Column field="transferencia" header="Transferencia" body={(rowData) => (rowData.transferencia ? rowData.transferencia.toFixed(2) : '0.00')} sortable style={{ textAlign: 'center' }}></Column>
+                <Column field="cheque" header="Cheque" body={(rowData) => (rowData.cheque ? rowData.cheque.toFixed(2) : '0.00')} sortable style={{ textAlign: 'center' }}></Column>
                 <Column field="total" header="Total" body={(rowData) => (rowData.total ? rowData.total.toFixed(2) : '0.00')} sortable></Column>
 
                 <Column field="proveedor" header="Proveedor" sortable></Column>

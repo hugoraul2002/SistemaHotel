@@ -1,7 +1,6 @@
 import axios from 'axios';
 import {me} from './AuthService'
 const API_URL = 'http://localhost:3333/cierreCaja';
-import { formatDateTime } from '../helpers/formatDate';
 export class CierreCajaService {
   static async getAllCierres() {
     try {

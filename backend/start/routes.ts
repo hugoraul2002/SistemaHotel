@@ -152,7 +152,7 @@ router
     router.get('/:id', [DetalleHospedaje, 'show'])
     router.get('/hospedaje/:id', [DetalleHospedaje, 'detallesByIdHospedaje'])
     router.put('/update/:id', [DetalleHospedaje, 'update'])
-    router.delete('/:id', [DetalleHospedaje, 'destroy'])
+    router.post('/delete', [DetalleHospedaje, 'destroy'])
   })
   .prefix('detalleHospedajes')
   .use(middleware.auth())
@@ -242,7 +242,8 @@ router
     router.get('/consultaNit/:nit', [FacturacionFelController, 'consultarNIT'])
     router.get('/extraerPDF/:numFactura', [FacturacionFelController, 'extraerPDF'])
     router.post('/facturar/', [FacturacionFelController, 'facturar'])
-    router.post('/facturarHospedaje/', [FacturacionFelController, 'registraFacturaFromHospedaje'])
+    router.post('/facturarHospedaje/', [FacturacionFelController, 'registraFacturaFromHospedaje']),
+      router.post('/anularFactura/', [FacturacionFelController, 'anularFactura'])
   })
   .prefix('fel')
   .use(middleware.auth())
@@ -250,6 +251,7 @@ router
 router
   .group(() => {
     router.post('/reporteFactura/', [FacturasController, 'reporteFactura'])
+    router.post('/anularFactura/', [FacturasController, 'updateAnulado'])
   })
   .prefix('facturas')
   .use(middleware.auth())

@@ -1,5 +1,5 @@
 import axios from 'axios';
-import {  formatDateTimeFormat2 } from '../helpers/formatDate';
+import {  fechaActual, formatDateTimeFormat2 } from '../helpers/formatDate';
 import {me} from '../services/AuthService';
 const API_URL = 'http://localhost:3333/fel';
 
@@ -85,6 +85,23 @@ const getPDF = async (numFactura: string) => {
     } catch (error) {
       console.error('Error fetching PDF:', error);
     }
-}
+  }
 
-export default {consultaNit , facturar , facturarHospedaje, reporteFactura, getPDF}
+    const  anularFacturaFel = async (data: any) => {
+      try {
+          const user = await me();
+          data = {...data, fechaAnulacion:fechaActual(),idUsuario:user.id};
+          console.log(data);
+          const token = localStorage.getItem('token');
+          const response = await axios.post(`${API_URL}/anularFactura/`,data,{
+              headers: { 'Authorization': `Bearer ${token}` }
+          });
+          return response.data;
+      } catch (error) {
+        console.log(error);
+        console.error('Error fetching users:', error);
+      }
+  }
+
+
+export default {consultaNit , facturar , facturarHospedaje, reporteFactura, getPDF, anularFacturaFel}
