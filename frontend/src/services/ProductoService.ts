@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { Producto } from '../types/types';
-import dayjs from 'dayjs';
+
 import { me } from './AuthService';
 import { fechaActual } from '../helpers/formatDate';
 const API_URL = 'http://localhost:3333/productos';
@@ -16,7 +16,16 @@ export class ProductoService {
             throw error;
         }
     }
-
+    static async getRegistrosDropDown() {
+        try {
+            const token = localStorage.getItem('token');
+            const response = await axios.get(API_URL+"/getRegistrosDropDown", { headers: { 'Authorization': `Bearer ${token}` } });
+            return response.data;
+        } catch (error) {
+            console.error('Error fetching products:', error);
+            throw error;
+        }
+    }
     static async getProductoById(id: number) {
         try {
             const token = localStorage.getItem('token');
@@ -37,7 +46,6 @@ export class ProductoService {
                 fechaIngreso: fechaActual(),
                 userId: user.id
             }
-            console.log(newProducto);
             const response = await axios.post(API_URL+"/store", newProducto,
                 { headers: { 'Authorization': `Bearer ${token}` } }
             );
@@ -69,6 +77,20 @@ export class ProductoService {
             return response.data;
         } catch (error) {
             console.error('Error updating product:', error);
+            throw error;
+        }
+    }
+
+    static async reporteHojaVida(data: any) {
+        const token = localStorage.getItem('token');
+        console.log('data', data);
+        try {
+            const response = await axios.post(API_URL+"/reporteHojaVida", data,
+                { headers: { 'Authorization': `Bearer ${token}` } }
+            );
+            return response.data;
+        } catch (error) {
+            console.error('Error querying product:', error);
             throw error;
         }
     }

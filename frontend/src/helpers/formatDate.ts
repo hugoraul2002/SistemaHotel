@@ -6,7 +6,7 @@ export const formatDateTime = (date: Date) => {
   };
 
   export const  formatDateTimeFormat2 = (date: Date) => {
-    const fecha = dayjs(date).format('YYYY-MM-DD HH:mm:ss');
+    const fecha = dayjs(date).add(6, 'hour').format('YYYY-MM-DD  HH:mm');
     return fecha
     
   }

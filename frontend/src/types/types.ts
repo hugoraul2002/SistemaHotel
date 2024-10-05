@@ -100,6 +100,17 @@ export interface ReporteGasto {
   usuario: string;
 }
 
+export interface ReporteHojaVida {
+  fecha: string;
+  tipo: string;
+  existenciaAnterior: number;
+  cantidad: number;
+  existenciaActual: number;
+  detalle: string;
+  usuario: string;
+  costo: number;
+}
+
 export interface TransaccionesCaja {
   fecha: string; 
   tipo: string;

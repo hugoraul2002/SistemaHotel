@@ -5,6 +5,17 @@ import BitacoraAnulacion from '#models/bitacora_anulacion'
 import DetalleFactura from '#models/detalle_factura'
 import Producto from '#models/producto'
 import HojaVidaProducto from '#models/hoja_vida_producto'
+import PDFDocument from 'pdfkit'
+import fs from 'node:fs'
+interface Empresa {
+  nombreComercial: string
+  nombreJuridico: string
+  nit: string
+  direccion: string
+  telefono: string
+  regimenISR: string
+}
+
 export default class FacturasController {
   async index({ response }: HttpContext) {
     try {
@@ -49,6 +60,78 @@ export default class FacturasController {
       return response.ok(factura)
     } catch (error) {
       return response.internalServerError({ message: 'Error fetching factura', error })
+    }
+  }
+
+  async generarTicket({ params, response }: HttpContext) {
+    const { id } = params
+    const empresaData: Empresa = {
+      nombreComercial: 'HOTEL MARGARITA',
+      nombreJuridico: 'Super Hotel S.A.',
+      nit: '123456789',
+      direccion: 'Av. Principal #123, Petén, Guatemala',
+      telefono: '4110-8778',
+      regimenISR: 'SUJETO A PAGOS TRIMESTRALES ISR',
+    }
+    try {
+      // Obtener factura y detalles
+      const factura = await Factura.findOrFail(id)
+      const detalleFactura = await DetalleFactura.query().where('facturaId', id).preload('producto')
+      console.log(detalleFactura)
+      // Crear nuevo documento PDF con tamaño 80mm de ancho
+      const doc = new PDFDocument({
+        size: [227, 841.89], // 227px ≈ 80mm, altura ajustable automáticamente
+        margins: { top: 10, bottom: 10, left: 10, right: 10 },
+      })
+
+      // Definir ruta para guardar el PDF temporalmente
+      const filePath = `./tickets/factura_${factura.id}.pdf`
+      doc.pipe(fs.createWriteStream(filePath))
+
+      // Añadir información de la empresa
+      doc.fontSize(10).text(empresaData.nombreComercial, { align: 'center' })
+      doc.text(`NIT: ${empresaData.nit}`, { align: 'center' })
+      doc.text(`Dirección: ${empresaData.direccion}`, { align: 'center' })
+      doc.text(`Teléfono: ${empresaData.telefono}`, { align: 'center' })
+      doc.text(`Regimen ISR: ${empresaData.regimenISR}`, { align: 'center' })
+      doc.moveDown()
+
+      doc.fontSize(9).text(`Serie: ${factura.serieFel}`, { align: 'center' })
+      doc.text(`DTE: ${factura.numeroFel}`, { align: 'center' })
+      doc.text(`Autorizacion: ${factura.autorizacionFel}`, { align: 'center' })
+      doc.moveDown()
+
+      // Añadir información del cliente
+      doc.text(`Cliente: ${factura.nombreFacturado}`)
+      doc.text(`NIT Cliente: ${factura.nit}`)
+      doc.text(`Dirección Cliente: ${factura.direccionFacturado}`)
+      doc.moveDown()
+
+      // Añadir detalles de la factura
+      doc.fontSize(8).text('Descripcion')
+      doc.text('Cant   P.Unit    Subtotal  Desc    Total')
+      detalleFactura.forEach((detalle) => {
+        doc.fontSize(8).text(detalle.producto.nombre) // Descripción en una línea
+        // Datos debajo de la descripción
+        doc.text(
+          `${detalle.cantidad}      Q${detalle.precioVenta.toFixed(2)}      Q${(detalle.cantidad * detalle.precioVenta).toFixed(2)}      Q${detalle.descuento.toFixed(2)}      Q${(detalle.cantidad * detalle.precioVenta - detalle.descuento).toFixed(2)}`,
+          { continued: false }
+        )
+        doc.moveDown(0.2)
+      })
+
+      // Total de la factura
+      doc.moveDown()
+      doc.fontSize(8.5).text(`Total: Q${factura.total.toFixed(2)}`, { align: 'right' })
+
+      // Finalizar y cerrar el documento PDF
+      doc.end()
+
+      // Retornar el PDF como respuesta
+      return response.download(filePath)
+    } catch (error) {
+      console.log(error)
+      return response.internalServerError({ message: 'Error generando el ticket', error })
     }
   }
 

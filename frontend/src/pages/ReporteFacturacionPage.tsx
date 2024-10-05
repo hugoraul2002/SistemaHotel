@@ -5,7 +5,7 @@ import { Button } from 'primereact/button';
 import { InputText } from 'primereact/inputtext';
 import { Toast } from 'primereact/toast';
 import { Calendar } from 'primereact/calendar';
-import { reporteFactura } from '../services/FacturaService';
+import { getTicketFactura, reporteFactura } from '../services/FacturaService';
 import { ReporteFactura } from '../types/types';
 import { formatDate } from '../helpers/formatDate';
 import { IconField } from 'primereact/iconfield';
@@ -21,6 +21,7 @@ import { InputTextarea } from 'primereact/inputtextarea';
 import { OverlayPanel } from 'primereact/overlaypanel';
 import { ColumnGroup } from 'primereact/columngroup';
 import { Row } from 'primereact/row';
+import { InputSwitch } from 'primereact/inputswitch';
 const ReporteFacturasPage: React.FC = () => {
     const op = useRef(null);
     const toast = useRef<Toast>(null);
@@ -31,7 +32,7 @@ const ReporteFacturasPage: React.FC = () => {
     const [fechaInicio, setFechaInicio] = useState<Date | null>(new Date());
     const [fechaFin, setFechaFin] = useState<Date | null>(new Date());
     const [selectedRow, setSelectedRow] = useState<ReporteFactura | null>(null);
-
+    const [formatoTicket, setFormatoTicket] = useState(false);
     const fetchFacturas = async (data: { fechaInicio: string; fechaFin: string }) => {
         try {
             setLoading(true);
@@ -95,7 +96,10 @@ const ReporteFacturasPage: React.FC = () => {
             <div className="flex flex-col  justify-content-between align-items-center">
                 <div className="flex justify-between items-center w-full">
                     <h2 className="text-lg font-semibold mb-4 md:mb-0">Reporte de Facturas</h2>
+                    <div className="flex gap-2 items-center">
+                    <InputSwitch checked={formatoTicket} onChange={(e) => setFormatoTicket(e.value)} tooltip='Impresión en Ticket' tooltipOptions={{ position: 'top' }} />
                     <Button label='Exportar' severity='success' icon="pi pi-file-excel" onClick={exportToExcel} />
+                    </div>
                 </div>
                 <IconField iconPosition="left">
                     <InputIcon className="pi pi-search"> </InputIcon>
@@ -154,6 +158,14 @@ const ReporteFacturasPage: React.FC = () => {
         }
     };
 
+    const downloadTicketPDF = async (idFactura: number, numFactura: string) => {
+        try {
+            await getTicketFactura(idFactura, numFactura); // Llamada al servicio que descarga el PDF
+        } catch (error) {
+            toast.current?.show({ severity: 'error', detail: 'Error al descargar el PDF.', life: 3000 });
+            console.error('Error al descargar PDF:', error);
+        }
+    };
     const pdfButtonTemplate = (rowData: ReporteFactura) => {
         return (
             <div className='flex gap-1'>
@@ -161,7 +173,7 @@ const ReporteFacturasPage: React.FC = () => {
                     icon="pi pi-file-pdf"
                     className="p-button-rounded"
                     severity='danger'
-                    onClick={() => downloadPDF(rowData.numFactura)}
+                    onClick={() =>{ formatoTicket ? downloadTicketPDF(rowData.id, rowData.numFactura) : downloadPDF(rowData.numFactura)}}
                     tooltip="Descargar PDF"
                     disabled={rowData.anulado == 1 || rowData.autorizacionFel == null}
                     tooltipOptions={{ position: 'top' }}

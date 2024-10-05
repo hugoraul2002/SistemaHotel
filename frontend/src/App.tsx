@@ -23,6 +23,7 @@ import RegistroSalida from './components/facturacion/RegistroSalida';
 import ReporteFacturasPage from './pages/ReporteFacturacionPage';
 import ReporteGastosPage from './pages/ReporteGastos';
 import CierreCaja from './pages/CierreCajaPage';
+import ReporteHojaVidaPage from './pages/ReporteHojaVida';
 function App() {
   return (
     
@@ -51,6 +52,7 @@ function App() {
               <Route path="/reporteFacturacion" element={<ReporteFacturasPage />} />
               <Route path="/reporteGastos" element={<ReporteGastosPage />} />
               <Route path="/cierreCaja/:idApertura" element={<CierreCaja />} />
+              <Route path="/ReporteHojaVida" element={<ReporteHojaVidaPage />} />
 
             </Route>
           </Route>

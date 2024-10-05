@@ -9,7 +9,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { ClienteFactura, DetalleHospedaje, DetalleHospedajeFactura, Hospedaje, MetodoPago, OpcionPago, Producto } from '../../types/types';
 import { HospedajeService } from '../../services/HospedajeService';
 import { formatDateTime } from '../../helpers/formatDate';
-import { getDetallesByHospedaje, create,deleteDetalle } from '../../services/DetalleHospedajeService';
+import { getDetallesByHospedaje, create, deleteDetalle } from '../../services/DetalleHospedajeService';
 import { InputText } from 'primereact/inputtext';
 import { InputNumber } from 'primereact/inputnumber';
 import { Toolbar } from 'primereact/toolbar';
@@ -20,6 +20,8 @@ import { Toast } from 'primereact/toast';
 import facturarHospedaje from '../../services/FacturacionFelService';
 import getPDF from '../../services/FacturacionFelService';
 import { createOpcionPago } from '../../services/OpcionPagoService';
+import { getTicketFactura } from '../../services/FacturaService';
+import { Checkbox } from 'primereact/checkbox';
 const RegistroSalida = () => {
     const toast = useRef<Toast>(null);
     const navigate = useNavigate();
@@ -34,6 +36,7 @@ const RegistroSalida = () => {
     const [price, setPrice] = useState<number | null>(null);
     const [discount, setDiscount] = useState<number | null>(null);
     const [subtotal, setSubtotal] = useState<number | null>(null);
+    const [formatoTicket, setFormatoTicket] = useState(false);
     const [metodosPago, setMetodosPago] = useState<MetodoPago[]>([
         { metodo: 'EFECTIVO', monto: 0 },
         { metodo: 'TARJETA', monto: 0 },
@@ -53,17 +56,17 @@ const RegistroSalida = () => {
     const { totalSubtotales, totalPagado } = calcularTotales();
     const mostrarToast = (detalle: string, tipo: "success" | "info" | "warn" | "error") => {
         toast.current?.show({ severity: tipo, detail: detalle, life: 3000 });
-      };
-    
+    };
+
 
     const handleProductSelect = (product: Producto) => {
-        setSelectedProduct(product); 
-        setDescription(product.nombre); 
-        setPrice(product.precioVenta); 
-        setQuantity(1); 
-        setDiscount(0); 
-        setSubtotal(product.precioVenta); 
-        setDialogVisible(false); 
+        setSelectedProduct(product);
+        setDescription(product.nombre);
+        setPrice(product.precioVenta);
+        setQuantity(1);
+        setDiscount(0);
+        setSubtotal(product.precioVenta);
+        setDialogVisible(false);
     };
 
     useEffect(() => {
@@ -76,10 +79,10 @@ const RegistroSalida = () => {
                         const detalles = await getDetallesByHospedaje(response.id);
                         if (detalles && detalles.length > 0) {
                             // Asignar el primer elemento a servicioHospedaje
-                            setServicioHospedaje([detalles[0]]);                         
+                            setServicioHospedaje([detalles[0]]);
                             // Asignar el resto de los elementos a detallesHospedaje
                             setDetallesHospedaje(detalles.slice(1));
-                        }                
+                        }
                     }
                     console.log(response);
 
@@ -134,7 +137,7 @@ const RegistroSalida = () => {
         }
     };
     const handleAddProduct = async () => {
-        
+
         if (!selectedProduct) {
             mostrarToast('Debe seleccionar un producto', 'warn');
             return;
@@ -146,31 +149,31 @@ const RegistroSalida = () => {
             return;
         }
 
-       
+
         const detalleHospedaje: DetalleHospedaje = {
             id: 0, // Esto lo asigna la base de datos automáticamente
-            hospedajeId: hospedaje!.id, 
+            hospedajeId: hospedaje!.id,
             productoId: selectedProduct.id,
             cantidad: quantity!,
             costo: selectedProduct.costo,
             precioVenta: price!,
             descuento: discount || 0,
-            pagado: false 
+            pagado: false
         };
 
         try {
             // Usar el servicio para crear el nuevo registro
-            const observaciones='Consumo en hospedaje #' + hospedaje!.id + ' habitación "' + hospedaje!.habitacion!.nombre  + '", cliente ' + hospedaje!.cliente!.nombre 
-            const response = await create(detalleHospedaje,observaciones);
+            const observaciones = 'Consumo en hospedaje #' + hospedaje!.id + ' habitación "' + hospedaje!.habitacion!.nombre + '", cliente ' + hospedaje!.cliente!.nombre
+            const response = await create(detalleHospedaje, observaciones);
 
             if (response) {
                 const detalles = await getDetallesByHospedaje(hospedaje!.id);
                 if (detalles && detalles.length > 0) {
                     // Asignar el primer elemento a servicioHospedaje
-                    setServicioHospedaje([detalles[0]]);                         
+                    setServicioHospedaje([detalles[0]]);
                     // Asignar el resto de los elementos a detallesHospedaje
                     setDetallesHospedaje(detalles.slice(1));
-                }   
+                }
             }
 
             // Limpiar los campos
@@ -182,16 +185,16 @@ const RegistroSalida = () => {
 
     const handleDeleteDetalle = async (detalleId: number) => {
         try {
-            const observaciones = 'Eliminación de consumo en hospedaje #' + hospedaje!.id + ' habitación "' + hospedaje!.habitacion!.nombre  + '", cliente ' + hospedaje!.cliente!.nombre;
+            const observaciones = 'Eliminación de consumo en hospedaje #' + hospedaje!.id + ' habitación "' + hospedaje!.habitacion!.nombre + '", cliente ' + hospedaje!.cliente!.nombre;
             const response = await deleteDetalle(detalleId, observaciones);
             if (response) {
                 const detalles = await getDetallesByHospedaje(hospedaje!.id);
                 if (detalles && detalles.length > 0) {
                     // Asignar el primer elemento a servicioHospedaje
-                    setServicioHospedaje([detalles[0]]);                         
+                    setServicioHospedaje([detalles[0]]);
                     // Asignar el resto de los elementos a detallesHospedaje
                     setDetallesHospedaje(detalles.slice(1));
-                }        
+                }
             }
         } catch (error) {
             console.error('Error al eliminar detalle:', error);
@@ -285,56 +288,61 @@ const RegistroSalida = () => {
     );
     const handleFacturar = async (cliente: ClienteFactura) => {
         const data = {
-          hospedajeId: hospedaje!.id,
-          nit: cliente.nit,
-          nombre: cliente.nombre,
-          direccion: cliente.direccion,
+            hospedajeId: hospedaje!.id,
+            nit: cliente.nit,
+            nombre: cliente.nombre,
+            direccion: cliente.direccion,
         }
-      
+
         try {
-          const response = await facturarHospedaje.facturarHospedaje(data)
-      
-          if (response) {
-            console.log('response', response)
-            toast.current?.show({
-              severity: 'success',
-              summary: 'Facturación',
-              detail: 'Hospedaje facturado exitosamente',
-              life: 3000,
-            })
-      
-            const idFactura = response.numFactura
-      
-            // Registrar métodos de pago
-            await Promise.all(
-              metodosPago.map(async (mp) => {
-                if (mp.monto > 0) {
-                  const opcionPago: OpcionPago = {
-                    id: 0,
-                    aperturaId: mp.idApertura,
-                    tipoDocumento: 'FH',
-                    documentoId: idFactura,
-                    metodo: mp.metodo === 'EFECTIVO' ? 'EFE' : mp.metodo === 'TARJETA' ? 'TAR' : '',
-                    monto: mp.monto,
-                    fecha: new Date(),
-                  }
-                  await createOpcionPago(opcionPago)
+            const response = await facturarHospedaje.facturarHospedaje(data)
+
+            if (response) {
+                console.log('response', response)
+                toast.current?.show({
+                    severity: 'success',
+                    summary: 'Facturación',
+                    detail: 'Hospedaje facturado exitosamente',
+                    life: 3000,
+                })
+
+                const idFactura = response.numFactura
+
+                // Registrar métodos de pago
+                await Promise.all(
+                    metodosPago.map(async (mp) => {
+                        if (mp.monto > 0) {
+                            const opcionPago: OpcionPago = {
+                                id: 0,
+                                aperturaId: mp.idApertura,
+                                tipoDocumento: 'FH',
+                                documentoId: idFactura,
+                                metodo: mp.metodo === 'EFECTIVO' ? 'EFE' : mp.metodo === 'TARJETA' ? 'TAR' : '',
+                                monto: mp.monto,
+                                fecha: new Date(),
+                            }
+                            await createOpcionPago(opcionPago)
+                        }
+                    })
+                )
+
+                // Descargar el PDF de la factura
+                if (formatoTicket) {
+                    await getTicketFactura(response.id, response.numFactura)
+                } else {
+                    await getPDF.getPDF(idFactura)
                 }
-              })
-            )
-      
-            // Descargar el PDF de la factura
-            await getPDF.getPDF(idFactura)
-      
-            // Cerrar el formulario y redirigir al checkout
-            setFormFacturarVisible(false)
-            navigate('/checkout')
-          }
+                // Cerrar el formulario y redirigir al checkout
+                setFormFacturarVisible(false)
+                setTimeout(() => {
+                    navigate('/checkout')
+                }, 2000)
+            }
         } catch (error) {
-          console.error('Error al facturar hospedaje:', error)
+            console.error('Error al facturar hospedaje:', error)
         }
-      }
-      
+    }
+
     return (
         <div className="p-4 flex flex-col md:flex-row gap-4">
             <Toast ref={toast} />
@@ -446,15 +454,19 @@ const RegistroSalida = () => {
                     </div>
 
                     <div className="flex justify-end mt-4">
-                        <Button label="Facturar" className="p-button-primary mr-2" onClick={() => setFormFacturarVisible(true)}/>
-                        <Button label="Cancelar" className="p-button-secondary" onClick={() => navigate(-1)}/>
+                        <Button label="Facturar" className="p-button-primary mr-2" onClick={() => setFormFacturarVisible(true)} />
+                        <Button label="Cancelar" className="p-button-secondary" onClick={() => navigate(-1)} />
                     </div>
+                        <div className="card flex justify-content-center gap-1">
+                            <Checkbox onChange={e => setFormatoTicket(e.checked)} checked={formatoTicket}></Checkbox>
+                            <label className="p-checkbox-label">Impresión en Ticket</label>
+                        </div>
                 </Panel>
             </div>
             <Dialog maximizable visible={dialogVisible} onHide={() => setDialogVisible(false)} header="Buscar Producto" style={{ width: '60vw' }}>
-                <BusquedaProducto onProductSelect={handleProductSelect} /> 
+                <BusquedaProducto onProductSelect={handleProductSelect} />
             </Dialog>
-            <FormRegistraFactura  mostrarToast={mostrarToast} cliente={ hospedaje ? {nit:hospedaje!.cliente?.numDocumento, nombre: hospedaje!.cliente?.nombre, direccion: hospedaje!.cliente?.direccion} : {nit: '', nombre: '', direccion: ''}} total={totalPagado} onSave={handleFacturar} visible={formFacturarVisible}  opcionesPago={metodosPago} setOpcionesPago={setMetodosPago} onHide={() => setFormFacturarVisible(false)}  />
+            <FormRegistraFactura mostrarToast={mostrarToast} cliente={hospedaje ? { nit: hospedaje!.cliente?.numDocumento, nombre: hospedaje!.cliente?.nombre, direccion: hospedaje!.cliente?.direccion } : { nit: '', nombre: '', direccion: '' }} total={totalPagado} onSave={handleFacturar} visible={formFacturarVisible} opcionesPago={metodosPago} setOpcionesPago={setMetodosPago} onHide={() => setFormFacturarVisible(false)} />
         </div>
     );
 };

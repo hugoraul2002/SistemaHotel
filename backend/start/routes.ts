@@ -161,6 +161,8 @@ router
   .group(() => {
     router.post('/', [ProductosController, 'index']),
       router.post('/store', [ProductosController, 'store']),
+      router.get('/getRegistrosDropDown', [ProductosController, 'getRegistrosDropDown']),
+      router.post('/reporteHojaVida', [ProductosController, 'reporteHojaVida']),
       router.get('/:id', [ProductosController, 'show']),
       router.put('/update/:id', [ProductosController, 'update']),
       router.put('/updateActivo/:id', [ProductosController, 'updateActivo'])
@@ -250,6 +252,7 @@ router
 
 router
   .group(() => {
+    router.get('/generarTicket/:id', [FacturasController, 'generarTicket'])
     router.post('/reporteFactura/', [FacturasController, 'reporteFactura'])
     router.post('/anularFactura/', [FacturasController, 'updateAnulado'])
   })

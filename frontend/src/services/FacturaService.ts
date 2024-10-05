@@ -43,4 +43,50 @@ const anularFactura = async (data : any) => {
     }
 }
 
-export {reporteFactura , anularFactura}
+const getTicketFactura = async (idFactura: number, numFactura: string) => {
+    try {
+        console.log(idFactura, numFactura)
+      const token = localStorage.getItem('token');
+      
+      // Verifica que el token exista antes de hacer la solicitud
+      if (!token) {
+        throw new Error('No se encontró un token de autenticación.');
+      }
+  
+      // Realiza la solicitud al API para generar y descargar el ticket en formato PDF
+      const response = await axios.get(`${API_URL}/generarTicket/${idFactura}`, {
+        headers: { 
+          'Authorization': `Bearer ${token}`,
+        },
+        responseType: 'blob', // Para recibir el PDF en formato binario
+      });
+  
+      // Verifica si la respuesta contiene datos válidos
+      if (!response.data) {
+        throw new Error('No se recibió el archivo PDF.');
+      }
+  
+      // Crea un objeto Blob con los datos del PDF
+      const pdfBlob = new Blob([response.data], { type: 'application/pdf' });
+      const pdfURL = window.URL.createObjectURL(pdfBlob);
+  
+      // Crear un enlace dinámico para descargar o abrir el PDF
+      const link = document.createElement('a');
+      link.href = pdfURL;
+      link.setAttribute('download', `Factura_${numFactura}.pdf`); // Nombre del archivo PDF
+      document.body.appendChild(link);
+      link.click();
+  
+      // Elimina el enlace después de hacer clic
+      link.remove();
+  
+
+  
+    } catch (error) {
+      console.error('Error fetching PDF:', error);
+    }
+  };
+
+
+
+export {reporteFactura , anularFactura, getTicketFactura}

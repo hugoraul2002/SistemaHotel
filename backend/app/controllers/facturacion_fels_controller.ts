@@ -405,6 +405,7 @@ export default class FacturacionFelController {
           success: true,
           message: 'Facturación registrada exitosamente',
           numFactura: numFactura,
+          id: factura.id,
         })
       }
     } catch (error) {

@@ -1,11 +1,21 @@
 import type { HttpContext } from '@adonisjs/core/http'
 import Producto from '#models/producto'
 import HojaVidaProducto from '#models/hoja_vida_producto'
+import db from '@adonisjs/lucid/services/db'
 export default class ProductosController {
   async index({ request, response }: HttpContext) {
     try {
       const anulado = request.input('anulado', false)
       const productos = await Producto.query().where('anulado', anulado)
+      return response.ok(productos)
+    } catch (error) {
+      return response.internalServerError({ message: 'Error fetching products', error })
+    }
+  }
+
+  async getRegistrosDropDown({ response }: HttpContext) {
+    try {
+      const productos = await Producto.query().where('anulado', false).select('id', 'nombre')
       return response.ok(productos)
     } catch (error) {
       return response.internalServerError({ message: 'Error fetching products', error })
@@ -101,6 +111,23 @@ export default class ProductosController {
       return response.ok(producto)
     } catch (error) {
       return response.internalServerError({ message: 'Error updating product', error })
+    }
+  }
+
+  async reporteHojaVida({ request, response }: HttpContext) {
+    try {
+      const fechaInicio = request.input('fechaInicio')
+      const fechaFin = request.input('fechaFin')
+      const idProducto = request.input('productoId')
+      console.log(`
+        SELECT * FROM rpthojavida WHERE producto_id= ${idProducto} AND fecha >= '${fechaInicio}' AND fecha <= '${fechaFin}'
+      `)
+      const registros = await db.rawQuery(`
+        SELECT * FROM rpthojavida WHERE producto_id= ${idProducto} AND fecha >= '${fechaInicio}' AND fecha <= '${fechaFin}'
+      `)
+      response.status(200).json(registros[0])
+    } catch (error) {
+      return response.internalServerError({ message: 'Error fetching factura', error })
     }
   }
 }

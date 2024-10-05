@@ -11,6 +11,8 @@ import * as XLSX from 'xlsx';
 import { formatDate } from '../helpers/formatDate';
 import { ColumnGroup } from 'primereact/columngroup';
 import { Row } from 'primereact/row';
+import { IconField } from 'primereact/iconfield';
+import { InputIcon } from 'primereact/inputicon';
 
 const ReporteGastosPage: React.FC = () => {
     const toast = useRef<Toast>(null);
@@ -83,10 +85,10 @@ const ReporteGastosPage: React.FC = () => {
                     <h2 className="text-lg font-semibold mb-4 md:mb-0">Reporte de Gastos</h2>
                     <Button label='Exportar' severity='success' icon="pi pi-file-excel" onClick={exportToExcel} />
                 </div>
-                <span className="p-input-icon-left">
-                    <i className="pi pi-search" />
+                <IconField iconPosition="left">
+                    <InputIcon className="pi pi-search"> </InputIcon>
                     <InputText value={globalFilterValue} onChange={onGlobalFilterChange} placeholder="Buscar" />
-                </span>
+                </IconField>
             </div>
         );
     };
