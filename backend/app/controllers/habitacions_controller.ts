@@ -82,7 +82,7 @@ export default class HabitacionController {
     }
   }
 
-  async recepcion({ params, response }: HttpContext) {
+  async getHabitacionesRecepcion({ params, response }: HttpContext) {
     try {
       const habitaciones = await db.rawQuery(`
         SELECT habitaciones.id, habitaciones.nombre, obtener_estado_habitacion(habitaciones.id,NOW()) AS estado, obtenerInfoEstado(habitaciones.id,estado,NOW()) AS numMinutos, clases_habitaciones.nombre AS clase, habitaciones.tarifa
@@ -95,7 +95,7 @@ export default class HabitacionController {
     }
   }
 
-  async habitacionesSalidas({ params, response }: HttpContext) {
+  async gethabitacionesSalidas({ params, response }: HttpContext) {
     try {
       const habitaciones = await db.rawQuery(`
         SELECT habitaciones.id, habitaciones.nombre, obtener_estado_habitacion(habitaciones.id,NOW()) AS estado, obtenerInfoEstado(habitaciones.id,estado,NOW()) AS numMinutos, clases_habitaciones.nombre AS clase, habitaciones.tarifa

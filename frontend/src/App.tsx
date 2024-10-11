@@ -24,12 +24,16 @@ import ReporteFacturasPage from './pages/ReporteFacturacionPage';
 import ReporteGastosPage from './pages/ReporteGastos';
 import CierreCaja from './pages/CierreCajaPage';
 import ReporteHojaVidaPage from './pages/ReporteHojaVida';
+import InicioPage from './pages/WebPage/Home';
+import Reserva from './pages/WebPage/Reservar';
 function App() {
   return (
     
       <BrowserRouter>
         <Routes>
-          <Route path="/" element={<Login />} />
+          <Route path="/" element={<InicioPage />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/reservar" element={<Reserva />} />
           <Route path="/register" element={<Register />} />
           <Route element={<PrivateRoute />}>
             <Route element={<Layout />}>

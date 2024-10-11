@@ -118,8 +118,8 @@ router
 router
   .group(() => {
     router.get('/', [HabitacionsController, 'index'])
-    router.get('/recepcion/:id', [HabitacionsController, 'recepcion'])
-    router.get('/salidas/:id', [HabitacionsController, 'habitacionesSalidas'])
+    router.get('/recepcion/:id', [HabitacionsController, 'getHabitacionesRecepcion'])
+    router.get('/salidas/:id', [HabitacionsController, 'gethabitacionesSalidas'])
     router.get('/getReservacionProxima/:idHabitacion', [
       HabitacionsController,
       'getReservacionProxima',
