@@ -2,6 +2,7 @@ import type { HttpContext } from '@adonisjs/core/http'
 import Habitacion from '#models/habitacion'
 import { habitacionValidator } from '#validators/habitacion'
 import db from '@adonisjs/lucid/services/db'
+import { DateTime } from 'luxon'
 
 export default class HabitacionController {
   async index({ response }: HttpContext) {
@@ -125,6 +126,47 @@ export default class HabitacionController {
       response.status(200).json({ habitacion: habitacion, info: data[0][0] })
     } catch (error) {
       response.status(500).json({ message: 'Error fetching habitaciones', error })
+    }
+  }
+
+  async habitacionesDisponiblesReservaEnLinea({ request, response }: HttpContext) {
+    try {
+      const { claseHabitacionId, fechaInicio, fechaFin } = request.only([
+        'claseHabitacionId',
+        'fechaInicio',
+        'fechaFin',
+      ])
+
+      // Primero obtenemos todas las habitaciones que pertenecen a la clase de habitación proporcionada
+      const habitaciones = await Habitacion.query()
+        .where('clase_habitacion_id', claseHabitacionId)
+        .where('anulado', false) // Excluimos las habitaciones anuladas
+        .whereNotExists((reservacionQuery) => {
+          reservacionQuery
+            .from('reservaciones')
+            .where('reservaciones.anulado', false)
+            .whereRaw('reservaciones.habitacion_id = habitaciones.id')
+            .where((subquery) => {
+              // Verificar que la habitación no esté reservada en el rango de fechas
+              subquery
+                .whereBetween('reservaciones.fecha_inicio', [fechaInicio, fechaFin])
+                .orWhereBetween('reservaciones.fecha_fin', [fechaInicio, fechaFin])
+                .orWhere((innerQuery) => {
+                  // También incluir las reservas que abarcan completamente el rango proporcionado
+                  innerQuery
+                    .where('reservaciones.fecha_inicio', '<=', fechaInicio)
+                    .where('reservaciones.fecha_fin', '>=', fechaFin)
+                })
+            })
+        })
+        .preload('nivel')
+
+      return response.ok(habitaciones)
+    } catch (error) {
+      return response.internalServerError({
+        message: 'Error obteniendo habitaciones disponibles',
+        error,
+      })
     }
   }
 }

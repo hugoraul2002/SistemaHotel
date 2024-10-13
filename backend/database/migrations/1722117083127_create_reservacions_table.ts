@@ -14,7 +14,7 @@ export default class extends BaseSchema {
         .inTable('habitaciones')
         .notNullable()
       table.integer('cliente_id').unsigned().references('id').inTable('clientes').notNullable()
-      table.integer('user_id').unsigned().references('id').inTable('usuarios').notNullable()
+      table.integer('user_id').unsigned().references('id').inTable('usuarios').nullable()
       table.float('total').notNullable()
       table.string('estado', 255).notNullable()
       table.datetime('fecha_inicio').notNullable()

@@ -4,13 +4,13 @@ import img2 from '../../../src/assets/img/img2.png';
 import img3 from '../../../src/assets/img/img3.png';
 import img4 from '../../../src/assets/img/img4.png';
 import img5 from '../../../src/assets/img/img5.png';
-
+import { useNavigate } from 'react-router-dom';
 const images = [img1, img2, img3, img4, img5];
 
 export default function Component() {
     const [currentSlide, setCurrentSlide] = useState(0);
     const [isMenuOpen, setIsMenuOpen] = useState(false);
-
+    const navigate = useNavigate();
     useEffect(() => {
         const timer = setInterval(() => {
             setCurrentSlide((prevSlide) => (prevSlide + 1) % images.length);
@@ -42,8 +42,8 @@ export default function Component() {
                         </ul>
                     </nav>
                     <div className='flex gap-1'>
-                        <button className="md:bg-gray-500 text-white px-4 py-2 rounded text-sm">Reservar</button>
-                        <button className="text-gray-500 md:bg-gray-500 hover:text-white md:text-white px-4 py-2 rounded text-sm radius">Inicia sesión</button>
+                        <button className="md:bg-gray-500 text-white px-4 py-2 rounded text-sm" onClick={() => { console.log("hola reservar");navigate("/reservar")}}>Reservar</button>
+                        <button className="text-gray-500 md:bg-gray-500 hover:text-white md:text-white px-4 py-2 rounded text-sm radius"  onClick={() => navigate("/login")}>Inicia sesión</button>
                     </div>
                 </div>
             </header>

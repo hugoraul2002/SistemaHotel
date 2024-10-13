@@ -2,6 +2,8 @@ import axios from 'axios';
 import { Habitacion } from '../types/types';
 
 const API_URL = 'http://localhost:3333/habitaciones'; 
+const API_URL_2 = 'http://localhost:3333/reservacionOnline'; 
+
 
 export class HabitacionService {
     static async getAll() {
@@ -84,6 +86,19 @@ export class HabitacionService {
         }
         const response = await axios.post(`${API_URL}/store`, newData,{
             headers: { 'Authorization': `Bearer ${token}` ,
+            'Content-Type': 'application/json'} 
+        });
+        return response.data;
+        } catch (error) {
+        console.error('Error creating user:', error);
+        throw error;
+        }
+    }
+
+    static async getHabitacionesDisponibles(data: any) {
+        try {
+        const response = await axios.post(`${API_URL_2}/habitacionesDisponibles`, data,{
+            headers: { 
             'Content-Type': 'application/json'} 
         });
         return response.data;

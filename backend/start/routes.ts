@@ -9,6 +9,7 @@
 
 import router from '@adonisjs/core/services/router'
 import { middleware } from './kernel.js'
+const PagoTransaccionsController = () => import('#controllers/pago_transaccions_controller')
 const FacturasController = () => import('#controllers/facturas_controller')
 const ProductosController = () => import('#controllers/productos_controller')
 const DetalleHospedaje = () => import('#controllers/detalle_hospedajes_controller')
@@ -118,6 +119,7 @@ router
 router
   .group(() => {
     router.get('/', [HabitacionsController, 'index'])
+    router.get('/:id', [HabitacionsController, 'show'])
     router.get('/recepcion/:id', [HabitacionsController, 'getHabitacionesRecepcion'])
     router.get('/salidas/:id', [HabitacionsController, 'gethabitacionesSalidas'])
     router.get('/getReservacionProxima/:idHabitacion', [
@@ -125,7 +127,6 @@ router
       'getReservacionProxima',
     ])
     router.post('/store', [HabitacionsController, 'store'])
-    router.get('/:id', [HabitacionsController, 'show'])
     router.put('/update/:id', [HabitacionsController, 'update'])
     router.put('/updateAnulado/:id', [HabitacionsController, 'updateAnulado'])
     router.delete('/:id', [HabitacionsController, 'destroy'])
@@ -268,3 +269,17 @@ router
   })
   .prefix('opcionPago')
   .use(middleware.auth())
+
+router
+  .group(() => {
+    router.post('/habitacionesDisponibles', [
+      HabitacionsController,
+      'habitacionesDisponiblesReservaEnLinea',
+    ])
+    router.get('/clasesHabitacion', [ClaseHabitacionsController, 'index'])
+    router.post('/registrarCliente', [ClientesController, 'store'])
+    router.post('/registrarReservacion', [ReservacionsController, 'store'])
+    router.post('/registrarPago', [PagoTransaccionsController, 'store'])
+    router.put('/updatePago/:id', [PagoTransaccionsController, 'updateCheckoutId'])
+  })
+  .prefix('reservacionOnline')

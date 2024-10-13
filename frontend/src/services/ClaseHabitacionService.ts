@@ -1,5 +1,7 @@
 import axios from 'axios';
-const API_URL = 'http://localhost:3333/claseHabitacion'; 
+const API_URL = 'http://localhost:3333/claseHabitacion';
+const API_URL_2 = 'http://localhost:3333/reservacionOnline'; 
+
 
 export class ClaseHabitacionService {
   static async getAllClaseHabitaciones() {
@@ -10,6 +12,28 @@ export class ClaseHabitacionService {
           'Authorization': `Bearer ${token}`
         }
       });
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching clase habitaciones:', error);
+      throw error;
+    }
+  }
+
+  static async getClasesReservacion() {
+    try {
+      
+      const response = await axios.get(`${API_URL_2}/clasesHabitacion`);
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching clase habitaciones:', error);
+      throw error;
+    }
+  }
+
+  static async getClasesHabitaciones() {
+    try {
+      const response = await axios.get(`${API_URL}/habitaciones`
+      );
       return response.data;
     } catch (error) {
       console.error('Error fetching clase habitaciones:', error);

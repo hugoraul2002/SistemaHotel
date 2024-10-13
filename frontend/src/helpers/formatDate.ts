@@ -29,8 +29,7 @@ export const formatDateTime = (date: Date) => {
 
 
     export const fechaActual = () => {
-      const fecha = dayjs().subtract(6, 'hour').toISOString().slice(0, 19).replace('T', ' ');
-      const fechaAnulacion = (new Date()).toISOString().slice(0, 19).replace('T', ' ');
-      console.log(fecha,fechaAnulacion)
+      const fecha = dayjs().subtract(6, 'hour').toISOString().slice(0, 19).replace('T', ' ');    
+      console.log(fecha)
       return fecha;
     };

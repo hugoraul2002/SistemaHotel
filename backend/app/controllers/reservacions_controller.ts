@@ -63,6 +63,8 @@ export default class ReservacionesController {
 
       const existeConflicto = await Reservacion.query()
         .where('habitacionId', reservacionData.habitacionId)
+        .where('anulado', false)
+        .where('estado', '!=', 'pendiente')
         .where((query) => {
           query
             .whereBetween('fechaInicio', [reservacionData.fechaInicio, reservacionData.fechaFin])
@@ -89,6 +91,7 @@ export default class ReservacionesController {
 
       return response.created(reservacion)
     } catch (error) {
+      console.log(error)
       return response.internalServerError({ message: 'Error creating reservation', error })
     }
   }

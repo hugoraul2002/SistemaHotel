@@ -2,6 +2,7 @@ import axios from 'axios';
 import { Cliente } from '../types/types';
 
 const API_URL = 'http://localhost:3333/clientes'; 
+const API_URL_2 = 'http://localhost:3333/reservacionOnline';
 
 export class ClienteService {
     static async getAll(anulados:boolean) {
@@ -52,7 +53,23 @@ export class ClienteService {
         throw error;
         }
     }
-
+    static async createCliente(data: Cliente) {
+        try {
+        const newData = {
+            nombre: data.nombre,
+            tipo_documento: data.tipoDocumento,
+            num_documento: data.numeroDocumento,
+            telefono: data.telefono,
+            direccion: data.direccion,
+            activo:true
+        }
+        const response = await axios.post(`${API_URL_2}/registrarCliente`, newData);
+        return response.data;
+        } catch (error) {
+        console.error('Error creando cliente:', error);
+        throw error;
+        }
+    }
     static async update(id: number, data: Cliente) {
         try {
             const updateData = {
