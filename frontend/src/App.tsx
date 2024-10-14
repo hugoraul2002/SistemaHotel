@@ -26,6 +26,7 @@ import CierreCaja from './pages/CierreCajaPage';
 import ReporteHojaVidaPage from './pages/ReporteHojaVida';
 import InicioPage from './pages/WebPage/Home';
 import Reserva from './pages/WebPage/Reservar';
+import VerificacionPago from './pages/WebPage/VerificacionPago';
 function App() {
   return (
     
@@ -35,6 +36,7 @@ function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/reservar" element={<Reserva />} />
           <Route path="/register" element={<Register />} />
+          <Route path="/checkTransaction/:idHash" element={<VerificacionPago />} />
           <Route element={<PrivateRoute />}>
             <Route element={<Layout />}>
               <Route path="/inicio" element={<Dashboard />} />

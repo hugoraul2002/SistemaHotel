@@ -6,6 +6,9 @@ import { fechaActual } from '../helpers/formatDate';
 const CLAVE_SECRETA = 'sk_live_jbbm0z4KaDr7oDEKhMFj2UgQeCS2eVk9MopgPORZIcwBQ2UDsnedR7Dt8';
 const CLAVE_PUBLICA = 'pk_live_hCSavwsYtq3Hh1b1bAepNIYpDdQ9Do5sTRyJH0r5WmdQHVC4nMifZmJNM';
 const API_URL = 'http://localhost:3333/reservacionOnline';
+// Clave y vector de inicialización
+
+
 const registrarEnlacePago = async (habitacion: Habitacion, cliente: Cliente, idPago :number) => {
   try {
     // Construimos los datos para la petición
@@ -20,7 +23,7 @@ const registrarEnlacePago = async (habitacion: Habitacion, cliente: Cliente, idP
           quantity: 1  // Cantidad
         }
       ],
-      success_url: "http://localhost:5173/confirmaReservacion/" + idPago,  // URL de éxito
+      success_url: `http://localhost:5173/checkTransaction/${idPago}`,  // URL de éxito
       user_id: cliente.numeroDocumento,  // Documento del cliente como ID del usuario
       metadata: {
         cliente: cliente.nombre,
@@ -45,7 +48,8 @@ const registrarEnlacePago = async (habitacion: Habitacion, cliente: Cliente, idP
     console.log(data);
     // Realizar la petición
     const response = await axios(config);    
-    await axios.put(`${API_URL}/updatePago/${idPago}`, {checkoutId: response.data.id});
+    const safeIdHash = idPago.toString().replace(/\//g, '_').replace(/\+/g, '-');
+    await axios.put(`${API_URL}/updatePago/${safeIdHash}`, {checkoutId: response.data.id});
 
     return response.data;  // Devolvemos la respuesta (enlace de pago)
   } catch (error) {
@@ -108,6 +112,17 @@ const updateCheckoutId = async (checkoutId:number) => {
   }
 }
 
+const verificarTransaccion = async (data: {idHash:string}) => {
+  try {
+    const newData = {idHash:data.idHash, fechaPagado: fechaActual()}
+    const response = await axios.post(`${API_URL}/verificarTransaccion`, newData);
+    return response.data;
+  } catch (error) {
+    console.error('Error al verificar transacción:', error);
+    throw error;
+  }
+}
+
 const createReservacion = async (data: any) => {
   try {
 
@@ -148,4 +163,13 @@ const createReservacion = async (data: any) => {
   }
 }
 
-export { registrarEnlacePago, createCliente,createReservacion , createRegistroPago ,updateCheckoutId};
+// const encrypt = (text: string) => {
+//   const cipher = crypto.createCipheriv('aes-256-cbc', 'hotelmargarita', '');
+//   let encrypted = cipher.update(text, 'utf8', 'hex');
+//   encrypted += cipher.final('hex');
+//   return encrypted;
+// };
+
+
+
+export { registrarEnlacePago, createCliente,createReservacion , createRegistroPago ,updateCheckoutId, verificarTransaccion };

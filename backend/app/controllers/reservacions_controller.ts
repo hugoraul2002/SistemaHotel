@@ -5,6 +5,7 @@ export default class ReservacionesController {
   async index({ response }: HttpContext) {
     try {
       const reservaciones = await Reservacion.query()
+        // .where('estado', '!=', 'pendiente')
         .preload('habitacion', (habitacionQuery) => {
           habitacionQuery.preload('claseHabitacion')
         })

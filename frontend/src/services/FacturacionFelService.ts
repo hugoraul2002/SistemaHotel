@@ -61,16 +61,14 @@ const reporteFactura = async (data: any) => {
 const getPDF = async (numFactura: string) => {
     try {
       const token = localStorage.getItem('token');
-      
-      // Configura la solicitud para que el servidor devuelva un blob (binario)
+
       const response = await axios.get(`${API_URL}/extraerPDF/${numFactura}`, {
         headers: { 
           'Authorization': `Bearer ${token}`,
         },
-        responseType: 'blob', // Importante para recibir el PDF en formato binario
+        responseType: 'blob', 
       });
-  
-      // Crear un enlace para descargar el PDF
+
       const pdfBlob = new Blob([response.data], { type: 'application/pdf' });
       const pdfURL = window.URL.createObjectURL(pdfBlob);
       

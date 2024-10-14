@@ -5,7 +5,7 @@ import { Button } from 'primereact/button';
 import { InputText } from 'primereact/inputtext';
 import { Toast } from 'primereact/toast';
 import { Calendar } from 'primereact/calendar';
-import { GastoService } from '../services/GastoService'; // Suponiendo que tienes un servicio para obtener los datos
+import { GastoService } from '../services/GastoService'; 
 import { ReporteGasto } from '../types/types';
 import * as XLSX from 'xlsx';
 import { formatDate } from '../helpers/formatDate';

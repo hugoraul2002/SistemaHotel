@@ -281,5 +281,8 @@ router
     router.post('/registrarReservacion', [ReservacionsController, 'store'])
     router.post('/registrarPago', [PagoTransaccionsController, 'store'])
     router.put('/updatePago/:id', [PagoTransaccionsController, 'updateCheckoutId'])
+    router.post('/encriptar', [PagoTransaccionsController, 'encriptar'])
+    router.post('/desencriptar', [PagoTransaccionsController, 'desencriptar'])
+    router.post('/verificarTransaccion', [PagoTransaccionsController, 'verificarTransaccion'])
   })
   .prefix('reservacionOnline')

@@ -8,8 +8,6 @@ import { Calendar } from 'primereact/calendar';
 import * as XLSX from 'xlsx';
 import { Producto, ReporteHojaVida } from '../types/types';
 import { ProductoService } from '../services/ProductoService';
-import { ColumnGroup } from 'primereact/columngroup';
-import { Row } from 'primereact/row';
 import { IconField } from 'primereact/iconfield';
 import { InputIcon } from 'primereact/inputicon';
 import { Dropdown } from 'primereact/dropdown';

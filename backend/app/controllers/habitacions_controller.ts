@@ -2,7 +2,6 @@ import type { HttpContext } from '@adonisjs/core/http'
 import Habitacion from '#models/habitacion'
 import { habitacionValidator } from '#validators/habitacion'
 import db from '@adonisjs/lucid/services/db'
-import { DateTime } from 'luxon'
 
 export default class HabitacionController {
   async index({ response }: HttpContext) {
