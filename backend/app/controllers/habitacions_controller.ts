@@ -130,16 +130,18 @@ export default class HabitacionController {
 
   async habitacionesDisponiblesReservaEnLinea({ request, response }: HttpContext) {
     try {
-      const { claseHabitacionId, fechaInicio, fechaFin } = request.only([
+      const { claseHabitacionId, fechaInicio, fechaFin, numPersonas } = request.only([
         'claseHabitacionId',
         'fechaInicio',
         'fechaFin',
+        'numPersonas',
       ])
 
       // Primero obtenemos todas las habitaciones que pertenecen a la clase de habitación proporcionada
-      const habitaciones = await Habitacion.query()
+      const habitacionesDisponibles = await Habitacion.query()
         .where('clase_habitacion_id', claseHabitacionId)
         .where('anulado', false) // Excluimos las habitaciones anuladas
+        .where('numero_personas', '>=', numPersonas)
         .whereNotExists((reservacionQuery) => {
           reservacionQuery
             .from('reservaciones')
@@ -160,7 +162,31 @@ export default class HabitacionController {
         })
         .preload('nivel')
 
-      return response.ok(habitaciones)
+      const otrasHabitacionesDisponibles = await Habitacion.query()
+        .where('clase_habitacion_id', claseHabitacionId)
+        .where('anulado', false) // Excluimos las habitaciones anuladas
+        .where('numero_personas', '<', numPersonas)
+        .whereNotExists((reservacionQuery) => {
+          reservacionQuery
+            .from('reservaciones')
+            .where('reservaciones.anulado', false)
+            .whereRaw('reservaciones.habitacion_id = habitaciones.id')
+            .where((subquery) => {
+              // Verificar que la habitación no esté reservada en el rango de fechas
+              subquery
+                .whereBetween('reservaciones.fecha_inicio', [fechaInicio, fechaFin])
+                .orWhereBetween('reservaciones.fecha_fin', [fechaInicio, fechaFin])
+                .orWhere((innerQuery) => {
+                  // También incluir las reservas que abarcan completamente el rango proporcionado
+                  innerQuery
+                    .where('reservaciones.fecha_inicio', '<=', fechaInicio)
+                    .where('reservaciones.fecha_fin', '>=', fechaFin)
+                })
+            })
+        })
+        .preload('nivel')
+
+      return response.ok({ habitacionesDisponibles, otrasHabitacionesDisponibles })
     } catch (error) {
       return response.internalServerError({
         message: 'Error obteniendo habitaciones disponibles',

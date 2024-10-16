@@ -3,6 +3,7 @@ import PagoTransaccion from '#models/pago_transaccion'
 import env from '#start/env'
 import CryptoJS from 'crypto-js'
 import Reservacion from '#models/reservacion'
+import { messages } from '@vinejs/vine/defaults'
 export default class PagoTransaccionsController {
   private CLAVE_CRYPTO: string | undefined = env.get('CLAVE_CRYPTO')
   async store({ request, response }: HttpContext) {
@@ -48,8 +49,19 @@ export default class PagoTransaccionsController {
       const data = request.only(['idHash', 'fechaPagado'])
       const id = this.decryptIdPago(data.idHash)
 
+      // Verifica si la transacción ya fue verificada
+      const pago = await PagoTransaccion.find(id)
+
+      if (!pago) {
+        return response.status(200).json({ success: false, message: 'Registro no encontrado.' })
+      }
+
+      if (pago.estado === 'Pagado') {
+        return response
+          .status(200)
+          .json({ success: false, message: 'Pago anteriormente verificado.', pago })
+      }
       // Actualiza el estado de la transacción
-      const pago = await PagoTransaccion.findOrFail(id)
       pago.estado = 'Pagado'
       pago.fechaPagado = data.fechaPagado
       await pago.save()
@@ -63,8 +75,10 @@ export default class PagoTransaccionsController {
       await pago.load('reservacion')
       await pago.reservacion.load('habitacion')
       await pago.reservacion.load('cliente')
-      console.log(pago)
-      return response.status(200).json({ success: true, pago })
+
+      return response
+        .status(200)
+        .json({ success: true, message: 'Pago verificado correctamente.', pago })
     } catch (error) {
       console.log(error)
       return response.internalServerError({ message: 'Error updating payment', error })

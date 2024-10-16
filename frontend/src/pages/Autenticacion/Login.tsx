@@ -59,9 +59,10 @@ const LoginComponent: React.FC = () => {
         <div className="flex justify-center items-center min-h-screen bg-gray-100 ">
             <Toast ref={toast} />
             <div className="flex  rounded-lg shadow-lg overflow-hidden w-full max-w-4xl sm:h-full">
-                <div className="hidden lg:block lg:w-1/2 bg-cover" style={{ backgroundImage: `url(${imageUrl})` }}></div>
+                <div className="hidden lg:block lg:w-1/2 bg-cover" style={{ backgroundImage: `url(${imageUrl})` }}>
+                </div>
                 <Card className=" w-full p-8 lg:w-1/2 ">
-                    <h2 className="text-2xl font-semibold text-center mb-4">Hotel Margarita</h2>
+                    <h2 className="text-2xl font-semibold text-center mb-4">HOTEL MARGARITA</h2>
                     <form onSubmit={handleLogin}>
                         <div className="mt-4 flex items-center justify-between">
                             <span className="border-b w-1/5 lg:w-1/4"></span>
@@ -94,11 +95,11 @@ const LoginComponent: React.FC = () => {
                         <div className="mt-8">
                             <Button label="Iniciar sesión" className="w-full" severity='secondary' type="submit" />
                         </div>
-                        <div className="mt-4 flex items-center justify-between">
+                        {/* <div className="mt-4 flex items-center justify-between">
                             <span className="border-b w-1/5 md:w-1/4"></span>
                             <Button label="o registrate" className=" p-button-sm text-xs uppercase hover:bg-gray-500 hover:text-white" outlined severity='secondary' onClick={() => navigate('/register')} />
                             <span className="border-b w-1/5 md:w-1/4"></span>
-                        </div>
+                        </div> */}
                     </form>
                 </Card>
             </div>
