@@ -1,3 +1,7 @@
+export interface AuthModulo {
+  user: Usuario;
+  allowed: boolean;
+}
 export interface Usuario {
     id: number;
     full_name: string;

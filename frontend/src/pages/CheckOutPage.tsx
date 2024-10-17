@@ -1,16 +1,20 @@
 import { useEffect, useState } from 'react';
 import { HabitacionCard } from '../components/hospedajes/HabitacionCard';
 import { NivelService } from '../services/NivelService';
-import { Nivel, HabitacionRecepcion } from '../types/types';
+import { Nivel, HabitacionRecepcion, AuthModulo } from '../types/types';
 import { Menubar } from 'primereact/menubar';
 import { MenuItem } from 'primereact/menuitem';
 import { HabitacionService } from '../services/HabitacionService';
 import { Panel } from 'primereact/panel';
+import { useNavigate } from 'react-router-dom';
+import { authModulo } from '../services/AuthService';
 
 function CheckOutPage() {
   const [items, setItems] = useState<MenuItem[]>([]);
   const [habitaciones, setHabitaciones] = useState<HabitacionRecepcion[]>([]);
   const [selectedNivel, setSelectedNivel] = useState<Nivel | null>(null);
+  const navigate = useNavigate();
+  const [userAuth, setUserAuth] = useState<AuthModulo | null>(null);
 
   useEffect(() => {
     const fetchNiveles = async () => {
@@ -26,8 +30,21 @@ function CheckOutPage() {
         setSelectedNivel(nivelesRegistros[0]);         
       }
     };
-    
-    fetchNiveles();
+    const auth = async () => {
+      try {
+        const response: AuthModulo = await authModulo('CheckOut');
+
+        if (!response.allowed) {
+          navigate('/Inicio');
+        }
+        setUserAuth(response);
+        fetchNiveles();
+      } catch (error) {
+        console.error('Error fetching auth:', error);
+      }
+    }
+
+    auth();  
   }, []);
 
   useEffect(() => {

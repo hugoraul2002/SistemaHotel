@@ -1,18 +1,34 @@
 import { useEffect, useState } from 'react';
 import { HabitacionCard } from '../components/hospedajes/HabitacionCard';
 import { NivelService } from '../services/NivelService';
-import { Nivel, HabitacionRecepcion } from '../types/types';
+import { Nivel, HabitacionRecepcion, AuthModulo } from '../types/types';
 import { Menubar } from 'primereact/menubar';
 import { MenuItem } from 'primereact/menuitem';
 import { HabitacionService } from '../services/HabitacionService';
 import { Panel } from 'primereact/panel';
+import { useNavigate } from 'react-router-dom';
+import { authModulo } from '../services/AuthService';
 
 function CheckInPage() {
   const [items, setItems] = useState<MenuItem[]>([]);
   const [habitaciones, setHabitaciones] = useState<HabitacionRecepcion[]>([]);
   const [selectedNivel, setSelectedNivel] = useState<Nivel | null>(null);
+  const [userAuth, setUserAuth] = useState<AuthModulo | null>(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
+    const auth = async () => {
+      try {
+        const response: AuthModulo = await authModulo('CheckIn');
+        if (!response.allowed) {
+          navigate('/Inicio');
+        }
+        setUserAuth(response);
+      } catch (error) {
+        console.error('Error fetching auth:', error);
+      }
+    }
+    
     const fetchNiveles = async () => {
       const nivelesRegistros: Nivel[] = await NivelService.getAllNiveles();
       console.log(nivelesRegistros);
@@ -26,7 +42,7 @@ function CheckInPage() {
         setSelectedNivel(nivelesRegistros[0]);         
       }
     };
-    
+    auth();
     fetchNiveles();
   }, []);
 

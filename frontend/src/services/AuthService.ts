@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { Usuario, UserCliente } from '../types/types';
-
+import { AuthModulo } from '../types/types';
 const API_URL = 'http://localhost:3333/auth';
 
 interface RegisterData {
@@ -58,26 +58,47 @@ const logout = async (): Promise<void> => {
 };
 
 const me = async (): Promise<Usuario> => {
-  const token = localStorage.getItem('token');
-  if (!token) throw new Error('No se encontro token.');
-
-  const response = await axios.get(`${API_URL}/me`, {
-    headers: {
-      'Authorization': `Bearer ${token}`
-    }
-  });
-  if (response.status !== 200) throw new Error('No se pudo obtener el usuario.');
-  const user: Usuario = {
-    id: response.data.user.id,
-    full_name: response.data.user.fullName,
-    email: response.data.user.email,
-    password: '',
-    rol: {
-      id: response.data.user.rol.id,
-      nombre: response.data.user.rol.nombre
-    }
-  };
-  return user;
+  try {
+    const token = localStorage.getItem('token');
+    if (!token) throw new Error('No se encontro token.');
+  
+    const response = await axios.get(`${API_URL}/me`, {
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    });
+    if (response.status !== 200) throw new Error('No se pudo obtener el usuario.');
+    const user: Usuario = {
+      id: response.data.user.id,
+      full_name: response.data.user.fullName,
+      email: response.data.user.email,
+      password: '',
+      rol: {
+        id: response.data.user.rol.id,
+        nombre: response.data.user.rol.nombre
+      }
+    };
+    return user;    
+  } catch (error) {
+    console.error('Error auth:', error);
+    throw error;
+  }
 };
 
-export { register, login, logout, me, registerCliente };
+const authModulo = async (modulo:string ): Promise<AuthModulo> => {
+  try {
+    const response = await axios.post<AuthModulo>(`${API_URL}/authModulo`, {modulo},
+      {
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        }
+      }
+    );
+    return response.data;    
+  } catch (error) {
+    console.error('Error auth:', error);
+    throw error;
+  }
+};
+
+export { register, login, logout, me, registerCliente, authModulo };

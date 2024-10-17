@@ -529,33 +529,33 @@ export default class FacturacionFelController {
       })
 
       // logica para regresar productos al inventario al anular
-      const detalles: DetalleFactura[] = await DetalleFactura.query().where(
-        'facturaId',
-        data.idFactura
-      )
+      // const detalles: DetalleFactura[] = await DetalleFactura.query().where(
+      //   'facturaId',
+      //   data.idFactura
+      // )
 
-      for (const detalle of detalles) {
-        const producto = await Producto.findOrFail(detalle.productoId)
-        if (!producto.esServicio) {
-          const existenciaAnterior = producto.existencia
-          producto.existencia += detalle.cantidad
-          await producto.save()
+      // for (const detalle of detalles) {
+      //   const producto = await Producto.findOrFail(detalle.productoId)
+      //   if (!producto.esServicio) {
+      //     const existenciaAnterior = producto.existencia
+      //     producto.existencia += detalle.cantidad
+      //     await producto.save()
 
-          await HojaVidaProducto.create({
-            costo: detalle.costo,
-            userId: data.idUsuario,
-            productoId: producto.id,
-            existenciaAnterior: existenciaAnterior,
-            cantidad: detalle.cantidad,
-            existenciaActual: existenciaAnterior + detalle.cantidad,
-            fecha: data.fechaAnulacion,
-            tipo: 'AFH',
-            movimientoId: data.idFactura,
-            detalle:
-              'Anulación de factura ' + factura.numFactura + ' por motivo: ' + data.motivoAnulacion,
-          })
-        }
-      }
+      //     await HojaVidaProducto.create({
+      //       costo: detalle.costo,
+      //       userId: data.idUsuario,
+      //       productoId: producto.id,
+      //       existenciaAnterior: existenciaAnterior,
+      //       cantidad: detalle.cantidad,
+      //       existenciaActual: existenciaAnterior + detalle.cantidad,
+      //       fecha: data.fechaAnulacion,
+      //       tipo: 'AFH',
+      //       movimientoId: data.idFactura,
+      //       detalle:
+      //         'Anulación de factura ' + factura.numFactura + ' por motivo: ' + data.motivoAnulacion,
+      //     })
+      //   }
+      // }
 
       // Retornar la respuesta con los datos extraídos
       return response.status(200).json({

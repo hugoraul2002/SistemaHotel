@@ -137,24 +137,82 @@ export default function Reserva() {
             [field]: value,
         }));
     };
-
-    const validaDatosHuesped = () => {
+    const validarDocumento = () => {
         let valido = false;
+        const tipoDocumento = cliente.tipoDocumento;
+        const numeroDocumento = cliente.numeroDocumento;
+        
+        // Validación de campo requerido
+        if (numeroDocumento === "") {
+            setErrorMessageClient("El número de documento es requerido.");
+            return false; // Salimos si el campo está vacío
+        }
+        const nitPattern = /^(CF|\d{6,}|[0-9K]+)$/; // Expresión regular para NIT
+        const dpiPattern = /^\d{13}$/; // Expresión regular para DPI (13 dígitos)
+        const idPattern = /^(?=[^A-Z]*[A-Z][^A-Z]*[A-Z][^A-Z]*[A-Z][^A-Z]*$)[0-9A-Z]{15}$/; // Expresión regular para ID (15 caracteres, 3 letras)
+        switch (tipoDocumento) {
+            case "NIT":
+                
+                if (!nitPattern.test(numeroDocumento)) {
+                    setErrorMessageClient("El número de documento NIT es inválido.");
+                    return false;
+                }
+                valido = true;
+                break;
+    
+            case "DPI":
+                
+                if (!dpiPattern.test(numeroDocumento)) {
+                    setErrorMessageClient("El número de documento DPI debe tener 13 dígitos.");
+                    return false;
+                }
+                valido = true;
+                break;
+    
+            case "ID":
+                
+                if (!idPattern.test(numeroDocumento)) {
+                    setErrorMessageClient("El número de documento ID debe tener 15 caracteres y puede incluir hasta 3 letras.");
+                    return false;
+                }
+                valido = true;
+                break;
+    
+            default:
+                setErrorMessageClient("Tipo de documento no soportado.");
+                return false;
+        }
+    
+        // Si todo es válido
+        setErrorMessageClient(""); // Limpiar mensajes de error si todo es correcto
+        return valido;
+    };
+    
+    const validaDatosHuesped = () => {
         if (cliente.nombre === "" || cliente.nombre.length < 3) {
             setErrorMessageClient("El nombre es requerido y debe tener al menos 3 caracteres.");
-        } else if (cliente.numeroDocumento === "" || cliente.numeroDocumento.length < 2) {
-            setErrorMessageClient("El número de documento es requerido.");
-        } else if (cliente.telefono === "" || cliente.telefono.length < 8) {
-            setErrorMessageClient("El telefón es requerido y debe tener al menos 8 caracteres.");
-        } else if (cliente.direccion === "" || cliente.direccion.length < 4) {
-            setErrorMessageClient("La direccion es requerida, detalle la ubicación.");
+            return false;
         }
-        else {
-            valido = true;
-            setErrorMessageClient("");
+    
+        if (!validarDocumento()) {
+            return false; 
         }
-        return valido;
-    }
+    
+        if (cliente.telefono === "" || cliente.telefono.length < 8) {
+            setErrorMessageClient("El teléfono es requerido y debe tener al menos 8 caracteres.");
+            return false;
+        }
+    
+        if (cliente.direccion === "" || cliente.direccion.length < 4) {
+            setErrorMessageClient("La dirección es requerida, detalle la ubicación.");
+            return false;
+        }
+    
+        // Si todas las validaciones son correctas
+        setErrorMessageClient(""); // Limpiar mensaje de error
+        return true;
+    };
+    
     const handleRegistrarReserva = async () => {
         try {
             if (!selectedHabitacion || !cliente || dates?.length !== 2 || !validaDatosHuesped()) {
@@ -389,7 +447,7 @@ export default function Reserva() {
 
                                 <Dropdown options={tiposDocumento} value={cliente.tipoDocumento} onChange={(e) => handleClienteChange('tipoDocumento', e.value)} />
 
-                                <InputText placeholder="Documento" value={cliente.numeroDocumento} onChange={(e) => handleClienteChange('numeroDocumento', e.target.value)} />
+                                <InputText placeholder="Documento" value={cliente.numeroDocumento} onChange={(e) => handleClienteChange('numeroDocumento', e.target.value.toUpperCase())} />
 
                                 <InputText placeholder="Teléfono" value={cliente.telefono} onChange={(e) => handleClienteChange('telefono', e.target.value)} />
 

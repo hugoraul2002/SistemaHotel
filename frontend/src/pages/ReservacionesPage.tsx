@@ -13,6 +13,9 @@ import { ReservacionDialog } from '../components/reservaciones/FormReservacion';
 import { ReservacionInfoDialog } from '../components/reservaciones/FrmReservacionInfo';
 import { CalendarEvent } from '../types/types';
 import { AxiosError } from 'axios';
+import { AuthModulo } from '../types/types';
+import { authModulo } from '../services/AuthService';
+import { useNavigate } from 'react-router-dom';
 dayjs.locale('es');
 const localizer = dayjsLocalizer(dayjs);
 
@@ -25,7 +28,8 @@ const ReservacionesPage = () => {
   const [selectedReservacion, setSelectedReservacion] = useState<Reservacion | null>(null);
   const [habitaciones, setHabitaciones] = useState([]);
   const [clientes, setClientes] = useState([]);
-
+  const [userAuth, setUserAuth] = useState<AuthModulo | null>(null);
+  const navigate = useNavigate();
   const fetchReservaciones = async () => {
     try {
       const data = await ReservacionService.getAll();
@@ -54,9 +58,23 @@ const ReservacionesPage = () => {
   };
 
   useEffect(() => {
-    fetchReservaciones();
-    fetchHabitaciones();
-    fetchClientes();
+    const auth = async () => {
+      try {
+        const response: AuthModulo = await authModulo('Reservaciones');
+
+        if (!response.allowed) {
+          navigate('/Inicio');
+        }
+        setUserAuth(response);
+        fetchReservaciones();
+        fetchHabitaciones();
+        fetchClientes();
+      } catch (error) {
+        console.error('Error fetching auth:', error);
+      }
+    }
+
+    auth();  
   }, []);
 
   useEffect(() => {
@@ -198,6 +216,7 @@ const ReservacionesPage = () => {
         clientes={clientes}
         mostrarToast={mostrarToast}
         idReservacion={selectedReservacion?.id}
+        esAdmin={userAuth?.user.rol.nombre === "ADMIN"}
       />
       <ReservacionInfoDialog
         visible={infoDialogVisible}

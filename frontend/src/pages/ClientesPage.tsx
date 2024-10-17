@@ -7,15 +7,17 @@ import { IconField } from 'primereact/iconfield';
 import { InputIcon } from 'primereact/inputicon';
 import { InputText } from 'primereact/inputtext';
 import { Button } from 'primereact/button';
-import { Cliente } from '../types/types';
+import { AuthModulo, Cliente } from '../types/types';
 import { Toast } from 'primereact/toast';
 import { ConfirmDialog, confirmDialog } from 'primereact/confirmdialog';
 import ClienteDialog from '../components/clientes/ClienteDialog';
-import { useUser } from '../hooks/UserContext';
+import { authModulo } from '../services/AuthService';
+import { useNavigate } from 'react-router-dom';
 
 export default function ClientePage() {
   const toast = useRef<Toast>(null);
-  const { user } = useUser();
+  const [userAuth, setUserAuth] = useState<AuthModulo | null>(null);
+  const navigate = useNavigate();
   const [anulados, setAnulados] = useState<boolean>(false);
   const [clientes, setClientes] = useState<Cliente[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
@@ -61,9 +63,9 @@ export default function ClientePage() {
             </IconField>
           </div>
           <div className="flex gap-2">
-            <Button type="button" icon="pi pi-plus" rounded data-pr-tooltip="Nuevo" onClick={() => handleNuevo()} />
+            <Button type="button" icon="pi pi-plus" rounded  onClick={() => handleNuevo()} />
             {/* <Button type="button" icon="pi pi-file-excel" severity="success" rounded data-pr-tooltip="XLS" onClick={exportToExcel} /> */}
-            <Button type="button" icon="pi pi-file-pdf" severity="warning" rounded data-pr-tooltip="PDF" />
+            {/* <Button type="button" icon="pi pi-file-pdf" severity="warning" rounded data-pr-tooltip="PDF" /> */}
             <Button type="button" label={anulados ? 'Inactivos' : 'Activos'} rounded onClick={() => setAnulados(!anulados)} size='small' />
           </div>
         </div>
@@ -121,8 +123,8 @@ export default function ClientePage() {
     return (
       <div className="flex align-items-center justify-content-end gap-2">
         <Button type="button" icon="pi pi-pen-to-square" onClick={() => handleEditCliente(rowData)} disabled={anulados} className='hover:bg-sky-500 hover:text-white'
-          severity='info' outlined rounded data-pr-tooltip="Editar" />
-        {user?.rol.nombre === "ADMIN" && <Button type="button" outlined icon={anulados ? 'pi pi-replay' : 'pi pi-minus-circle'} className='hover:bg-red-500 hover:text-white'  severity="danger" onClick={() => confirmarAnulacion(rowData)} rounded data-pr-tooltip="Eliminar" />}
+          severity='info' outlined rounded  />
+        {userAuth?.user.rol.nombre === "ADMIN" && <Button type="button" outlined icon={anulados ? 'pi pi-replay' : 'pi pi-minus-circle'} className='hover:bg-red-500 hover:text-white'  severity="danger" onClick={() => confirmarAnulacion(rowData)} rounded />}
       </div>
     );
   };
@@ -141,6 +143,24 @@ export default function ClientePage() {
 
     fetchClientes();
   }, [anulados]);
+
+  useEffect(() => {
+    const auth = async () => {
+      try {
+        const response: AuthModulo = await authModulo('Clientes');
+
+        if (!response.allowed) {
+          navigate('/Inicio');
+        }
+        setUserAuth(response);
+      } catch (error) {
+        console.error('Error fetching auth:', error);
+      }
+    }
+
+    auth();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const aceptarAnular = async (cliente: Cliente) => {
     try {

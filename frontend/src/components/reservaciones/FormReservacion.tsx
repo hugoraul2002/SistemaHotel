@@ -22,9 +22,10 @@ interface ReservacionDialogProps {
   clientes: Cliente[];
   mostrarToast: (detalle: string, tipo: "success" | "info" | "warn" | "error") => void;
   idReservacion?: number; 
+  esAdmin: boolean;
 }
 
-export const ReservacionDialog: React.FC<ReservacionDialogProps> = ({ visible, onHide, onSave, onDelete, habitaciones, clientes, mostrarToast, idReservacion }) => {
+export const ReservacionDialog: React.FC<ReservacionDialogProps> = ({ visible, onHide, onSave, onDelete, habitaciones, clientes, mostrarToast, idReservacion, esAdmin }) => {
   const [selectedHabitacion, setSelectedHabitacion] = useState<Habitacion | null>(null);
   const [selectedClient, setSelectedClient] = useState<Cliente | null>(null);
   const [fechaInicio, setFechaInicio] = useState<Nullable<Date>>(null);
@@ -152,7 +153,7 @@ export const ReservacionDialog: React.FC<ReservacionDialogProps> = ({ visible, o
             <label htmlFor="anulado">{anulado ? 'Anulado' : 'Anular'}</label>
           </div>
           <div className="ml-2">
-            <InputSwitch checked={anulado} disabled={anulado || estado !== 'creada'} onChange={(e) => {if (e.value === true) confirmarAnulacion(idReservacion!); }} />
+            <InputSwitch checked={anulado} disabled={!esAdmin||anulado || estado !== 'creada'} onChange={(e) => {if (e.value === true) confirmarAnulacion(idReservacion!); }} />
           </div>
         </div>)}
         <div className="field">

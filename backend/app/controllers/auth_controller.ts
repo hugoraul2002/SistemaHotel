@@ -2,6 +2,7 @@ import { registerValidator, loginValidator, registerClienteValidator } from '#va
 import type { HttpContext } from '@adonisjs/core/http'
 import User from '#models/user'
 import Cliente from '#models/cliente'
+import Modulo from '#models/modulo'
 
 export default class AuthController {
   async register({ request }: HttpContext) {
@@ -74,6 +75,28 @@ export default class AuthController {
     await auth.user!.load('rol')
     return {
       user: auth.user!,
+    }
+  }
+
+  async authModulo({ auth, request }: HttpContext) {
+    try {
+      await auth.check()
+      await auth.user!.load('rol')
+
+      const modulo = request.input('modulo')
+      await auth.user!.rol.load('modulos', (query) => {
+        query.where('nombre', modulo)
+      })
+
+      return {
+        user: auth.user!,
+        allowed: auth.user!.rol.modulos.length > 0,
+      }
+    } catch (error) {
+      console.log(error)
+      return {
+        user: null,
+      }
     }
   }
 }

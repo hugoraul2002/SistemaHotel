@@ -29,6 +29,7 @@ const ReporteHojaVidaPage: React.FC = () => {
 
     const fetchReportes = async (data: { fechaInicio: string; fechaFin: string }) => {
         try {
+            setReportes([]);
             console.log('data', data);
             setLoading(true);
             const response = await ProductoService.reporteHojaVida(data);
@@ -141,7 +142,7 @@ const ReporteHojaVidaPage: React.FC = () => {
                 />
                 <Button label="Generar Reporte" icon="pi pi-file" onClick={handleGenerarReporte} />
             </div>
-            <DataTable value={reportes} paginator rows={10} loading={loading} dataKey="fecha"
+            <DataTable value={reportes} paginator rows={10} loading={loading} dataKey="id"
                 globalFilter={globalFilterValue} header={renderHeader()} emptyMessage="No se encontraron registros." size='small'>
                 <Column field="fechaHora"  header="Fecha" body={(rowData) => formatDateTimeFormat2(rowData.fechaHora)}  style={{textAlign: 'center'}}></Column>
                 <Column field="tipo" header="Tipo"  style={{textAlign: 'center'}}></Column>

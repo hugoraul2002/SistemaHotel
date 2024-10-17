@@ -5,7 +5,7 @@ import { Button } from 'primereact/button';
 import { InputText } from 'primereact/inputtext';
 import { Calendar } from 'primereact/calendar';
 import { Nullable } from 'primereact/ts-helpers';
-import { Cliente, Habitacion, Reservacion } from '../../types/types';
+import { AuthModulo, Cliente, Habitacion, Reservacion } from '../../types/types';
 import { HabitacionService } from '../../services/HabitacionService';
 import { ReservacionService } from '../../services/ReservacionService';
 import { ClienteService } from '../../services/ClienteService';
@@ -14,6 +14,7 @@ import dayjs from 'dayjs';
 import { Dropdown } from 'primereact/dropdown';
 import { addLocale } from 'primereact/api';
 import { Toast } from 'primereact/toast';
+import { authModulo } from '../../services/AuthService';
 
 
 
@@ -33,6 +34,8 @@ const RegistrarHospedaje: React.FC = () => {
   const navigate = useNavigate();
   const [submmiting, setSubmmiting] = useState(false);
   const { idHabitacion } = useParams();
+  const [userAuth, setUserAuth] = useState<AuthModulo | null>(null);
+
 
   addLocale('es', {
     firstDayOfWeek: 1,
@@ -46,6 +49,7 @@ const RegistrarHospedaje: React.FC = () => {
   });
 
   useEffect(() => {
+    
     if (idHabitacion) {
       
       const fetchHabitacion = async () => {
@@ -74,8 +78,22 @@ const RegistrarHospedaje: React.FC = () => {
           console.error('Error fetching habitacion:', error);
         }
       };
-
-      fetchHabitacion();
+      const auth = async () => {
+        try {
+          const response: AuthModulo = await authModulo('Reservaciones');
+  
+          if (!response.allowed) {
+            navigate('/Inicio');
+          }
+          setUserAuth(response);
+          fetchHabitacion();
+  
+        } catch (error) {
+          console.error('Error fetching auth:', error);
+        }
+      }
+  
+      auth();
     }
   }, [idHabitacion]);
 

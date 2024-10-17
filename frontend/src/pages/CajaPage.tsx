@@ -12,10 +12,11 @@ import { InputTextarea } from 'primereact/inputtextarea';
 import { ConfirmDialog, confirmDialog } from 'primereact/confirmdialog';
 import { useUser } from '../hooks/UserContext';
 import { AperturaCajaService } from '../services/AperturaCajaService';
-import { AperturaCaja, ArqueoCaja } from '../types/types';
+import { AperturaCaja, ArqueoCaja, AuthModulo } from '../types/types';
 import { ArqueoCajaService } from '../services/ArqueoCajaService';
 import {formatDateTime} from '../helpers/formatDate';
 import { useNavigate } from 'react-router-dom';
+import { authModulo } from '../services/AuthService';
 function CajaPage() {
     const [aperturasCaja, setAperturasCaja] = useState<AperturaCaja[]>([]);
     const [selectedApertura, setSelectedApertura] = useState<AperturaCaja | null>(null);
@@ -33,7 +34,7 @@ function CajaPage() {
     const [monto, setMonto] = useState<number>(0);
     const [observaciones, setObservaciones] = useState<string>('');
     const toast = useRef<Toast>(null);
-    const { user } = useUser();
+    const [userAuth, setUserAuth] = useState<AuthModulo | null>(null);
 
     const mostrarToast = (detalle: string, tipo: "success" | "info" | "warn" | "error") => {
         toast.current?.show({ severity: tipo, detail: detalle, life: 3000 });
@@ -73,9 +74,9 @@ function CajaPage() {
                 monto,
                 observaciones,
                 fecha: new Date(),
-                userId: user!.id,
+                userId: userAuth!.user.id,
                 anulado: false,
-                user: user!
+                user: userAuth!.user
             };
 
             await AperturaCajaService.createApertura(nuevaApertura);
@@ -143,7 +144,7 @@ function CajaPage() {
                 monto,
                 observaciones,
                 fecha: new Date(),
-                userId: user!.id,
+                userId: userAuth!.user.id,
                 anulado: false
             };
                 await ArqueoCajaService.createArqueo(nuevoArqueo);
@@ -169,8 +170,22 @@ function CajaPage() {
                 mostrarToast('Error al cargar aperturas de caja.', 'error');
             }
         };
+        const auth = async () => {
+            try {
+              const response: AuthModulo = await authModulo('Cajas');
+      
+              if (!response.allowed) {
+                navigate('/Inicio');
+              }
+              setUserAuth(response);
+              fetchAperturas();
 
-        fetchAperturas();
+            } catch (error) {
+              console.error('Error fetching auth:', error);
+            }
+          }
+      
+          auth();
     }, []);
 
     const renderHeader = () => {
@@ -199,13 +214,13 @@ function CajaPage() {
             <div className="flex align-items-center justify-content-end gap-2">
                 <Button type="button" icon="pi pi-wallet" rounded data-pr-tooltip="Registrar Arqueo"
                     onClick={() => handleArqueo(rowData)} disabled={!!rowData.arqueoCaja || rowData.anulado} />
-                {user?.rol.nombre === "ADMIN" && (
+                {userAuth?.user.rol.nombre === "ADMIN" && (
                     <Button type="button" outlined icon="pi pi-trash" severity="danger" rounded data-pr-tooltip="Anular"
                         onClick={() => confirmarAnulacion(rowData)} disabled={rowData.anulado} />
                         
                 )}
                 <Button type="button" outlined icon="pi pi-eye" severity="secondary" rounded data-pr-tooltip="Cierre"
-                        onClick={() => navigate("/cierreCaja/" +rowData.id)} disabled={(user?.rol.nombre !== "ADMIN" && !rowData.anulado) || (user?.rol.nombre !== "ADMIN" && !rowData.arqueoCaja?.monto)}/>
+                        onClick={() => navigate("/cierreCaja/" +rowData.id)} disabled={(userAuth?.user.rol.nombre !== "ADMIN" && !rowData.anulado) || (userAuth?.user.rol.nombre !== "ADMIN" && !rowData.arqueoCaja?.monto)}/>
             </div>
         );
     };
