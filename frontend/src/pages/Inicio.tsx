@@ -1,4 +1,6 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import { Usuario } from '../types/types';
+import { me } from '../services/AuthService';
 // import { Card } from 'primereact/card';
 // import { Chart } from 'primereact/chart';
 // import { Divider } from 'primereact/divider';
@@ -6,8 +8,20 @@ import React from 'react';
 // import { PowerBIEmbed } from 'powerbi-client-react';
 // import { models } from 'powerbi-client';
 const Dashboard: React.FC = () => {
+  const [userAuth, setUserAuth] = useState<Usuario | null>(null);
 
+  useEffect(() => {
+    const auth = async () => {
+      try {
+        const user :Usuario= await me();
+        setUserAuth(user);
+      } catch (error) {
+        console.error('Error fetching auth:', error);
+      }
+    }
 
+    auth();
+  }, []);
   return (
     <div style={{ height: '100vh', width: '100%' }}>
       <div className="p-4 mt-[30px]"></div>

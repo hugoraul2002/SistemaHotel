@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
 import { Button } from 'primereact/button';
@@ -6,7 +6,7 @@ import { InputText } from 'primereact/inputtext';
 import { Toast } from 'primereact/toast';
 import { Calendar } from 'primereact/calendar';
 import { getTicketFactura, reporteFactura } from '../services/FacturaService';
-import { ReporteFactura } from '../types/types';
+import { AuthModulo, ReporteFactura } from '../types/types';
 import { formatDate } from '../helpers/formatDate';
 import { IconField } from 'primereact/iconfield';
 import { InputIcon } from 'primereact/inputicon';
@@ -22,9 +22,13 @@ import { OverlayPanel } from 'primereact/overlaypanel';
 import { ColumnGroup } from 'primereact/columngroup';
 import { Row } from 'primereact/row';
 import { InputSwitch } from 'primereact/inputswitch';
+import { useNavigate } from 'react-router-dom';
+import { authModulo } from '../services/AuthService';
 const ReporteFacturasPage: React.FC = () => {
     const op = useRef(null);
     const toast = useRef<Toast>(null);
+    const [userAuth, setUserAuth] = useState<AuthModulo | null>(null);
+    const navigate = useNavigate();
     const [motivoAnulacion, setMotivoAnulacion] = useState<string>('');
     const [facturas, setFacturas] = useState<ReporteFactura[]>([]);
     const [loading, setLoading] = useState<boolean>(false);
@@ -108,6 +112,22 @@ const ReporteFacturasPage: React.FC = () => {
             </div>
         );
     };
+    useEffect(() => {
+        const auth = async () => {
+            try {
+              const response: AuthModulo = await authModulo('ReporteFacturacion');
+      
+              if (!response.allowed) {
+                navigate('/Inicio');
+              }
+              setUserAuth(response);
+            } catch (error) {
+              console.error('Error fetching auth:', error);
+            }
+          }
+      
+        auth();
+    }, []);
     const handleAnular = async (rowData: ReporteFactura) => {
         try {
             const data = {

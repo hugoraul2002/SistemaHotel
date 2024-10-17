@@ -10,7 +10,6 @@ import { Toast } from 'primereact/toast';
 import { Dialog } from 'primereact/dialog';
 import { InputTextarea } from 'primereact/inputtextarea';
 import { ConfirmDialog, confirmDialog } from 'primereact/confirmdialog';
-import { useUser } from '../hooks/UserContext';
 import { AperturaCajaService } from '../services/AperturaCajaService';
 import { AperturaCaja, ArqueoCaja, AuthModulo } from '../types/types';
 import { ArqueoCajaService } from '../services/ArqueoCajaService';

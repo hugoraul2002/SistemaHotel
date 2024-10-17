@@ -8,12 +8,16 @@ import { InputIcon } from 'primereact/inputicon';
 import { InputText } from 'primereact/inputtext';
 import { Button } from 'primereact/button';
 import { Toast } from 'primereact/toast';
-import { TipoGasto } from '../types/types';
+import { AuthModulo, TipoGasto } from '../types/types';
 import { confirmDialog, ConfirmDialog } from 'primereact/confirmdialog';
 import TipoGastoDialog from '../components/gastos/FormTipoGasto';
+import { useNavigate } from 'react-router-dom';
+import { authModulo } from '../services/AuthService';
 
 const TiposGastosPage: React.FC = () => {
     const toast = useRef<Toast>(null);
+    const [userAuth, setUserAuth] = useState<AuthModulo | null>(null);
+    const navigate = useNavigate();
     const [isEditing, setIsEditing] = useState(false);
     const [editingTipoId, setEditingTipoId] = useState<number | null>(null);
     const [dialogVisible, setDialogVisible] = useState(false);
@@ -56,8 +60,8 @@ const TiposGastosPage: React.FC = () => {
                     </div>
                     <div className="flex gap-2">
                         <Button type="button" icon="pi pi-plus" rounded data-pr-tooltip="Nuevo" onClick={() => handleNuevo()} />
-                        <Button type="button" icon="pi pi-file-excel" severity="success" rounded data-pr-tooltip="XLS" />
-                        <Button type="button" icon="pi pi-file-pdf" severity="warning" rounded data-pr-tooltip="PDF" />
+                        {/* <Button type="button" icon="pi pi-file-excel" severity="success" rounded data-pr-tooltip="XLS" />
+                        <Button type="button" icon="pi pi-file-pdf" severity="warning" rounded data-pr-tooltip="PDF" /> */}
                         <Button type="button" label={anulados ? 'Inactivos' : 'Activos'} rounded onClick={() => setAnulados(!anulados)} size='small' />
                     </div>
                 </div>
@@ -134,7 +138,7 @@ const TiposGastosPage: React.FC = () => {
         });
       };
 
-    useEffect(() => {
+    useEffect(() => {        
         const fetchTiposGasto = async () => {
             try {
                 const data = await TipoGastoService.getAllTipoGastos(anulados);
@@ -150,13 +154,31 @@ const TiposGastosPage: React.FC = () => {
         fetchTiposGasto();
     }, [anulados]);
 
+    useEffect(() => {
+        const auth = async () => {
+            try {
+              const response: AuthModulo = await authModulo('TiposGasto');
+      
+              if (!response.allowed) {
+                navigate('/Inicio');
+              }
+              setUserAuth(response);
+
+            } catch (error) {
+              console.error('Error fetching auth:', error);
+            }
+          }
+      
+          auth();
+    }, []);
+
     const header = renderHeader();
     const actionBodyTemplate = (rowData: TipoGasto) => {
         return (
             <div className="flex align-items-center justify-content-end gap-2">
                 <Button type="button" icon="pi pi-pen-to-square"
                     severity='info' outlined rounded onClick={() => handleEditTipoGasto(rowData)} data-pr-tooltip="Editar" disabled={anulados} className='hover:bg-sky-500 hover:text-white' />
-                <Button type="button" outlined icon={anulados ? 'pi pi-replay' : 'pi pi-minus-circle'} className='hover:bg-red-500 hover:text-white'  severity="danger" onClick={() => confirmarAnulacion(rowData)} rounded data-pr-tooltip="Eliminar" />
+                {userAuth?.user.rol.nombre === "ADMIN" && <Button type="button" outlined icon={anulados ? 'pi pi-replay' : 'pi pi-minus-circle'} className='hover:bg-red-500 hover:text-white'  severity="danger" onClick={() => confirmarAnulacion(rowData)} rounded data-pr-tooltip="Eliminar" />}
             </div>
         );
     };

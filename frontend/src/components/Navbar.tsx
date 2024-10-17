@@ -57,7 +57,7 @@ const navigate = useNavigate();
 
   const end = (
     <>
-      <Button
+      {/* <Button
         icon={darkTheme ? "pi pi-moon" : "pi pi-sun"}
         size='small'
         style={{ height: '2rem', width: '2rem' }}
@@ -66,7 +66,7 @@ const navigate = useNavigate();
         rounded
         text={!darkTheme}
         onClick={toggleTheme}
-      />
+      /> */}
 
       <Avatar
         label={user ? user.full_name.substring(0, 1) : ''}

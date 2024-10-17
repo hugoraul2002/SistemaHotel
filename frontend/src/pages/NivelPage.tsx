@@ -8,13 +8,14 @@ import { InputIcon } from 'primereact/inputicon';
 import { InputText } from 'primereact/inputtext';
 import { Button } from 'primereact/button';
 import { Toast } from 'primereact/toast';
-import { Nivel } from '../types/types';
+import { AuthModulo, Nivel } from '../types/types';
 import NivelDialog from '../components/niveles/FormNivel'
 import { ConfirmDialog, confirmDialog } from 'primereact/confirmdialog';
-import { useUser } from '../hooks/UserContext';
+import { authModulo } from '../services/AuthService';
+import { useNavigate } from 'react-router-dom';
+
 export default function NivelPage() {
   const toast = useRef<Toast>(null);
-  const { user } = useUser();
   const [dialogVisible, setDialogVisible] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [editingNivelId, setEditingNivelId] = useState<number | null>(null);
@@ -26,7 +27,8 @@ export default function NivelPage() {
     nombre: { value: null, matchMode: FilterMatchMode.STARTS_WITH },
     descripcion: { value: null, matchMode: FilterMatchMode.STARTS_WITH }
   });
-
+  const [userAuth, setUserAuth] = useState<AuthModulo | null>(null);
+  const navigate = useNavigate();
   const mostrarToast = (detalle: string, tipo: "success" | "info" | "warn" | "error") => {
     toast.current?.show({ severity: tipo, detail: detalle, life: 3000 });
   };
@@ -62,8 +64,8 @@ export default function NivelPage() {
         </div>
         <div className="flex gap-2">
           <Button type="button" icon="pi pi-plus" rounded data-pr-tooltip="Nuevo" onClick={() => handleNuevo()} />
-          <Button type="button" icon="pi pi-file-excel" severity="success" rounded data-pr-tooltip="XLS" />
-          <Button type="button" icon="pi pi-file-pdf" severity="warning" rounded data-pr-tooltip="PDF" />
+          {/* <Button type="button" icon="pi pi-file-excel" severity="success" rounded data-pr-tooltip="XLS" />
+          <Button type="button" icon="pi pi-file-pdf" severity="warning" rounded data-pr-tooltip="PDF" /> */}
         </div>
       </div>
       </>
@@ -76,8 +78,8 @@ export default function NivelPage() {
     return (
       <div className="flex align-items-center justify-content-end gap-2">
         <Button type="button" icon="pi pi-pen-to-square" onClick={() => handleEditNivel(rowData)}
-          severity='info' outlined rounded data-pr-tooltip="Editar" />
-        {user?.rol.nombre==="ADMIN" &&  <Button type="button" outlined icon="pi pi-trash" severity="danger" onClick={() => confirmarAnulacion(rowData)} rounded data-pr-tooltip="Eliminar" />}
+          severity='info' outlined rounded  />
+        {userAuth?.user.rol.nombre==="ADMIN" &&  <Button type="button" outlined icon="pi pi-trash" severity="danger" onClick={() => confirmarAnulacion(rowData)} rounded  />}
       </div>
     );
   };
@@ -124,6 +126,21 @@ export default function NivelPage() {
   }
 
   useEffect(() => {
+    const auth = async () => {
+      try {
+        const response: AuthModulo = await authModulo('Niveles');
+
+        if (!response.allowed) {
+          navigate('/Inicio');
+        }
+        setUserAuth(response);
+
+      } catch (error) {
+        console.error('Error fetching auth:', error);
+      }
+    }
+
+    auth();
     const fetchNiveles = async () => {
       try {
         const niveles = await NivelService.getAllNiveles();

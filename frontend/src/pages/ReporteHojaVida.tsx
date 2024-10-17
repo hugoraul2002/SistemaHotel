@@ -6,12 +6,14 @@ import { InputText } from 'primereact/inputtext';
 import { Toast } from 'primereact/toast';
 import { Calendar } from 'primereact/calendar';
 import * as XLSX from 'xlsx';
-import { Producto, ReporteHojaVida } from '../types/types';
+import { AuthModulo, Producto, ReporteHojaVida } from '../types/types';
 import { ProductoService } from '../services/ProductoService';
 import { IconField } from 'primereact/iconfield';
 import { InputIcon } from 'primereact/inputicon';
 import { Dropdown } from 'primereact/dropdown';
 import { formatDateTimeFormat2 } from '../helpers/formatDate';
+import { useNavigate } from 'react-router-dom';
+import { authModulo } from '../services/AuthService';
 interface RegistroProducto {
     id: number;
     nombre: string;
@@ -19,6 +21,8 @@ interface RegistroProducto {
 
 const ReporteHojaVidaPage: React.FC = () => {
     const toast = useRef<Toast>(null);
+    const [userAuth, setUserAuth] = useState<AuthModulo | null>(null);
+    const navigate = useNavigate();
     const [reportes, setReportes] = useState<ReporteHojaVida[]>([]);
     const [loading, setLoading] = useState<boolean>(false);
     const [globalFilterValue, setGlobalFilterValue] = useState<string>('');
@@ -101,7 +105,20 @@ const ReporteHojaVidaPage: React.FC = () => {
     };
 
     useEffect(() => {
-        console.log('Fetching productos...');
+        const auth = async () => {
+            try {
+              const response: AuthModulo = await authModulo('ReporteHojaVida');
+      
+              if (!response.allowed) {
+                navigate('/Inicio');
+              }
+              setUserAuth(response);
+            } catch (error) {
+              console.error('Error fetching auth:', error);
+            }
+          }
+      
+        auth();
         const fetchProductos = async () => {
           try {
             const response = await ProductoService.getRegistrosDropDown();

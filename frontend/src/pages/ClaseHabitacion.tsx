@@ -8,14 +8,14 @@ import { InputIcon } from 'primereact/inputicon';
 import { InputText } from 'primereact/inputtext';
 import { Button } from 'primereact/button';
 import { Toast } from 'primereact/toast';
-import { ClaseHabitacion } from '../types/types';
+import { AuthModulo, ClaseHabitacion } from '../types/types';
 import FormClaseHabitacion from '../components/clases_habitacion/FormClaseHabitacion';
 import { ConfirmDialog, confirmDialog } from 'primereact/confirmdialog';
-import { useUser } from '../hooks/UserContext';
+import { authModulo } from '../services/AuthService';
+import { useNavigate } from 'react-router-dom';
 
 export default function ClaseHabitacionPage() {
   const toast = useRef<Toast>(null);
-  const { user } = useUser();
   const [dialogVisible, setDialogVisible] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [editingClaseHabitacionId, setEditingClaseHabitacionId] = useState<number | null>(null);
@@ -26,10 +26,13 @@ export default function ClaseHabitacionPage() {
     global: { value: null, matchMode: FilterMatchMode.CONTAINS },
     nombre: { value: null, matchMode: FilterMatchMode.STARTS_WITH },
   });
-
+  const [userAuth, setUserAuth] = useState<AuthModulo | null>(null);
+  const navigate = useNavigate();
+  
   const mostrarToast = (detalle: string, tipo: "success" | "info" | "warn" | "error") => {
     toast.current?.show({ severity: tipo, detail: detalle, life: 3000 });
   };
+
 
   const onGlobalFilterChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
@@ -61,9 +64,9 @@ export default function ClaseHabitacionPage() {
             </IconField>
           </div>
           <div className="flex gap-2">
-            <Button type="button" icon="pi pi-plus" rounded data-pr-tooltip="Nuevo" onClick={handleNuevo} />
-            <Button type="button" icon="pi pi-file-excel" severity="success" rounded data-pr-tooltip="XLS" />
-            <Button type="button" icon="pi pi-file-pdf" severity="warning" rounded data-pr-tooltip="PDF" />
+            <Button type="button" icon="pi pi-plus" rounded onClick={handleNuevo} />
+            {/* <Button type="button" icon="pi pi-file-excel" severity="success" rounded data-pr-tooltip="XLS" />
+            <Button type="button" icon="pi pi-file-pdf" severity="warning" rounded data-pr-tooltip="PDF" /> */}
           </div>
         </div>
       </>
@@ -77,7 +80,7 @@ export default function ClaseHabitacionPage() {
       <div className="flex align-items-center justify-content-end gap-2">
         <Button type="button" icon="pi pi-pen-to-square" onClick={() => handleEditClaseHabitacion(rowData)}
           severity='info' outlined rounded data-pr-tooltip="Editar" />
-        {user?.rol.nombre === "ADMIN" && <Button type="button" outlined icon="pi pi-trash" severity="danger" onClick={() => confirmarAnulacion(rowData)} rounded data-pr-tooltip="Eliminar" />}
+        {userAuth?.user.rol.nombre === "ADMIN" && <Button type="button" outlined icon="pi pi-trash" severity="danger" onClick={() => confirmarAnulacion(rowData)} rounded data-pr-tooltip="Eliminar" />}
       </div>
     );
   };
@@ -95,9 +98,7 @@ export default function ClaseHabitacionPage() {
 
   const handleSaveClaseHabitacion = async (claseHabitacion: ClaseHabitacion) => {
     try {
-      console.log('claseHabitacion:', claseHabitacion);
       if (isEditing && editingClaseHabitacionId !== null) {
-        console.log('Updating claseHabitacion:', editingClaseHabitacionId, claseHabitacion);
         const response = await ClaseHabitacionService.updateClaseHabitacion(editingClaseHabitacionId, { nombre: claseHabitacion.nombre });
         if (response) {
           const claseHabitacionesActualizadas = await ClaseHabitacionService.getAllClaseHabitaciones();
@@ -123,6 +124,21 @@ export default function ClaseHabitacionPage() {
   };
 
   useEffect(() => {
+    const auth = async () => {
+      try {
+        const response: AuthModulo = await authModulo('ClasesHabitacion');
+
+        if (!response.allowed) {
+          navigate('/Inicio');
+        }
+        setUserAuth(response);
+
+      } catch (error) {
+        console.error('Error fetching auth:', error);
+      }
+    }
+
+    auth();
     const fetchClaseHabitaciones = async () => {
       try {
         const data = await ClaseHabitacionService.getAllClaseHabitaciones();

@@ -7,14 +7,16 @@ import { IconField } from 'primereact/iconfield';
 import { InputIcon } from 'primereact/inputicon';
 import { InputText } from 'primereact/inputtext';
 import { Button } from 'primereact/button';
-import { Usuario } from '../types/types';
+import { AuthModulo, Usuario } from '../types/types';
 import { Toast } from 'primereact/toast';
 import FormUsuario from '../components/usuarios/FormUsuario';
 import { ConfirmDialog, confirmDialog } from 'primereact/confirmdialog';
-import { useUser } from '../hooks/UserContext';
+import { useNavigate } from 'react-router-dom';
+import { authModulo } from '../services/AuthService';
 
 export default function UsuarioPage() {
-  const { user } = useUser();
+  const [userAuth, setUserAuth] = useState<AuthModulo | null>(null);
+  const navigate = useNavigate();
   const toast = useRef<Toast>(null);
   const [usuarios, setUsuarios] = useState<Usuario[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
@@ -117,12 +119,26 @@ export default function UsuarioPage() {
       <div className="flex align-items-center justify-content-end gap-2">
         <Button type="button" icon="pi pi-pen-to-square" onClick={() => handleEditUsuario(rowData)}
           severity='info' outlined rounded data-pr-tooltip="Editar" />
-        {user?.rol.nombre === "ADMIN" && <Button type="button" outlined icon="pi pi-trash" severity="danger" onClick={() => confirmarAnulacion(rowData)} rounded data-pr-tooltip="Eliminar" />}
+        {userAuth?.user.rol.nombre === "ADMIN" && <Button type="button" outlined icon="pi pi-trash" severity="danger" onClick={() => confirmarAnulacion(rowData)} rounded data-pr-tooltip="Eliminar" />}
       </div>
     );
   };
 
   useEffect(() => {
+    const auth = async () => {
+      try {
+        const response: AuthModulo = await authModulo('Usuarios');
+
+        if (!response.allowed) {
+          navigate('/Inicio');
+        }
+        setUserAuth(response);
+      } catch (error) {
+        console.error('Error fetching auth:', error);
+      }
+    }
+
+    auth();
     const fetchUsuarios = async () => {
       try {
         const users = await UsuarioService.getAllUsers();

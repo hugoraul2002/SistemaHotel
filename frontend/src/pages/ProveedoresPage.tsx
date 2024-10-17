@@ -8,14 +8,15 @@ import { InputIcon } from 'primereact/inputicon';
 import { InputText } from 'primereact/inputtext';
 import { Button } from 'primereact/button';
 import { Toast } from 'primereact/toast';
-import { Proveedor } from '../types/types';
+import { AuthModulo, Proveedor } from '../types/types';
 import { ConfirmDialog, confirmDialog } from 'primereact/confirmdialog';
 import ProveedorDialog from '../components/gastos/FormProveedor';
-import { useUser } from '../hooks/UserContext';
+import { useNavigate } from 'react-router-dom';
+import { authModulo } from '../services/AuthService';
+
 
 const ProveedoresPage: React.FC = () => {
   const toast = useRef<Toast>(null);
-  const { user } = useUser();
   const [anulados, setAnulados] = useState<boolean>(false);
   const [proveedores, setProveedores] = useState<Proveedor[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
@@ -28,7 +29,8 @@ const ProveedoresPage: React.FC = () => {
   const [dialogVisible, setDialogVisible] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [editingProveedorId, setEditingProveedorId] = useState<number | null>(null);
-
+  const [userAuth, setUserAuth] = useState<AuthModulo | null>(null);
+  const navigate = useNavigate();
   const mostrarToast = (detalle: string, tipo: "success" | "info" | "warn" | "error") => {
     toast.current?.show({ severity: tipo, detail: detalle, life: 3000 });
   };
@@ -71,7 +73,7 @@ const ProveedoresPage: React.FC = () => {
           </div>
           <div className="flex gap-2">
             <Button type="button" icon="pi pi-plus" rounded data-pr-tooltip="Nuevo" onClick={handleNuevo} />
-            <Button type="button" icon="pi pi-file-pdf" severity="warning" rounded data-pr-tooltip="PDF" />
+            {/* <Button type="button" icon="pi pi-file-pdf" severity="warning" rounded data-pr-tooltip="PDF" /> */}
             <Button type="button" label={anulados ? 'Inactivos' : 'Activos'} rounded onClick={() => setAnulados(!anulados)} size='small' />
           </div>
         </div>
@@ -113,12 +115,12 @@ const ProveedoresPage: React.FC = () => {
       <div className="flex align-items-center justify-content-end gap-2">
         <Button type="button" icon="pi pi-pen-to-square" onClick={() => handleEditProveedor(rowData)} disabled={anulados} className='hover:bg-sky-500 hover:text-white'
           severity='info' outlined rounded data-pr-tooltip="Editar" />
-        {user?.rol.nombre === "ADMIN" && <Button type="button" outlined icon={anulados ? 'pi pi-replay' : 'pi pi-minus-circle'} className='hover:bg-red-500 hover:text-white' severity="danger" onClick={() => confirmarAnulacion(rowData)} rounded data-pr-tooltip="Eliminar" />}
+        {userAuth?.user.rol.nombre === "ADMIN" && <Button type="button" outlined icon={anulados ? 'pi pi-replay' : 'pi pi-minus-circle'} className='hover:bg-red-500 hover:text-white' severity="danger" onClick={() => confirmarAnulacion(rowData)} rounded data-pr-tooltip="Eliminar" />}
       </div>
     );
   };
 
-  useEffect(() => {
+  useEffect(() => {    
     const fetchProveedores = async () => {
       try {
         const proveedores = await ProveedorService.getAllProveedors(anulados);
@@ -131,6 +133,23 @@ const ProveedoresPage: React.FC = () => {
 
     fetchProveedores();
   }, [anulados]);
+
+  useEffect(() => {
+    const auth = async () => {
+      try {
+        const response: AuthModulo = await authModulo('Proveedores');
+
+        if (!response.allowed) {
+          navigate('/Inicio');
+        }
+        setUserAuth(response);
+      } catch (error) {
+        console.error('Error fetching auth:', error);
+      }
+    }
+
+    auth();
+  },[]);
 
   const aceptarAnular = async (proveedor: Proveedor) => {
     try {

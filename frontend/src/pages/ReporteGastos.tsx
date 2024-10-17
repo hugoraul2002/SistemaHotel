@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
 import { Button } from 'primereact/button';
@@ -6,16 +6,20 @@ import { InputText } from 'primereact/inputtext';
 import { Toast } from 'primereact/toast';
 import { Calendar } from 'primereact/calendar';
 import { GastoService } from '../services/GastoService'; 
-import { ReporteGasto } from '../types/types';
+import { AuthModulo, ReporteGasto } from '../types/types';
 import * as XLSX from 'xlsx';
 import { formatDate } from '../helpers/formatDate';
 import { ColumnGroup } from 'primereact/columngroup';
 import { Row } from 'primereact/row';
 import { IconField } from 'primereact/iconfield';
 import { InputIcon } from 'primereact/inputicon';
+import { useNavigate } from 'react-router-dom';
+import { authModulo } from '../services/AuthService';
 
 const ReporteGastosPage: React.FC = () => {
     const toast = useRef<Toast>(null);
+    const [userAuth, setUserAuth] = useState<AuthModulo | null>(null);
+    const navigate = useNavigate();
     const [gastos, setGastos] = useState<ReporteGasto[]>([]);
     const [loading, setLoading] = useState<boolean>(false);
     const [globalFilterValue, setGlobalFilterValue] = useState<string>('');
@@ -116,7 +120,22 @@ const ReporteGastosPage: React.FC = () => {
             </Row>
         </ColumnGroup>
     );
-
+    useEffect(() => {
+        const auth = async () => {
+            try {
+              const response: AuthModulo = await authModulo('ReporteGastos');
+      
+              if (!response.allowed) {
+                navigate('/Inicio');
+              }
+              setUserAuth(response);
+            } catch (error) {
+              console.error('Error fetching auth:', error);
+            }
+          }
+      
+          auth();
+    }, []);
     return (
         <div className="card">
             <Toast ref={toast} />

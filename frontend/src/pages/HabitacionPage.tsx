@@ -7,15 +7,16 @@ import { IconField } from 'primereact/iconfield';
 import { InputIcon } from 'primereact/inputicon';
 import { InputText } from 'primereact/inputtext';
 import { Button } from 'primereact/button';
-import { Habitacion } from '../types/types';
+import { AuthModulo, Habitacion } from '../types/types';
 import { Toast } from 'primereact/toast';
 import HabitacionDialog from '../components/habitaciones/FormHabitacion';
 import { ConfirmDialog, confirmDialog } from 'primereact/confirmdialog';
-import { useUser } from '../hooks/UserContext';
+import { useNavigate } from 'react-router-dom';
+import { authModulo } from '../services/AuthService';
+
 
 export default function HabitacionPage() {
   const toast = useRef<Toast>(null);
-  const { user } = useUser();
   const [habitaciones, setHabitaciones] = useState<Habitacion[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [globalFilterValue, setGlobalFilterValue] = useState<string>('');
@@ -33,7 +34,8 @@ export default function HabitacionPage() {
   const [dialogVisible, setDialogVisible] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [editingHabitacionId, setEditingHabitacionId] = useState<number | null>(null);
-
+  const [userAuth, setUserAuth] = useState<AuthModulo | null>(null);
+  const navigate = useNavigate();
   const mostrarToast = (detalle: string, tipo: "success" | "info" | "warn" | "error") => {
     toast.current?.show({ severity: tipo, detail: detalle, life: 3000 });
   };
@@ -119,12 +121,26 @@ export default function HabitacionPage() {
       <div className="flex align-items-center justify-content-end gap-2">
         <Button type="button" icon="pi pi-pen-to-square" onClick={() => handleEditHabitacion(rowData)}
           severity='info' outlined rounded data-pr-tooltip="Editar" />
-        {user?.rol.nombre==="ADMIN" && <Button type="button" outlined icon="pi pi-trash" severity="danger" onClick={() => confirmarAnulacion(rowData)} rounded data-pr-tooltip="Eliminar" />}
+        {userAuth?.user.rol.nombre==="ADMIN" && <Button type="button" outlined icon="pi pi-trash" severity="danger" onClick={() => confirmarAnulacion(rowData)} rounded data-pr-tooltip="Eliminar" />}
       </div>
     );
   };
 
   useEffect(() => {
+    const auth = async () => {
+      try {
+        const response: AuthModulo = await authModulo('Habitaciones');
+
+        if (!response.allowed) {
+          navigate('/Inicio');
+        }
+        setUserAuth(response);
+      } catch (error) {
+        console.error('Error fetching auth:', error);
+      }
+    }
+
+    auth();
     const fetchHabitaciones = async () => {
       try {
         const habitaciones = await HabitacionService.getAll();
@@ -142,8 +158,6 @@ export default function HabitacionPage() {
     const estadoOptions = [
       { label: 'Disponible', value: 'D' },
       { label: 'Reservada', value: 'R' },
-      { label: 'Ocupada', value: 'O' },
-      { label: 'Sucia', value: 'S' },
       { label: 'Limpieza', value: 'L' },
     ];
   

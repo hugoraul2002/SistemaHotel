@@ -8,16 +8,18 @@ import { InputIcon } from 'primereact/inputicon';
 import { InputText } from 'primereact/inputtext';
 import { Button } from 'primereact/button';
 import { Toast } from 'primereact/toast';
-import { Gasto, MetodoPago, OpcionPago } from '../types/types';
+import { AuthModulo, Gasto, MetodoPago, OpcionPago } from '../types/types';
 import { ConfirmDialog, confirmDialog } from 'primereact/confirmdialog';
 import { formatDate } from '../helpers/formatDate';
 import { createOpcionPago } from '../services/OpcionPagoService';
 import GastoDialog from '../components/gastos/GastoDialog';
-import { useUser } from '../hooks/UserContext';
+import { useNavigate } from 'react-router-dom';
+import { authModulo } from '../services/AuthService';
 
 const GastosPage: React.FC = () => {
   const toast = useRef<Toast>(null);
-  const { user } = useUser();
+  const [userAuth, setUserAuth] = useState<AuthModulo | null>(null);
+  const navigate = useNavigate();
   const [anulados, setAnulados] = useState<boolean>(false);
   const [gastos, setGastos] = useState<Gasto[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
@@ -152,7 +154,7 @@ const GastosPage: React.FC = () => {
           rounded
           data-pr-tooltip="Editar"
         />
-        {user?.rol.nombre === "ADMIN" && (
+        {userAuth?.user.rol.nombre === "ADMIN" && (
           <Button
             type="button"
             outlined
@@ -185,6 +187,22 @@ const GastosPage: React.FC = () => {
     fetchGastos();
   }, [anulados]);
 
+  useEffect(() => {
+    const auth = async () => {
+      try {
+        const response: AuthModulo = await authModulo('Gastos');
+
+        if (!response.allowed) {
+          navigate('/Inicio');
+        }
+        setUserAuth(response);
+      } catch (error) {
+        console.error('Error fetching auth:', error);
+      }
+    }
+
+    auth();
+  }, []);
   const aceptarAnular = async (gasto: Gasto) => {
     try {
       const response = await GastoService.updateAnulado(gasto.id);
