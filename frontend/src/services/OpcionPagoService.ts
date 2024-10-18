@@ -1,13 +1,11 @@
-import axios from 'axios';
+import { apiRequest } from '../helpers/clienteAxios'; 
 import { OpcionPago } from '../types/types';
 import dayjs from 'dayjs';
-
-const API_URL = 'http://localhost:3333/opcionPago';
 
 const getAllPagos = async () => {
     try {
         const token = localStorage.getItem('token');
-        const response = await axios.get<OpcionPago[]>(`${API_URL}`, {
+        const response = await apiRequest.get<OpcionPago[]>('/opcionPago', {
             headers: {
                 'Authorization': `Bearer ${token}`,
                 'Content-Type': 'application/json'
@@ -24,7 +22,7 @@ const createOpcionPago = async (data: OpcionPago) => {
     try {
         const token = localStorage.getItem('token');
         const dataWithDate = { ...data, fecha: dayjs(data.fecha).subtract(6, 'hour').format('YYYY-MM-DD') };
-        const response = await axios.post<OpcionPago>(`${API_URL}/store`, dataWithDate,{    
+        const response = await apiRequest.post<OpcionPago>('/opcionPago/store', dataWithDate, {    
             headers: {
                 'Authorization': `Bearer ${token}`,
                 'Content-Type': 'application/json'
@@ -40,7 +38,7 @@ const createOpcionPago = async (data: OpcionPago) => {
 const getOpcionPagoById = async (id: number) => {
     try {
         const token = localStorage.getItem('token');
-        const response = await axios.get<OpcionPago>(`${API_URL}/${id}`, {
+        const response = await apiRequest.get<OpcionPago>(`/opcionPago/${id}`, {
             headers: {
                 'Authorization': `Bearer ${token}`,
                 'Content-Type': 'application/json'
@@ -56,7 +54,7 @@ const getOpcionPagoById = async (id: number) => {
 const getOpcionPagoByDocumento = async (id: number, tipoDocumento: string) => {
     try {
         const token = localStorage.getItem('token');
-        const response = await axios.get<any>(`${API_URL}/documento/${tipoDocumento}/${id}`, {
+        const response = await apiRequest.get<any>(`/opcionPago/documento/${tipoDocumento}/${id}`, {
             headers: {
                 'Authorization': `Bearer ${token}`,
                 'Content-Type': 'application/json'
@@ -69,4 +67,4 @@ const getOpcionPagoByDocumento = async (id: number, tipoDocumento: string) => {
     }
 }
 
-export { getAllPagos, createOpcionPago, getOpcionPagoById , getOpcionPagoByDocumento}
+export { getAllPagos, createOpcionPago, getOpcionPagoById, getOpcionPagoByDocumento };

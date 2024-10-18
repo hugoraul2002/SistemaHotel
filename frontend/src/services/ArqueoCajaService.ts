@@ -1,14 +1,12 @@
-import axios from 'axios';
 import { ArqueoCaja } from '../types/types';
 import dayjs from 'dayjs';
-
-const API_URL = 'http://localhost:3333/arqueoCaja';
+import { apiRequest } from '../helpers/clienteAxios';
 
 export class ArqueoCajaService {
   static async getAllArqueos() {
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.get(`${API_URL}/`, {
+      const response = await apiRequest.get('/arqueoCaja/', {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -34,7 +32,7 @@ export class ArqueoCajaService {
         anulado: arqueoData.anulado
       };
       const token = localStorage.getItem('token');
-      const response = await axios.post(`${API_URL}/store`, data, {
+      const response = await apiRequest.post('/arqueoCaja/store', data, {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
@@ -50,7 +48,7 @@ export class ArqueoCajaService {
   static async getArqueoById(arqueoId: number) {
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.get(`${API_URL}/${arqueoId}`, {
+      const response = await apiRequest.get(`/arqueoCaja/${arqueoId}`, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -65,7 +63,7 @@ export class ArqueoCajaService {
   static async updateArqueo(arqueoId: number, arqueoData: { aperturaId?: number; usuarioId?: number; fecha?: string; monto?: number; anulado?: boolean }) {
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.put(`${API_URL}/update/${arqueoId}`, arqueoData, {
+      const response = await apiRequest.put(`/arqueoCaja/update/${arqueoId}`, arqueoData, {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
@@ -81,7 +79,7 @@ export class ArqueoCajaService {
   static async updateAnulado(arqueoId: number, arqueoData: { anulado: boolean }) {
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.put(`${API_URL}/updateAnulado/${arqueoId}`, arqueoData, {
+      const response = await apiRequest.put(`/arqueoCaja/updateAnulado/${arqueoId}`, arqueoData, {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
@@ -97,7 +95,7 @@ export class ArqueoCajaService {
   static async deleteArqueo(arqueoId: number) {
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.delete(`${API_URL}/delete/${arqueoId}`, {
+      const response = await apiRequest.delete(`/arqueoCaja/delete/${arqueoId}`, {
         headers: {
           'Authorization': `Bearer ${token}`
         }

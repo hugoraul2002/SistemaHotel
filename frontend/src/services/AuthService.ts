@@ -1,7 +1,6 @@
-import axios from 'axios';
 import { Usuario, UserCliente } from '../types/types';
 import { AuthModulo } from '../types/types';
-const API_URL = 'http://localhost:3333/auth';
+import { apiRequest } from '../helpers/clienteAxios';
 
 interface RegisterData {
   username: string;
@@ -20,12 +19,12 @@ interface AuthResponse {
 }
 
 const register = async (data: RegisterData): Promise<AuthResponse> => {
-  const response = await axios.post<AuthResponse>(`${API_URL}/register`, data);
+  const response = await apiRequest.post<AuthResponse>('/auth/register', data);
   return response.data;
 };
 
 const registerCliente = async (data: UserCliente): Promise<AuthResponse> => {
-  const response = await axios.post<AuthResponse>(`${API_URL}/registerCliente`, data);
+  const response = await apiRequest.post<AuthResponse>('/auth/registerCliente', data);
   if (response.status === 200) {
     localStorage.setItem('token', response.data.token);
     localStorage.setItem('auth', JSON.stringify(response.data.user));
@@ -34,7 +33,7 @@ const registerCliente = async (data: UserCliente): Promise<AuthResponse> => {
 };
 
 const login = async (data: LoginData): Promise<AuthResponse> => {
-  const response = await axios.post<AuthResponse>(`${API_URL}/login`, data);
+  const response = await apiRequest.post<AuthResponse>('/auth/login', data);
   if (response.status === 200) {
     localStorage.setItem('token', response.data.token);
     localStorage.setItem('auth', JSON.stringify(response.data.user));
@@ -45,9 +44,9 @@ const login = async (data: LoginData): Promise<AuthResponse> => {
 
 const logout = async (): Promise<void> => {
   const token = localStorage.getItem('token');
-  if (!token) throw new Error('No se encontro token.');
+  if (!token) throw new Error('No se encontró token.');
 
-  await axios.post(`${API_URL}/logout`, {}, {
+  await apiRequest.post('/auth/logout', {}, {
     headers: {
       'Authorization': `Bearer ${token}`
     }
@@ -60,14 +59,15 @@ const logout = async (): Promise<void> => {
 const me = async (): Promise<Usuario> => {
   try {
     const token = localStorage.getItem('token');
-    if (!token) throw new Error('No se encontro token.');
-  
-    const response = await axios.get(`${API_URL}/me`, {
+    if (!token) throw new Error('No se encontró token.');
+
+    const response = await apiRequest.get('/auth/me', {
       headers: {
         'Authorization': `Bearer ${token}`
       }
     });
     if (response.status !== 200) throw new Error('No se pudo obtener el usuario.');
+    
     const user: Usuario = {
       id: response.data.user.id,
       full_name: response.data.user.fullName,
@@ -85,15 +85,13 @@ const me = async (): Promise<Usuario> => {
   }
 };
 
-const authModulo = async (modulo:string ): Promise<AuthModulo> => {
+const authModulo = async (modulo: string): Promise<AuthModulo> => {
   try {
-    const response = await axios.post<AuthModulo>(`${API_URL}/authModulo`, {modulo},
-      {
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
-        }
+    const response = await apiRequest.post<AuthModulo>('/auth/authModulo', { modulo }, {
+      headers: {
+        'Authorization': `Bearer ${localStorage.getItem('token')}`
       }
-    );
+    });
     return response.data;    
   } catch (error) {
     console.error('Error auth:', error);

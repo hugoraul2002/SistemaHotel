@@ -1,13 +1,11 @@
-import axios from 'axios';
-import {TipoGasto}  from '../types/types';
-
-const API_URL = 'http://localhost:3333/tiposGastos';
+import { apiRequest } from '../helpers/clienteAxios';
+import { TipoGasto } from '../types/types';
 
 export class TipoGastoService {
   static async getAllTipoGastos(anulados: boolean) {
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.post(`${API_URL}/`, {anulados},{
+      const response = await apiRequest.post('/', { anulados }, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -22,7 +20,7 @@ export class TipoGastoService {
   static async createTipoGasto(tipoGastoData: TipoGasto) {
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.post(`${API_URL}/store`, tipoGastoData, {
+      const response = await apiRequest.post('/store', tipoGastoData, {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
@@ -38,7 +36,7 @@ export class TipoGastoService {
   static async getTipoGastoById(tipoGastoId: number) {
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.get(`${API_URL}/${tipoGastoId}`, {
+      const response = await apiRequest.get(`/${tipoGastoId}`, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -53,7 +51,7 @@ export class TipoGastoService {
   static async updateTipoGasto(tipoGastoId: number, tipoGastoData: Partial<TipoGasto>) {
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.put(`${API_URL}/update/${tipoGastoId}`, tipoGastoData, {
+      const response = await apiRequest.put(`/update/${tipoGastoId}`, tipoGastoData, {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
@@ -69,7 +67,7 @@ export class TipoGastoService {
   static async updateAnulado(tipoGastoId: number) {
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.put(`${API_URL}/updateAnulado/${tipoGastoId}`, {  }, {
+      const response = await apiRequest.put(`/updateAnulado/${tipoGastoId}`, {}, {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
@@ -85,7 +83,7 @@ export class TipoGastoService {
   static async deleteTipoGasto(tipoGastoId: number) {
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.delete(`${API_URL}/delete/${tipoGastoId}`, {
+      const response = await apiRequest.delete(`/delete/${tipoGastoId}`, {
         headers: {
           'Authorization': `Bearer ${token}`
         }

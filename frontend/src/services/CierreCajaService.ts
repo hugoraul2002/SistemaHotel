@@ -1,11 +1,11 @@
-import axios from 'axios';
-import {me} from './AuthService'
-const API_URL = 'http://localhost:3333/cierreCaja';
+import { me } from './AuthService';
+import { apiRequest } from '../helpers/clienteAxios';
+
 export class CierreCajaService {
   static async getAllCierres() {
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.get(`${API_URL}/`, {
+      const response = await apiRequest.get('/cierreCaja/', {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -24,7 +24,8 @@ export class CierreCajaService {
 
       cierreData.userId = user.id;
       cierreData.fecha = (new Date()).toISOString().slice(0, 19).replace('T', ' ');
-      const response = await axios.post(`${API_URL}/store`, cierreData, {
+
+      const response = await apiRequest.post('/cierreCaja/store', cierreData, {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
@@ -40,7 +41,7 @@ export class CierreCajaService {
   static async getCierreById(cierreId: number) {
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.get(`${API_URL}/${cierreId}`, {
+      const response = await apiRequest.get(`/cierreCaja/${cierreId}`, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -55,7 +56,7 @@ export class CierreCajaService {
   static async getEncabezadoCierre(idApertura: number) {
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.get(`${API_URL}/encabezadoCierre/${idApertura}`, {
+      const response = await apiRequest.get(`/cierreCaja/encabezadoCierre/${idApertura}`, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -64,7 +65,6 @@ export class CierreCajaService {
       return response.data;
     } catch (error) {
       console.error(`Error fetching cierre with id ${idApertura}:`, error);
-      console.error(`Error fetching cierre with id ${idApertura}:`, error);
       throw error;
     }
   }
@@ -72,7 +72,7 @@ export class CierreCajaService {
   static async getTransaccionesCierre(idApertura: number) {
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.get(`${API_URL}/transaccionesCierre/${idApertura}`, {
+      const response = await apiRequest.get(`/cierreCaja/transaccionesCierre/${idApertura}`, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -87,7 +87,7 @@ export class CierreCajaService {
   static async updateCierre(cierreId: number, cierreData: { arqueoId?: number; usuarioId?: number; fecha?: string; montoSistema?: number; observaciones?: string; anulado?: boolean }) {
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.put(`${API_URL}/update/${cierreId}`, cierreData, {
+      const response = await apiRequest.put(`/cierreCaja/update/${cierreId}`, cierreData, {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
@@ -103,7 +103,7 @@ export class CierreCajaService {
   static async updateAnulado(cierreId: number, cierreData: { anulado: boolean }) {
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.put(`${API_URL}/updateAnulado/${cierreId}`, cierreData, {
+      const response = await apiRequest.put(`/cierreCaja/updateAnulado/${cierreId}`, cierreData, {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'

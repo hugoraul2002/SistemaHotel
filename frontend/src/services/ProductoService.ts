@@ -1,35 +1,41 @@
-import axios from 'axios';
+import { apiRequest } from '../helpers/clienteAxios';
 import { Producto } from '../types/types';
-
 import { me } from './AuthService';
 import { fechaActual } from '../helpers/formatDate';
-const API_URL = 'http://localhost:3333/productos';
 
 export class ProductoService {
-    static async getAll(anulado:boolean) {
+    static async getAll(anulado: boolean) {
         try {
             const token = localStorage.getItem('token');
-            const response = await axios.post(API_URL,{anulado}, { headers: { 'Authorization': `Bearer ${token}` } });
+            const response = await apiRequest.post('/productos', { anulado }, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
             return response.data;
         } catch (error) {
             console.error('Error fetching products:', error);
             throw error;
         }
     }
+
     static async getRegistrosDropDown() {
         try {
             const token = localStorage.getItem('token');
-            const response = await axios.get(API_URL+"/getRegistrosDropDown", { headers: { 'Authorization': `Bearer ${token}` } });
+            const response = await apiRequest.get('/productos/getRegistrosDropDown', {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
             return response.data;
         } catch (error) {
             console.error('Error fetching products:', error);
             throw error;
         }
     }
+
     static async getProductoById(id: number) {
         try {
             const token = localStorage.getItem('token');
-            const response = await axios.get(`${API_URL}/${id}`, { headers: { 'Authorization': `Bearer ${token}` } });
+            const response = await apiRequest.get(`/productos/${id}`, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
             return response.data;
         } catch (error) {
             console.error('Error fetching product:', error);
@@ -41,14 +47,14 @@ export class ProductoService {
         const token = localStorage.getItem('token');
         const user = await me();
         try {
-            const newProducto  = {
+            const newProducto = {
                 ...producto,
                 fechaIngreso: fechaActual(),
                 userId: user.id
-            }
-            const response = await axios.post(API_URL+"/store", newProducto,
-                { headers: { 'Authorization': `Bearer ${token}` } }
-            );
+            };
+            const response = await apiRequest.post('/productos/store', newProducto, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
             return response.data;
         } catch (error) {
             console.error('Error creating product:', error);
@@ -60,8 +66,9 @@ export class ProductoService {
         try {
             const token = localStorage.getItem('token');
             const user = await me();
-            const data ={ ...producto, userId: user.id , fecha: fechaActual()};
-            const response = await axios.put(`${API_URL}/update/${producto.id}`, data, { headers: { 'Authorization': `Bearer ${token}` } 
+            const data = { ...producto, userId: user.id, fecha: fechaActual() };
+            const response = await apiRequest.put(`/productos/update/${producto.id}`, data, {
+                headers: { 'Authorization': `Bearer ${token}` }
             });
             return response.data;
         } catch (error) {
@@ -73,7 +80,9 @@ export class ProductoService {
     static async updateActivo(id: number) {
         try {
             const token = localStorage.getItem('token');
-            const response = await axios.put(`${API_URL}/updateActivo/${id}`, {},{ headers: { 'Authorization': `Bearer ${token}` } });
+            const response = await apiRequest.put(`/productos/updateActivo/${id}`, {}, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
             return response.data;
         } catch (error) {
             console.error('Error updating product:', error);
@@ -83,11 +92,10 @@ export class ProductoService {
 
     static async reporteHojaVida(data: any) {
         const token = localStorage.getItem('token');
-        console.log('data', data);
         try {
-            const response = await axios.post(API_URL+"/reporteHojaVida", data,
-                { headers: { 'Authorization': `Bearer ${token}` } }
-            );
+            const response = await apiRequest.post('/productos/reporteHojaVida', data, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
             return response.data;
         } catch (error) {
             console.error('Error querying product:', error);

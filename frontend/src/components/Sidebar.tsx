@@ -1,16 +1,46 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Sidebar } from 'primereact/sidebar';
 import { PanelMenu } from 'primereact/panelmenu';
 import { useNavigate } from 'react-router-dom';
 
 import { MenuItem } from 'primereact/menuitem';
-import { useUser } from '../hooks/UserContext';
+import { Usuario } from '../types/types';
+import { me } from '../services/AuthService';
+
 
 
 export default function Barra({ visible, setVisible }: { visible: boolean, setVisible: React.Dispatch<React.SetStateAction<boolean>> }) {
     const navigate = useNavigate();
-    const { user } = useUser();
-
+    const [user, setUser] = useState<Usuario | null>(null);
+    const [filteredItems, setFilteredItems] = useState<MenuItem[]>([]);
+    useEffect(() => {
+        const auth = async () => {
+            try {
+                const response: Usuario = await me();
+                let listadoItems = items;
+                
+                // Filtrar items si el rol es RECEPCIONISTA
+                if (response.rol.nombre === 'RECEPCIONISTA') {
+                    listadoItems = items.filter(item => 
+                        item.label !== 'Catálogos' &&
+                        item.label !== 'Usuarios' &&
+                        item.label !== 'Reportes'
+                    );
+                } else {
+                    listadoItems = items;
+                }
+                
+                setFilteredItems(listadoItems);
+                setUser(response);
+            } catch (error) {
+                console.error('Error fetching auth:', error);
+            }
+        }
+    
+        auth();
+    }, []);
+    
+    
     const customIcons = (
         <>
             <button className="p-sidebar-icon p-link mr-2">
@@ -113,12 +143,7 @@ export default function Barra({ visible, setVisible }: { visible: boolean, setVi
     ];
 
 
-    const filteredItems = items.filter(item => {
-        if (item.label === 'Usuarios' || item.label === 'Mantenimientos' || item.label === 'Reservaciones' || item.label === 'Clientes' || item.label === 'Catálogos' || item.label === 'Productos'   || item.label === 'Check In' || item.label === 'Check Out' || item.label === 'Cajas' || item.label === 'Gastos' || item.label === 'Dashboard') {
-            return user?.rol.nombre != 'CLIENTE';
-        }
-        return true;
-    });
+    
 
     return (
         <div className="card flex justify-content-center">

@@ -331,7 +331,8 @@ export default function Reserva() {
             const enlacePago = await registrarEnlacePago(
               selectedHabitacion,
               cliente,
-              pago.idHash
+              pago.idHash,
+              (totalNoches * selectedHabitacion.precio)
             );
             console.log("Enlace de pago generado:", enlacePago);
             window.location.href = enlacePago.checkout_url;

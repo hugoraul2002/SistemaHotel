@@ -1,105 +1,104 @@
-import axios from 'axios';
-import {  fechaActual, formatDateTimeFormat2 } from '../helpers/formatDate';
-import {me} from '../services/AuthService';
-const API_URL = 'http://localhost:3333/fel';
-
+import { apiRequest } from '../helpers/clienteAxios';
+import { fechaActual, formatDateTimeFormat2 } from '../helpers/formatDate';
+import { me } from '../services/AuthService';
 
 const consultaNit = async (nit: string) => {
     try {
         const token = localStorage.getItem('token');
-        const response = await axios.get(`${API_URL}/consultaNit/${nit}`,{
+        const response = await apiRequest.get(`/fel/consultaNit/${nit}`, {
             headers: { 'Authorization': `Bearer ${token}` }
         });
         return response.data;
     } catch (error) {
-      console.error('Error fetching users:', error);
+        console.error('Error fetching NIT:', error);
+        throw error;
     }
 }
 
 const facturar = async (data: any) => {
     try {
         const token = localStorage.getItem('token');
-        const response = await axios.post(`${API_URL}/facturar/`,data,{
+        const response = await apiRequest.post(`/fel/facturar/`, data, {
             headers: { 'Authorization': `Bearer ${token}` }
         });
         return response.data;
     } catch (error) {
-      console.error('Error fetching users:', error);
+        console.error('Error during facturation:', error);
+        throw error;
     }
 }
 
- const  facturarHospedaje = async (data: any) => {
+const facturarHospedaje = async (data: any) => {
     try {
         const user = await me();
-        const fecha = formatDateTimeFormat2(new Date());
-        data = {...data, fecha,usuarioId:user.id};
+        const fecha = fechaActual();
+        data = { ...data, fecha, usuarioId: user.id };
         console.log(data);
         const token = localStorage.getItem('token');
-        const response = await axios.post(`${API_URL}/facturarHospedaje/`,data,{
+        const response = await apiRequest.post(`/fel/facturarHospedaje/`, data, {
             headers: { 'Authorization': `Bearer ${token}` }
         });
         console.log(response.data);
         return response.data;
     } catch (error) {
-      console.error('Error fetching users:', error);
+        console.error('Error during hospedaje facturation:', error);
+        throw error;
     }
 }
+
 
 const reporteFactura = async (data: any) => {
     try {
         const token = localStorage.getItem('token');
-        const response = await axios.post(`${API_URL}/reporteFactura/`,data,{
+        const response = await apiRequest.post(`/fel/reporteFactura/`, data, {
             headers: { 'Authorization': `Bearer ${token}` }
         });
         return response.data;
     } catch (error) {
-      console.error('Error fetching users:', error);
+        console.error('Error generating factura report:', error);
+        throw error;
     }
 }
 
-
 const getPDF = async (numFactura: string) => {
     try {
-      const token = localStorage.getItem('token');
+        const token = localStorage.getItem('token');
+        const response = await apiRequest.get(`/fel/extraerPDF/${numFactura}`, {
+            headers: { 'Authorization': `Bearer ${token}` },
+            responseType: 'blob',
+        });
 
-      const response = await axios.get(`${API_URL}/extraerPDF/${numFactura}`, {
-        headers: { 
-          'Authorization': `Bearer ${token}`,
-        },
-        responseType: 'blob', 
-      });
-
-      const pdfBlob = new Blob([response.data], { type: 'application/pdf' });
-      const pdfURL = window.URL.createObjectURL(pdfBlob);
-      
-      // Crear un enlace dinámico para descargar o abrir el PDF
-      const link = document.createElement('a');
-      link.href = pdfURL;
-      link.setAttribute('download', `Factura_${numFactura}.pdf`); // Nombre del archivo PDF
-      document.body.appendChild(link);
-      link.click();
-      link.remove();
+        const pdfBlob = new Blob([response.data], { type: 'application/pdf' });
+        const pdfURL = window.URL.createObjectURL(pdfBlob);
+        
+        // Crear un enlace dinámico para descargar o abrir el PDF
+        const link = document.createElement('a');
+        link.href = pdfURL;
+        link.setAttribute('download', `Factura_${numFactura}.pdf`); // Nombre del archivo PDF
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
   
     } catch (error) {
-      console.error('Error fetching PDF:', error);
+        console.error('Error fetching PDF:', error);
+        throw error;
     }
-  }
+}
 
-    const  anularFacturaFel = async (data: any) => {
-      try {
-          const user = await me();
-          data = {...data, fechaAnulacion:fechaActual(),idUsuario:user.id};
-          console.log(data);
-          const token = localStorage.getItem('token');
-          const response = await axios.post(`${API_URL}/anularFactura/`,data,{
-              headers: { 'Authorization': `Bearer ${token}` }
-          });
-          return response.data;
-      } catch (error) {
-        console.log(error);
-        console.error('Error fetching users:', error);
-      }
-  }
+const anularFacturaFel = async (data: any) => {
+    try {
+        const user = await me();
+        data = { ...data, fechaAnulacion: fechaActual(), idUsuario: user.id };
+        console.log(data);
+        const token = localStorage.getItem('token');
+        const response = await apiRequest.post(`/fel/anularFactura/`, data, {
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+        return response.data;
+    } catch (error) {
+        console.error('Error annulling factura:', error);
+        throw error;
+    }
+}
 
-
-export default {consultaNit , facturar , facturarHospedaje, reporteFactura, getPDF, anularFacturaFel}
+export default { consultaNit, facturar, facturarHospedaje, reporteFactura, getPDF, anularFacturaFel };

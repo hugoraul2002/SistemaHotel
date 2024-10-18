@@ -1,12 +1,10 @@
-import axios from 'axios';
-
-const API_URL = 'http://localhost:3333/usuarios'; 
+import { apiRequest } from '../helpers/clienteAxios';
 
 export class UsuarioService {
   static async getAllUsers() {
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.get(`${API_URL}/`,{
+      const response = await apiRequest.get('/', {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -21,7 +19,7 @@ export class UsuarioService {
   static async createUser(userData: { full_name: string; email: string; password: string; rol_id: number }) {
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.post(`${API_URL}/store`, userData,{
+      const response = await apiRequest.post('/store', userData, {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
@@ -37,12 +35,11 @@ export class UsuarioService {
   static async getUserById(userId: number) {
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.get(`${API_URL}/${userId}`,{
+      const response = await apiRequest.get(`/${userId}`, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
-      }
-      );
+      });
       return response.data;
     } catch (error) {
       console.error(`Error fetching user with id ${userId}:`, error);
@@ -53,7 +50,7 @@ export class UsuarioService {
   static async updateUser(userId: number, userData: { full_name: string; email: string; rolId: number }) {
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.put(`${API_URL}/update/${userId}`, userData,{
+      const response = await apiRequest.put(`/update/${userId}`, userData, {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
@@ -69,7 +66,7 @@ export class UsuarioService {
   static async updateAnulado(userId: number, userData: { anulado: boolean }) {
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.put(`${API_URL}/updateAnulado/${userId}`, userData,{
+      const response = await apiRequest.put(`/updateAnulado/${userId}`, userData, {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
@@ -85,7 +82,7 @@ export class UsuarioService {
   static async deleteUser(userId: number) {
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.delete(`${API_URL}/${userId}`,{
+      const response = await apiRequest.delete(`/${userId}`, {
         headers: {
           'Authorization': `Bearer ${token}`
         }

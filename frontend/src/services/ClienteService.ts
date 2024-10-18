@@ -1,75 +1,75 @@
-import axios from 'axios';
+import { apiRequest } from '../helpers/clienteAxios';
 import { Cliente } from '../types/types';
 
-const API_URL = 'http://localhost:3333/clientes'; 
-const API_URL_2 = 'http://localhost:3333/reservacionOnline';
-
 export class ClienteService {
-    static async getAll(anulados:boolean) {
+    static async getAll(anulados: boolean) {
         try {
-            console.log(anulados)
-        const token = localStorage.getItem('token');
-        const response = await axios.post(`${API_URL}/`,{anulados},{
-            headers: { 'Authorization': `Bearer ${token}` } 
-        });
-        return response.data;
-        } catch (error) {   
-        console.error('Error consultando clientes:', error);
-        throw error;
+            const token = localStorage.getItem('token');
+            const response = await apiRequest.post('/clientes', { anulados }, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            return response.data;
+        } catch (error) {
+            console.error('Error consultando clientes:', error);
+            throw error;
         }
     }
 
     static async getById(id: number) {
         try {
-        const token = localStorage.getItem('token');
-        const response = await axios.get(`${API_URL}/${id}`,{
-            headers: { 'Authorization': `Bearer ${token}` } 
-        });
-        return response.data;
+            const token = localStorage.getItem('token');
+            const response = await apiRequest.get(`/clientes/${id}`, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            return response.data;
         } catch (error) {
-        console.error('Error consultando cliente:', error);
-        throw error;
+            console.error('Error consultando cliente:', error);
+            throw error;
         }
     }
 
     static async create(data: Cliente) {
         try {
-        const token = localStorage.getItem('token');
-        const newData = {
-            nombre: data.nombre,
-            tipo_documento: data.tipoDocumento,
-            num_documento: data.numeroDocumento,
-            telefono: data.telefono,
-            direccion: data.direccion,
-            activo:true
-        }
-        const response = await axios.post(`${API_URL}/store`, newData,{
-            headers: { 'Authorization': `Bearer ${token}` ,
-            'Content-Type': 'application/json'} 
-        });
-        return response.data;
+            const token = localStorage.getItem('token');
+            const newData = {
+                nombre: data.nombre,
+                tipo_documento: data.tipoDocumento,
+                num_documento: data.numeroDocumento,
+                telefono: data.telefono,
+                direccion: data.direccion,
+                activo: true
+            };
+            const response = await apiRequest.post('/clientes/store', newData, {
+                headers: { 
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                }
+            });
+            return response.data;
         } catch (error) {
-        console.error('Error creando cliente:', error);
-        throw error;
+            console.error('Error creando cliente:', error);
+            throw error;
         }
     }
+
     static async createCliente(data: Cliente) {
         try {
-        const newData = {
-            nombre: data.nombre,
-            tipo_documento: data.tipoDocumento,
-            num_documento: data.numeroDocumento,
-            telefono: data.telefono,
-            direccion: data.direccion,
-            activo:true
-        }
-        const response = await axios.post(`${API_URL_2}/registrarCliente`, newData);
-        return response.data;
+            const newData = {
+                nombre: data.nombre,
+                tipo_documento: data.tipoDocumento,
+                num_documento: data.numeroDocumento,
+                telefono: data.telefono,
+                direccion: data.direccion,
+                activo: true
+            };
+            const response = await apiRequest.post('/reservacionOnline/registrarCliente', newData);
+            return response.data;
         } catch (error) {
-        console.error('Error creando cliente:', error);
-        throw error;
+            console.error('Error creando cliente:', error);
+            throw error;
         }
     }
+
     static async update(id: number, data: Cliente) {
         try {
             const updateData = {
@@ -79,11 +79,13 @@ export class ClienteService {
                 telefono: data.telefono,
                 direccion: data.direccion,
                 activo: data.activo
-            }
+            };
             const token = localStorage.getItem('token');
-            const response = await axios.put(`${API_URL}/update/${id}`, updateData,{
-                headers: { 'Authorization': `Bearer ${token}` ,
-                'Content-Type': 'application/json'} 
+            const response = await apiRequest.put(`/clientes/update/${id}`, updateData, {
+                headers: { 
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                }
             });
             return response.data;
         } catch (error) {
@@ -91,13 +93,15 @@ export class ClienteService {
             throw error;
         }
     }
+
     static async updateActivo(id: number) {
         try {
             const token = localStorage.getItem('token');
-            const response = await axios.put(`${API_URL}/updateActivo/${id}`,{},{
-                headers: { 'Authorization': `Bearer ${token}`,
-                'Content-Type': 'application/json'
-            } 
+            const response = await apiRequest.put(`/clientes/updateActivo/${id}`, {}, {
+                headers: { 
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                }
             });
             return response.data;
         } catch (error) {
@@ -109,8 +113,10 @@ export class ClienteService {
     static async delete(id: number) {
         try {
             const token = localStorage.getItem('token');
-            const response = await axios.delete(`${API_URL}/delete/${id}`,{
-                headers: { 'Authorization': `Bearer ${token}` } 
+            const response = await apiRequest.delete(`/clientes/delete/${id}`, {
+                headers: { 
+                    'Authorization': `Bearer ${token}` 
+                }
             });
             return response.data;
         } catch (error) {
@@ -118,6 +124,4 @@ export class ClienteService {
             throw error;
         }
     }
-
-
 }

@@ -1,14 +1,11 @@
-import axios from 'axios';
+import { apiRequest } from '../helpers/clienteAxios';
 import { Rol } from '../types/types';
-const API_URL = 'http://localhost:3333'; // Ajusta esto según tu configuración de API
-
-
 
 export const RolService = {
   async getAllRols(): Promise<Rol[]> {
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.get(`${API_URL}/roles`,{
+      const response = await apiRequest.get('/roles', {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -23,7 +20,7 @@ export const RolService = {
   async getRolById(id: number): Promise<Rol> {
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.get(`${API_URL}/roles/${id}`,{
+      const response = await apiRequest.get(`/roles/${id}`, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -38,7 +35,7 @@ export const RolService = {
   async createRol(rol: Rol): Promise<Rol> {
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.post(`${API_URL}/roles`, rol,{
+      const response = await apiRequest.post('/roles', rol, {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
@@ -54,7 +51,7 @@ export const RolService = {
   async updateRol(id: number, rol: Rol): Promise<Rol> {
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.put(`${API_URL}/roles/${id}`, rol,{
+      const response = await apiRequest.put(`/roles/${id}`, rol, {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
@@ -70,7 +67,7 @@ export const RolService = {
   async deleteRol(id: number): Promise<void> {
     try {
       const token = localStorage.getItem('token');
-      await axios.delete(`${API_URL}/roles/${id}`,{
+      await apiRequest.delete(`/roles/${id}`, {
         headers: {
           'Authorization': `Bearer ${token}`
         }

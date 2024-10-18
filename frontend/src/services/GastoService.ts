@@ -1,15 +1,19 @@
-import axios from 'axios';
+import { apiRequest } from '../helpers/clienteAxios';
 import { Gasto, Usuario } from '../types/types';
 import dayjs from 'dayjs';
-import {me} from './AuthService'
-const API_URL = 'http://localhost:3333/gastos';
+import { me } from './AuthService';
 
 export class GastoService {
-  static async getAllGastos(anulados:boolean) {
+  static async getAllGastos(anulados: boolean) {
     try {
-      const token = localStorage.getItem('token');    
-      const user: Usuario = await me()
-      const response = await axios.post(`${API_URL}/`,{anulados,opcion:user.rol.nombre =='ADMIN' ? 1 : 2, userId:user.id, fecha: dayjs(new Date()).format('YYYY-MM-DD')}, {
+      const token = localStorage.getItem('token');
+      const user: Usuario = await me();
+      const response = await apiRequest.post('/', {
+        anulados,
+        opcion: user.rol.nombre === 'ADMIN' ? 1 : 2,
+        userId: user.id,
+        fecha: dayjs(new Date()).format('YYYY-MM-DD')
+      }, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -23,20 +27,18 @@ export class GastoService {
 
   static async createGasto(gastoData: Gasto) {
     try {
-      console.log(gastoData);
-      const data = {id:gastoData.id, 
-
-    userId: JSON.parse(localStorage.getItem('auth')!).id,
-    tipoGastoId: gastoData.tipoGastoId,
-    proveedorId: gastoData.proveedorId,
-    descripcion: gastoData.descripcion,
-    monto: gastoData.monto,
-    fecha:dayjs(gastoData.fecha).add(6, 'hour').format('YYYY-MM-DD'),
-    anulado: false
-      }
-      console.log(data);
+      const data = {
+        id: gastoData.id,
+        userId: JSON.parse(localStorage.getItem('auth')!).id,
+        tipoGastoId: gastoData.tipoGastoId,
+        proveedorId: gastoData.proveedorId,
+        descripcion: gastoData.descripcion,
+        monto: gastoData.monto,
+        fecha: dayjs(gastoData.fecha).add(6, 'hour').format('YYYY-MM-DD'),
+        anulado: false
+      };
       const token = localStorage.getItem('token');
-      const response = await axios.post(`${API_URL}/store`, data, {
+      const response = await apiRequest.post('/store', data, {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
@@ -52,7 +54,7 @@ export class GastoService {
   static async getGastoById(gastoId: number) {
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.get(`${API_URL}/${gastoId}`, {
+      const response = await apiRequest.get(`/${gastoId}`, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -67,18 +69,17 @@ export class GastoService {
   static async updateGasto(gastoId: number, gastoData: Partial<Gasto>) {
     try {
       const token = localStorage.getItem('token');
-      const data = {id:gastoData.id, 
-
+      const data = {
+        id: gastoData.id,
         userId: JSON.parse(localStorage.getItem('auth')!).id,
         tipoGastoId: gastoData.tipoGastoId,
         proveedorId: gastoData.proveedorId,
         descripcion: gastoData.descripcion,
         monto: gastoData.monto,
-        fecha:dayjs(gastoData.fecha).format('YYYY-MM-DD'),
+        fecha: dayjs(gastoData.fecha).format('YYYY-MM-DD'),
         anulado: false
-          }
-          console.log('data',data, 'gastoData',gastoData);
-      const response = await axios.put(`${API_URL}/update/${gastoId}`, data, {
+      };
+      const response = await apiRequest.put(`/update/${gastoId}`, data, {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
@@ -94,7 +95,7 @@ export class GastoService {
   static async updateAnulado(gastoId: number) {
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.put(`${API_URL}/updateAnulado/${gastoId}`, { }, {
+      const response = await apiRequest.put(`/updateAnulado/${gastoId}`, {}, {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
@@ -107,26 +108,27 @@ export class GastoService {
     }
   }
 
-  static reporteGasto = async (data : any) => {
+  static async reporteGasto(data: any) {
     try {
-        const token = localStorage.getItem('token');
-        const reportData = {
-            fechaInicio : dayjs(data.fechaInicio).format('YYYY-MM-DD'),
-            fechaFin : dayjs(data.fechaFin).format('YYYY-MM-DD'),
-        }
-        const response = await axios.post(`${API_URL}/reporteGastos/`,reportData,{
-            headers: { 'Authorization': `Bearer ${token}` }
-        });
-        return response.data;
+      const token = localStorage.getItem('token');
+      const reportData = {
+        fechaInicio: dayjs(data.fechaInicio).format('YYYY-MM-DD'),
+        fechaFin: dayjs(data.fechaFin).format('YYYY-MM-DD'),
+      };
+      const response = await apiRequest.post('/reporteGastos/', reportData, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      return response.data;
     } catch (error) {
-      console.error('Error fetching users:', error);
+      console.error('Error generating report:', error);
+      throw error;
     }
-}
+  }
 
   static async deleteGasto(gastoId: number) {
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.delete(`${API_URL}/delete/${gastoId}`, {
+      const response = await apiRequest.delete(`/delete/${gastoId}`, {
         headers: {
           'Authorization': `Bearer ${token}`
         }

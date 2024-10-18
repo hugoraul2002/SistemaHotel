@@ -1,13 +1,10 @@
-import axios from 'axios';
-const API_URL = 'http://localhost:3333/claseHabitacion';
-const API_URL_2 = 'http://localhost:3333/reservacionOnline'; 
-
+import { apiRequest } from '../helpers/clienteAxios';
 
 export class ClaseHabitacionService {
   static async getAllClaseHabitaciones() {
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.get(`${API_URL}/`,{
+      const response = await apiRequest.get('/claseHabitacion/', {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -21,8 +18,7 @@ export class ClaseHabitacionService {
 
   static async getClasesReservacion() {
     try {
-      
-      const response = await axios.get(`${API_URL_2}/clasesHabitacion`);
+      const response = await apiRequest.get('/reservacionOnline/clasesHabitacion');
       return response.data;
     } catch (error) {
       console.error('Error fetching clase habitaciones:', error);
@@ -32,8 +28,7 @@ export class ClaseHabitacionService {
 
   static async getClasesHabitaciones() {
     try {
-      const response = await axios.get(`${API_URL}/habitaciones`
-      );
+      const response = await apiRequest.get('/claseHabitacion/habitaciones');
       return response.data;
     } catch (error) {
       console.error('Error fetching clase habitaciones:', error);
@@ -44,7 +39,7 @@ export class ClaseHabitacionService {
   static async createClaseHabitacion(data: { nombre: string; }) {
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.post(`${API_URL}/store`, data,{
+      const response = await apiRequest.post('/claseHabitacion/store', data, {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
@@ -60,7 +55,7 @@ export class ClaseHabitacionService {
   static async getClaseHabitacionById(id: number) {
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.get(`${API_URL}/${id}`,{
+      const response = await apiRequest.get(`/claseHabitacion/${id}`, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -72,10 +67,10 @@ export class ClaseHabitacionService {
     }
   }
 
-  static async updateClaseHabitacion(id: number, data: { nombre?: string}) {
+  static async updateClaseHabitacion(id: number, data: { nombre?: string }) {
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.put(`${API_URL}/update/${id}`, data,{
+      const response = await apiRequest.put(`/claseHabitacion/update/${id}`, data, {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
@@ -91,7 +86,7 @@ export class ClaseHabitacionService {
   static async updateAnulado(id: number, data: { anulado: boolean }) {
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.put(`${API_URL}/updateAnulado/${id}`, data,{
+      const response = await apiRequest.put(`/claseHabitacion/updateAnulado/${id}`, data, {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
@@ -107,7 +102,7 @@ export class ClaseHabitacionService {
   static async deleteClaseHabitacion(id: number) {
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.delete(`${API_URL}/${id}`,{
+      const response = await apiRequest.delete(`/claseHabitacion/${id}`, {
         headers: {
           'Authorization': `Bearer ${token}`
         }

@@ -1,12 +1,10 @@
-import axios from 'axios';
-
-const API_URL = 'http://localhost:3333/nivel';
+import { apiRequest } from '../helpers/clienteAxios'; 
 
 export class NivelService {
   static async getAllNiveles() {
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.get(`${API_URL}/`,{
+      const response = await apiRequest.get('/nivel/', {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -22,7 +20,7 @@ export class NivelService {
   static async createNivel(nivelData: { nombre: string }) {
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.post(`${API_URL}/store`, nivelData, {
+      const response = await apiRequest.post('/nivel/store', nivelData, {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
@@ -34,12 +32,11 @@ export class NivelService {
       throw error;
     }
   }
-  
 
   static async getNivelById(nivelId: number) {
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.get(`${API_URL}/${nivelId}`,{
+      const response = await apiRequest.get(`/nivel/${nivelId}`, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -56,7 +53,7 @@ export class NivelService {
     try {
       const token = localStorage.getItem('token');
       console.log(nivelData);
-      const response = await axios.put(`${API_URL}/update/${nivelId}`, nivelData, {
+      const response = await apiRequest.put(`/nivel/update/${nivelId}`, nivelData, {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
@@ -72,7 +69,7 @@ export class NivelService {
   static async updateAnulado(nivelId: number, nivelData: { anulado: boolean }) {
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.put(`${API_URL}/updateAnulado/${nivelId}`, nivelData,{
+      const response = await apiRequest.put(`/nivel/updateAnulado/${nivelId}`, nivelData, {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
@@ -89,7 +86,7 @@ export class NivelService {
     try {
       console.log(nivelId);
       const token = localStorage.getItem('token');
-      const response = await axios.delete(`${API_URL}/delete/${nivelId}`, { 
+      const response = await apiRequest.delete(`/nivel/delete/${nivelId}`, { 
         headers: {
           'Authorization': `Bearer ${token}`
         }

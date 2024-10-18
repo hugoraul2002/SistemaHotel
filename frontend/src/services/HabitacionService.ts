@@ -1,115 +1,113 @@
-import axios from 'axios';
+import { apiRequest } from '../helpers/clienteAxios';
 import { Habitacion } from '../types/types';
-
-const API_URL = 'http://localhost:3333/habitaciones'; 
-const API_URL_2 = 'http://localhost:3333/reservacionOnline'; 
-
 
 export class HabitacionService {
     static async getAll() {
         try {
-        const token = localStorage.getItem('token');
-        const response = await axios.get(`${API_URL}/`,{
-            headers: { 'Authorization': `Bearer ${token}` } 
-        });
-        return response.data;
-        } catch (error) {   
-        console.error('Error fetching users:', error);
-        throw error;
+            const token = localStorage.getItem('token');
+            const response = await apiRequest.get('/habitaciones/', {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            return response.data;
+        } catch (error) {
+            console.error('Error fetching habitaciones:', error);
+            throw error;
         }
     }
 
-    static async getRecepcion(idNivel:number) {
+    static async getRecepcion(idNivel: number) {
         try {
-        const token = localStorage.getItem('token');
-        const response = await axios.get(`${API_URL}/recepcion/${idNivel}`,{
-            headers: { 'Authorization': `Bearer ${token}` } 
-        });
-        return response.data;
-        } catch (error) {   
-        console.error('Error fetching users:', error);
-        throw error;
+            const token = localStorage.getItem('token');
+            const response = await apiRequest.get(`/habitaciones/recepcion/${idNivel}`, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            return response.data;
+        } catch (error) {
+            console.error('Error fetching recepcion:', error);
+            throw error;
         }
     }
 
-    static async getHabitacionesSalida(idNivel:number) {
+    static async getHabitacionesSalida(idNivel: number) {
         try {
-        const token = localStorage.getItem('token');
-        const response = await axios.get(`${API_URL}/salidas/${idNivel}`,{
-            headers: { 'Authorization': `Bearer ${token}` } 
-        });
-        return response.data;
-        } catch (error) {   
-        console.error('Error fetching users:', error);
-        throw error;
+            const token = localStorage.getItem('token');
+            const response = await apiRequest.get(`/habitaciones/salidas/${idNivel}`, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            return response.data;
+        } catch (error) {
+            console.error('Error fetching habitaciones salida:', error);
+            throw error;
         }
     }
 
-    static async getReservacionProxima(idHabitacion:number) {
+    static async getReservacionProxima(idHabitacion: number) {
         try {
-        const token = localStorage.getItem('token');
-        const response = await axios.get(`${API_URL}/getReservacionProxima/${idHabitacion}`,{
-            headers: { 'Authorization': `Bearer ${token}` } 
-        });
-        return response.data;
-        } catch (error) {   
-        console.error('Error fetching users:', error);
-        throw error;
+            const token = localStorage.getItem('token');
+            const response = await apiRequest.get(`/habitaciones/getReservacionProxima/${idHabitacion}`, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            return response.data;
+        } catch (error) {
+            console.error('Error fetching reservacion proxima:', error);
+            throw error;
         }
     }
 
     static async getById(id: number) {
         try {
-        const token = localStorage.getItem('token');
-        const response = await axios.get(`${API_URL}/${id}`,{
-            headers: { 'Authorization': `Bearer ${token}` } 
-        });
-        return response.data;
+            const token = localStorage.getItem('token');
+            const response = await apiRequest.get(`/habitaciones/${id}`, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            return response.data;
         } catch (error) {
-        console.error('Error fetching user:', error);
-        throw error;
+            console.error('Error fetching habitacion:', error);
+            throw error;
         }
     }
 
     static async create(data: Habitacion) {
         try {
-        const token = localStorage.getItem('token');
-        const newData = {
-            nombre: data.nombre,
-            precio: data.precio,
-            tarifa: data.tarifa,
-            estado: data.estado,
-            nivelId: data.nivel.id,
-            claseHabitacionId: data.claseHabitacion.id,
-            numeroPersonas: data.numeroPersonas,
-            anulado:false
-        }
-        const response = await axios.post(`${API_URL}/store`, newData,{
-            headers: { 'Authorization': `Bearer ${token}` ,
-            'Content-Type': 'application/json'} 
-        });
-        return response.data;
+            const token = localStorage.getItem('token');
+            const newData = {
+                nombre: data.nombre,
+                precio: data.precio,
+                tarifa: data.tarifa,
+                estado: data.estado,
+                nivelId: data.nivel.id,
+                claseHabitacionId: data.claseHabitacion.id,
+                numeroPersonas: data.numeroPersonas,
+                anulado: false
+            };
+            const response = await apiRequest.post('/habitaciones/store', newData, {
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                }
+            });
+            return response.data;
         } catch (error) {
-        console.error('Error creating user:', error);
-        throw error;
+            console.error('Error creating habitacion:', error);
+            throw error;
         }
     }
 
     static async getHabitacionesDisponibles(data: any) {
         try {
-        const response = await axios.post(`${API_URL_2}/habitacionesDisponibles`, data,{
-            headers: { 
-            'Content-Type': 'application/json'} 
-        });
-        return response.data;
+            const response = await apiRequest.post('/reservacionOnline/habitacionesDisponibles', data, {
+                headers: { 'Content-Type': 'application/json' }
+            });
+            return response.data;
         } catch (error) {
-        console.error('Error creating user:', error);
-        throw error;
+            console.error('Error fetching habitaciones disponibles:', error);
+            throw error;
         }
     }
 
     static async update(id: number, data: Habitacion) {
         try {
+            const token = localStorage.getItem('token');
             const updateData = {
                 nombre: data.nombre,
                 precio: data.precio,
@@ -118,48 +116,47 @@ export class HabitacionService {
                 nivelId: data.nivel.id,
                 claseHabitacionId: data.claseHabitacion.id,
                 numeroPersonas: data.numeroPersonas,
-                anulado:false
-            }
-            console.log(updateData);
-        const token = localStorage.getItem('token');
-        const response = await axios.put(`${API_URL}/update/${id}`, updateData,{
-            headers: {
-              'Authorization': `Bearer ${token}`,
-              'Content-Type': 'application/json'
-            }
-          });
-        return response.data;
+                anulado: false
+            };
+            const response = await apiRequest.put(`/habitaciones/update/${id}`, updateData, {
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                }
+            });
+            return response.data;
         } catch (error) {
-        console.error('Error updating user:', error);
-        throw error;
+            console.error('Error updating habitacion:', error);
+            throw error;
         }
     }
 
     static async delete(id: number) {
         try {
-        const token = localStorage.getItem('token');
-        const response = await axios.delete(`${API_URL}/${id}`,{
-            headers: { 'Authorization': `Bearer ${token}` } 
-        });
-        return response.data;
+            const token = localStorage.getItem('token');
+            const response = await apiRequest.delete(`/${id}`, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            return response.data;
         } catch (error) {
-        console.error('Error deleting user:', error);
-        throw error;
+            console.error('Error deleting habitacion:', error);
+            throw error;
         }
     }
 
     static async updateAnulado(id: number, data: { anulado: boolean }) {
         try {
-            console.log(data, id);
-        const token = localStorage.getItem('token');
-        const response = await axios.put(`${API_URL}/updateAnulado/${id}`, data,{
-            headers: { 'Authorization': `Bearer ${token}` ,
-            'Content-Type': 'application/json'} 
-        });
-        return response.data;
+            const token = localStorage.getItem('token');
+            const response = await apiRequest.put(`/habitaciones/updateAnulado/${id}`, data, {
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                }
+            });
+            return response.data;
         } catch (error) {
-        console.error('Error updating user:', error);
-        throw error;
+            console.error('Error updating anulado:', error);
+            throw error;
         }
     }
 }

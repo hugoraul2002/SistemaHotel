@@ -1,15 +1,11 @@
-import axios from 'axios';
+import { apiRequest } from '../helpers/clienteAxios';
 import { Proveedor } from '../types/types';
 
-const API_URL = 'http://localhost:3333/proveedores';
-// const API_URL = import.meta.env.API_IP + '/proveedores';
-
-
 export class ProveedorService {
-  static async getAllProveedors(anulados:boolean) {
+  static async getAllProveedors(anulados: boolean) {
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.post(`${API_URL}/`,{anulados}, {
+      const response = await apiRequest.post('/proveedores', { anulados }, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -24,7 +20,7 @@ export class ProveedorService {
   static async createProveedor(proveedorData: Proveedor) {
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.post(`${API_URL}/store`, proveedorData, {
+      const response = await apiRequest.post('/proveedores/store', proveedorData, {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
@@ -40,7 +36,7 @@ export class ProveedorService {
   static async getProveedorById(proveedorId: number) {
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.get(`${API_URL}/${proveedorId}`, {
+      const response = await apiRequest.get(`/proveedores/${proveedorId}`, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -55,7 +51,7 @@ export class ProveedorService {
   static async updateProveedor(proveedorId: number, proveedorData: Partial<Proveedor>) {
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.put(`${API_URL}/update/${proveedorId}`, proveedorData, {
+      const response = await apiRequest.put(`/proveedores/update/${proveedorId}`, proveedorData, {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
@@ -71,7 +67,7 @@ export class ProveedorService {
   static async updateAnulado(proveedorId: number) {
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.put(`${API_URL}/updateAnulado/${proveedorId}`, {  }, {
+      const response = await apiRequest.put(`/proveedores/updateAnulado/${proveedorId}`, {}, {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
@@ -87,7 +83,7 @@ export class ProveedorService {
   static async deleteProveedor(proveedorId: number) {
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.delete(`${API_URL}/delete/${proveedorId}`, {
+      const response = await apiRequest.delete(`/proveedores/delete/${proveedorId}`, {
         headers: {
           'Authorization': `Bearer ${token}`
         }

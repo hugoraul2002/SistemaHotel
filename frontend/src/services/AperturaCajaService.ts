@@ -1,16 +1,17 @@
-import axios from 'axios';
 import { AperturaCaja, Usuario } from '../types/types';
-import {me} from '../services/AuthService';
+import { me } from '../services/AuthService';
 import dayjs from 'dayjs';
-
-const API_URL = 'http://localhost:3333/aperturaCaja';
+import { apiRequest } from '../helpers/clienteAxios';
 
 export class AperturaCajaService {
   static async getAllAperturas() {
     try {
       const token = localStorage.getItem('token');
       const user = await me();
-      const response = await axios.post(`${API_URL}/`,{userId:user.id,userRol:user.rol.nombre} ,{
+      const response = await apiRequest.post('/aperturaCaja/', {
+        userId: user.id,
+        userRol: user.rol.nombre
+      }, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -22,11 +23,9 @@ export class AperturaCajaService {
     }
   }
 
-  static async createApertura(aperturaData:AperturaCaja) {
+  static async createApertura(aperturaData: AperturaCaja) {
     try {
       const token = localStorage.getItem('token');
-      console.log(aperturaData)
-
       const formatDateTime = (date: Date) => {
         return date.toISOString().slice(0, 19).replace('T', ' ');
       };
@@ -36,8 +35,8 @@ export class AperturaCajaService {
         observaciones: aperturaData.observaciones,
         monto: aperturaData.monto,
         anulado: aperturaData.anulado
-      }
-      const response = await axios.post(`${API_URL}/store`, data, {
+      };
+      const response = await apiRequest.post('/aperturaCaja/store', data, {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
@@ -53,7 +52,7 @@ export class AperturaCajaService {
   static async getAperturaById(aperturaId: number) {
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.get(`${API_URL}/${aperturaId}`, {
+      const response = await apiRequest.get(`/aperturaCaja/${aperturaId}`, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -67,13 +66,10 @@ export class AperturaCajaService {
 
   static async getAperturaUsuario() {
     try {
-
       const token = localStorage.getItem('token');
-      const usuario : Usuario = await me();
-      console.log("USUARIO", usuario)
-      console.log("url",`${API_URL}/aperturaActiva/${usuario.id}`)
-      const response = await axios.get(`${API_URL}/activa/${usuario.id}`, {
-        headers: { 
+      const usuario: Usuario = await me();
+      const response = await apiRequest.get(`/aperturaCaja/activa/${usuario.id}`, {
+        headers: {
           'Authorization': `Bearer ${token}`
         }
       });
@@ -87,7 +83,7 @@ export class AperturaCajaService {
   static async updateApertura(aperturaId: number, aperturaData: { userId?: number; fecha?: string; observaciones?: string; monto?: number; anulado?: boolean }) {
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.put(`${API_URL}/update/${aperturaId}`, aperturaData, {
+      const response = await apiRequest.put(`/aperturaCaja/update/${aperturaId}`, aperturaData, {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
@@ -103,7 +99,7 @@ export class AperturaCajaService {
   static async updateAnulado(aperturaId: number, aperturaData: { anulado: boolean }) {
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.put(`${API_URL}/updateAnulado/${aperturaId}`, aperturaData, {
+      const response = await apiRequest.put(`/aperturaCaja/updateAnulado/${aperturaId}`, aperturaData, {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
@@ -119,7 +115,7 @@ export class AperturaCajaService {
   static async deleteApertura(aperturaId: number) {
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.delete(`${API_URL}/delete/${aperturaId}`, {
+      const response = await apiRequest.delete(`/aperturaCaja/delete/${aperturaId}`, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
