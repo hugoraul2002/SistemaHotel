@@ -5,7 +5,7 @@ export class TipoGastoService {
   static async getAllTipoGastos(anulados: boolean) {
     try {
       const token = localStorage.getItem('token');
-      const response = await apiRequest.post('/', { anulados }, {
+      const response = await apiRequest.post('/tiposGastos/', { anulados }, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -20,7 +20,7 @@ export class TipoGastoService {
   static async createTipoGasto(tipoGastoData: TipoGasto) {
     try {
       const token = localStorage.getItem('token');
-      const response = await apiRequest.post('/store', tipoGastoData, {
+      const response = await apiRequest.post('/tiposGastos/store', tipoGastoData, {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
@@ -36,7 +36,7 @@ export class TipoGastoService {
   static async getTipoGastoById(tipoGastoId: number) {
     try {
       const token = localStorage.getItem('token');
-      const response = await apiRequest.get(`/${tipoGastoId}`, {
+      const response = await apiRequest.get(`/tiposGastos/${tipoGastoId}`, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -51,7 +51,7 @@ export class TipoGastoService {
   static async updateTipoGasto(tipoGastoId: number, tipoGastoData: Partial<TipoGasto>) {
     try {
       const token = localStorage.getItem('token');
-      const response = await apiRequest.put(`/update/${tipoGastoId}`, tipoGastoData, {
+      const response = await apiRequest.put(`/tiposGastos/update/${tipoGastoId}`, tipoGastoData, {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
@@ -67,7 +67,7 @@ export class TipoGastoService {
   static async updateAnulado(tipoGastoId: number) {
     try {
       const token = localStorage.getItem('token');
-      const response = await apiRequest.put(`/updateAnulado/${tipoGastoId}`, {}, {
+      const response = await apiRequest.put(`/tiposGastos/updateAnulado/${tipoGastoId}`, {}, {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
@@ -83,7 +83,7 @@ export class TipoGastoService {
   static async deleteTipoGasto(tipoGastoId: number) {
     try {
       const token = localStorage.getItem('token');
-      const response = await apiRequest.delete(`/delete/${tipoGastoId}`, {
+      const response = await apiRequest.delete(`/tiposGastos/delete/${tipoGastoId}`, {
         headers: {
           'Authorization': `Bearer ${token}`
         }

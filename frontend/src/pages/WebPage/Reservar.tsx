@@ -173,15 +173,17 @@ export default function Reserva() {
     fetchClaseHabitaciones();
   }, []);
   useEffect(() => {
-    const total =
-      dates &&
+    let total :number = 0;
+    if (dates &&
       dates !== null &&
       dates[0] !== null &&
       dates[1] !== null &&
-      selectedHabitacion
-        ? 
-          (dayjs(dates[1]).diff(dayjs(dates[0]), "days") + 1)
-        : 0;
+      selectedHabitacion){
+        total=(dayjs(dates[1]).diff(dayjs(dates[0]), "days"))
+        if (total===0) total=1;
+    }else{
+      total=0;
+    }
     setTotalNoches(total);
   }, [selectedHabitacion, dates]);
   const handleClienteChange = (field: keyof Cliente, value: string) => {

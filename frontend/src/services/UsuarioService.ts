@@ -4,7 +4,7 @@ export class UsuarioService {
   static async getAllUsers() {
     try {
       const token = localStorage.getItem('token');
-      const response = await apiRequest.get('/', {
+      const response = await apiRequest.get('/usuarios/', {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -19,7 +19,7 @@ export class UsuarioService {
   static async createUser(userData: { full_name: string; email: string; password: string; rol_id: number }) {
     try {
       const token = localStorage.getItem('token');
-      const response = await apiRequest.post('/store', userData, {
+      const response = await apiRequest.post('/usuarios/store', userData, {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
@@ -35,7 +35,7 @@ export class UsuarioService {
   static async getUserById(userId: number) {
     try {
       const token = localStorage.getItem('token');
-      const response = await apiRequest.get(`/${userId}`, {
+      const response = await apiRequest.get(`/usuarios/${userId}`, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -50,7 +50,7 @@ export class UsuarioService {
   static async updateUser(userId: number, userData: { full_name: string; email: string; rolId: number }) {
     try {
       const token = localStorage.getItem('token');
-      const response = await apiRequest.put(`/update/${userId}`, userData, {
+      const response = await apiRequest.put(`/usuarios/update/${userId}`, userData, {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
@@ -66,7 +66,7 @@ export class UsuarioService {
   static async updateAnulado(userId: number, userData: { anulado: boolean }) {
     try {
       const token = localStorage.getItem('token');
-      const response = await apiRequest.put(`/updateAnulado/${userId}`, userData, {
+      const response = await apiRequest.put(`/usuarios/updateAnulado/${userId}`, userData, {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
@@ -82,7 +82,7 @@ export class UsuarioService {
   static async deleteUser(userId: number) {
     try {
       const token = localStorage.getItem('token');
-      const response = await apiRequest.delete(`/${userId}`, {
+      const response = await apiRequest.delete(`/usuarios/${userId}`, {
         headers: {
           'Authorization': `Bearer ${token}`
         }

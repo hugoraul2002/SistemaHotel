@@ -8,7 +8,7 @@ export class GastoService {
     try {
       const token = localStorage.getItem('token');
       const user: Usuario = await me();
-      const response = await apiRequest.post('/', {
+      const response = await apiRequest.post('/gastos/', {
         anulados,
         opcion: user.rol.nombre === 'ADMIN' ? 1 : 2,
         userId: user.id,
@@ -38,7 +38,7 @@ export class GastoService {
         anulado: false
       };
       const token = localStorage.getItem('token');
-      const response = await apiRequest.post('/store', data, {
+      const response = await apiRequest.post('/gastos/store', data, {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
@@ -54,7 +54,7 @@ export class GastoService {
   static async getGastoById(gastoId: number) {
     try {
       const token = localStorage.getItem('token');
-      const response = await apiRequest.get(`/${gastoId}`, {
+      const response = await apiRequest.get(`/gastos/${gastoId}`, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -79,7 +79,7 @@ export class GastoService {
         fecha: dayjs(gastoData.fecha).format('YYYY-MM-DD'),
         anulado: false
       };
-      const response = await apiRequest.put(`/update/${gastoId}`, data, {
+      const response = await apiRequest.put(`/gastos/update/${gastoId}`, data, {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
@@ -95,7 +95,7 @@ export class GastoService {
   static async updateAnulado(gastoId: number) {
     try {
       const token = localStorage.getItem('token');
-      const response = await apiRequest.put(`/updateAnulado/${gastoId}`, {}, {
+      const response = await apiRequest.put(`/gastos/updateAnulado/${gastoId}`, {}, {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
@@ -115,7 +115,7 @@ export class GastoService {
         fechaInicio: dayjs(data.fechaInicio).format('YYYY-MM-DD'),
         fechaFin: dayjs(data.fechaFin).format('YYYY-MM-DD'),
       };
-      const response = await apiRequest.post('/reporteGastos/', reportData, {
+      const response = await apiRequest.post('/gastos/reporteGastos/', reportData, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       return response.data;
@@ -128,7 +128,7 @@ export class GastoService {
   static async deleteGasto(gastoId: number) {
     try {
       const token = localStorage.getItem('token');
-      const response = await apiRequest.delete(`/delete/${gastoId}`, {
+      const response = await apiRequest.delete(`/gastos/delete/${gastoId}`, {
         headers: {
           'Authorization': `Bearer ${token}`
         }

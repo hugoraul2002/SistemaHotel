@@ -85,7 +85,7 @@ export default class HabitacionController {
   async getHabitacionesRecepcion({ params, response }: HttpContext) {
     try {
       const habitaciones = await db.rawQuery(`
-        SELECT habitaciones.id, habitaciones.nombre, obtener_estado_habitacion(habitaciones.id,NOW()) AS estado, obtenerInfoEstado(habitaciones.id,estado,NOW()) AS numMinutos, clases_habitaciones.nombre AS clase, habitaciones.tarifa
+        SELECT habitaciones.id, habitaciones.nombre, obtener_estado_habitacion(habitaciones.id,DATE_SUB(NOW(), INTERVAL 6 HOUR)) AS estado, obtenerInfoEstado(habitaciones.id,estado,DATE_SUB(NOW(), INTERVAL 6 HOUR)) AS numMinutos, clases_habitaciones.nombre AS clase, habitaciones.tarifa
 	      FROM habitaciones	INNER JOIN clases_habitaciones ON clases_habitaciones.id = habitaciones.clase_habitacion_id
 	      WHERE habitaciones.anulado=0 AND habitaciones.nivel_id = ${params.id}
       `)
@@ -98,9 +98,9 @@ export default class HabitacionController {
   async gethabitacionesSalidas({ params, response }: HttpContext) {
     try {
       const habitaciones = await db.rawQuery(`
-        SELECT habitaciones.id, habitaciones.nombre, obtener_estado_habitacion(habitaciones.id,NOW()) AS estado, obtenerInfoEstado(habitaciones.id,estado,NOW()) AS numMinutos, clases_habitaciones.nombre AS clase, habitaciones.tarifa
+        SELECT habitaciones.id, habitaciones.nombre, obtener_estado_habitacion(habitaciones.id,DATE_SUB(NOW(), INTERVAL 6 HOUR)) AS estado, obtenerInfoEstado(habitaciones.id,estado,DATE_SUB(NOW(), INTERVAL 6 HOUR)) AS numMinutos, clases_habitaciones.nombre AS clase, habitaciones.tarifa
 	      FROM habitaciones	INNER JOIN clases_habitaciones ON clases_habitaciones.id = habitaciones.clase_habitacion_id
-	      WHERE (obtener_estado_habitacion(habitaciones.id,NOW()) = 'O' OR obtener_estado_habitacion(habitaciones.id,NOW()) = 'S')  AND habitaciones.anulado=0 AND habitaciones.nivel_id = ${params.id}
+	      WHERE (obtener_estado_habitacion(habitaciones.id,DATE_SUB(NOW(), INTERVAL 6 HOUR)) = 'O' OR obtener_estado_habitacion(habitaciones.id,DATE_SUB(NOW(), INTERVAL 6 HOUR)) = 'S')  AND habitaciones.anulado=0 AND habitaciones.nivel_id = ${params.id}
       `)
       response.status(200).json(habitaciones[0])
     } catch (error) {
@@ -116,9 +116,9 @@ export default class HabitacionController {
         .firstOrFail()
 
       const data = await db.rawQuery(`
-        SELECT  obtener_estado_habitacion(id,NOW()) AS estado, 
-        CASE WHEN obtener_estado_habitacion(id,NOW())='R' THEN
-        obtener_reservacion_proxima(id,NOW())
+        SELECT  obtener_estado_habitacion(id,DATE_SUB(NOW(), INTERVAL 6 HOUR)) AS estado, 
+        CASE WHEN obtener_estado_habitacion(id,DATE_SUB(NOW(), INTERVAL 6 HOUR))='R' THEN
+        obtener_reservacion_proxima(id,DATE_SUB(NOW(), INTERVAL 6 HOUR))
         ELSE 0 END AS idReservacion
         FROM habitaciones WHERE id= ${params.idHabitacion}
       `)

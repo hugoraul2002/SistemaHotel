@@ -289,7 +289,7 @@ const RegistroSalida = () => {
   };
 
   const centerContent = (
-    <div className="flex flex-wrap">
+    <div className="flex flex-wrap md:flex-nowrap gap-1">
       <div className="p-inputgroup">
         <Button
           id="buscarProducto"

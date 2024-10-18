@@ -107,7 +107,7 @@ const ReporteHojaVidaPage: React.FC = () => {
     useEffect(() => {
         const auth = async () => {
             try {
-              const response: AuthModulo = await authModulo('ReporteHojaVida');
+              const response: AuthModulo = await authModulo('HojaVidaProductos');
       
               if (!response.allowed) {
                 navigate('/Inicio');

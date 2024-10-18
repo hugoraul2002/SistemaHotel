@@ -339,7 +339,7 @@ export default class FacturacionFelController {
       const datosGenerales = {
         TrnEstNum: this.numEstablecimiento,
         TipTrnCod: 'FACT',
-        TrnNum: 444 + factura.id,
+        TrnNum: 555 + factura.id,
         TrnFec: fecha.split(' ')[0],
         MonCod: 'GTQ',
         TrnBenConNIT: nit,

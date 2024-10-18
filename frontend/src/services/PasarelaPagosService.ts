@@ -14,7 +14,7 @@ const registrarEnlacePago = async (habitacion: Habitacion, cliente: Cliente, idP
         {
           name: "Hospedaje de habitación " + habitacion.nombre,
           currency: "GTQ",
-          amount_in_cents: total * 100,
+          amount_in_cents: total * 100,          
           image_url: 'https://imgs.search.brave.com/1v19-lKHrcxrgPF8qoRgm7zMT-av42YD8rwvI3wcPGM/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9tZWRp/YS5nZXR0eWltYWdl/cy5jb20vaWQvMTI5/OTA5ODM4NC9lcy9m/b3RvL2ludGVyaW9y/LW1vZGVybm8tZGVs/LWRvcm1pdG9yaW8t/Zm90by1kZS1zdG9j/ay5qcGc_cz02MTJ4/NjEyJnc9MCZrPTIw/JmM9XzJUUDNEeVRN/Y2pkTXRoTXFESm0y/Z2ppdWNjRnFyVkxu/VEtuSG91N3l2dz0',
           quantity: 1
         }

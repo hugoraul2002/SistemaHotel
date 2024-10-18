@@ -50,7 +50,7 @@ const ReservacionesPage = () => {
 
   const fetchClientes = async () => {
     try {
-      const data = await ClienteService.getAll();
+      const data = await ClienteService.getAll(false);
       setClientes(data);
     } catch (error) {
       console.error('Error fetching clientes:', error);
