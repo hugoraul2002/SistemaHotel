@@ -7,6 +7,7 @@ import { StepperPanel } from 'primereact/stepperpanel';
 import RegistroPago from '../opcionesPago/OpcionPago';
 import consultaNit from '../../services/FacturacionFelService';
 import { ClienteFactura } from '../../types/types';
+import { Checkbox } from 'primereact/checkbox';
 interface FacturaDialogProps {
     visible: boolean;
     cliente: ClienteFactura;
@@ -16,9 +17,11 @@ interface FacturaDialogProps {
     onHide: () => void;
     onSave: (cliente: ClienteFactura, opcionesPago: any) => void;
     mostrarToast: (detalle: string, tipo: "success" | "info" | "warn" | "error") => void;
+    esFEL: boolean;
+    setEsFel: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-const FormRegistraFactura: React.FC<FacturaDialogProps> = ({ visible, cliente, total, opcionesPago, setOpcionesPago, onHide, onSave, mostrarToast }) => {
+const FormRegistraFactura: React.FC<FacturaDialogProps> = ({ visible, cliente, total, opcionesPago, setOpcionesPago, onHide, onSave, mostrarToast, esFEL, setEsFel }) => {
     const [nit, setNit] = useState(cliente.nit);
     const [nombre, setNombre] = useState(cliente.nombre);
     const [direccion, setDireccion] = useState(cliente.direccion);
@@ -71,6 +74,10 @@ const FormRegistraFactura: React.FC<FacturaDialogProps> = ({ visible, cliente, t
     };
 
     const handleNext = () => {
+        if (!nit || nit.trim() === ''  ) return;
+        if (esFEL && nit.trim() === 'CF' && total>2500) mostrarToast('El total de la facturación no debe ser mayor a Q2500', 'warn');
+        if (!esFEL) stepperRef.current.nextCallback();
+        console.log("si es fel");
         getApiResponseNit().then((valida) => {
             if (!valida) return;
             if (nit && nombre && errorNit === '') {
@@ -94,11 +101,24 @@ const FormRegistraFactura: React.FC<FacturaDialogProps> = ({ visible, cliente, t
         }
     }, [visible]);
 
+    useEffect(() => {
+        if (!esFEL) {
+            setNit(cliente.nit);
+            setNombre(cliente.nombre);
+            setDireccion(cliente.direccion);
+            setErrorNit('');
+        }
+    }, [esFEL]);
+
     return (
         <Dialog visible={visible} style={{ width: '600px' }} header="Registro de Factura" modal onHide={onHide}>
             <Stepper ref={stepperRef} linear>
                 <StepperPanel header="Datos del Cliente">
                     <div className="p-fluid">
+                        <div className='field flex items-center mb-2'>
+                        <Checkbox checked={esFEL} onChange={() => setEsFel(!esFEL)} />
+                        <label htmlFor="nit" className='ml-3'>Factura FEL</label>
+                        </div>
                         <div className="field">
                             <label htmlFor="nit">NIT</label>
                             <div className="p-inputgroup">
@@ -120,7 +140,7 @@ const FormRegistraFactura: React.FC<FacturaDialogProps> = ({ visible, cliente, t
                     </div>
 
                     <div className="flex justify-content-end pt-3">
-                        <Button label="Siguiente" disabled={!nit || !nombre || errorNit !== ''} icon="pi pi-arrow-right" onClick={handleNext} />
+                        <Button label="Siguiente" disabled={(esFEL && nit==="") || !nit || !nombre || errorNit !== ''} icon="pi pi-arrow-right" onClick={handleNext} />
                     </div>
                 </StepperPanel>
 

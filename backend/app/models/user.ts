@@ -37,10 +37,10 @@ export default class User extends compose(BaseModel, AuthFinder) {
   @column()
   declare anulado: boolean
 
-  @hasOne(() => Cliente, {
-    foreignKey: 'userId',
-  })
-  declare cliente: HasOne<typeof Cliente>
+  // @hasOne(() => Cliente, {
+  //   foreignKey: 'userId',
+  // })
+  // declare cliente: HasOne<typeof Cliente>
 
   @belongsTo(() => Rol, {
     foreignKey: 'rolId',

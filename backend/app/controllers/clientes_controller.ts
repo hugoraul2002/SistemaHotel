@@ -5,7 +5,8 @@ export default class ClientesController {
   async index({ request, response }: HttpContext) {
     try {
       const anulados = request.input('anulados', false)
-      const clientes = await Cliente.query().where('activo', !anulados).preload('user')
+      const clientes = await Cliente.query().where('activo', !anulados)
+      // .preload('user')
       return response.ok(clientes)
     } catch (error) {
       return response.internalServerError({ message: 'Error fetching clients', error })
@@ -20,6 +21,8 @@ export default class ClientesController {
         'nombre',
         'telefono',
         'direccion',
+        'nacionalidad',
+        'email',
         'activo',
       ])
       const cliente = await Cliente.create(data)
@@ -41,15 +44,19 @@ export default class ClientesController {
   async update({ params, request, response }: HttpContext) {
     try {
       const cliente = await Cliente.findOrFail(params.id)
+      const numDocumento = request.input('numeroDocumento')
       const data = request.only([
-        'userId',
+        // 'userId',
         'tipoDocumento',
         'numDocumento',
         'nombre',
         'telefono',
         'direccion',
+        'nacionalidad',
+        'email',
         'activo',
       ])
+      data.numDocumento = numDocumento
       cliente.merge(data)
       await cliente.save()
       return response.ok(cliente)

@@ -12,6 +12,8 @@ export default class extends BaseSchema {
       table.string('nombre').notNullable()
       table.string('telefono').notNullable()
       table.string('direccion').notNullable()
+      table.string('email').nullable()
+      table.string('nacionalidad').nullable()
       table.boolean('activo').notNullable().defaultTo(true)
     })
   }

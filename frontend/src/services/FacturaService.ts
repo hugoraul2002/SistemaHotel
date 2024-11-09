@@ -7,8 +7,8 @@ const reporteFactura = async (data: any) => {
     try {
         const token = localStorage.getItem('token');
         const reportData = {
-            fechaInicio: dayjs(data.fechaInicio).format('YYYY-MM-DD'),
-            fechaFin: dayjs(data.fechaFin).format('YYYY-MM-DD'),
+            fechaInicio: dayjs(data.fechaInicio).subtract(6, 'hour').format('YYYY-MM-DD'),
+            fechaFin: dayjs(data.fechaFin).subtract(6, 'hour').format('YYYY-MM-DD'),
         };
         const response = await apiRequest.post(`/facturas/reporteFactura/`, reportData, {
             headers: { 'Authorization': `Bearer ${token}` }

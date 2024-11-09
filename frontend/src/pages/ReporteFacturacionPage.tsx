@@ -36,7 +36,7 @@ const ReporteFacturasPage: React.FC = () => {
     const [fechaInicio, setFechaInicio] = useState<Date | null>(new Date());
     const [fechaFin, setFechaFin] = useState<Date | null>(new Date());
     const [selectedRow, setSelectedRow] = useState<ReporteFactura | null>(null);
-    const [formatoTicket, setFormatoTicket] = useState(false);
+    const [formatoTicket, setFormatoTicket] = useState(true);
     const fetchFacturas = async (data: { fechaInicio: string; fechaFin: string }) => {
         try {
             setLoading(true);
@@ -195,7 +195,7 @@ const ReporteFacturasPage: React.FC = () => {
                     severity='danger'
                     onClick={() =>{ formatoTicket ? downloadTicketPDF(rowData.id, rowData.numFactura) : downloadPDF(rowData.numFactura)}}
                     tooltip="Descargar PDF"
-                    disabled={rowData.anulado == 1 || rowData.autorizacionFel == null}
+                    disabled={rowData.anulado == 1 }
                     tooltipOptions={{ position: 'top' }}
                 />
                 <Button

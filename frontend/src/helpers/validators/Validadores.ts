@@ -15,6 +15,8 @@ export const ClienteSchema = z.object({
   num_documento: z.string().min(2, { message: 'El documento es obligatorio' }),
   telefono: z.string().min(8, { message: 'El teléfono debe tener al menos 8 caracteres' }),
   direccion: z.string().min(1, { message: 'La dirección es obligatoria' }),
+  nacionalidad: z.string().min(1, { message: 'La nacionalidad es obligatoria' }),
+  email: z.string().email({ message: 'Correo electrónico no válido' }),
 });
 
 export const ProveedorSchema = z.object({

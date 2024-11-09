@@ -10,11 +10,10 @@ import { Dropdown } from 'primereact/dropdown';
 import { ClienteDialogProps } from '../../types/types';
 import { ClienteSchema } from '../../helpers/validators/Validadores';
 import { ClienteValidador } from '../../helpers/validators/Validadores';
-import { useUser } from '../../hooks/UserContext';
 
 const ClienteDialog: React.FC<ClienteDialogProps> = ({ editar, id, onHide, visible, onSave }) => {
   const [tipoDocumento, setTipoDocumento] = useState<string>('NIT');
-  const { user } = useUser();
+
   const tipoDocumentoOptions = [
     { label: 'NIT', value: 'NIT' },
     { label: 'CUI', value: 'CUI' },
@@ -26,7 +25,9 @@ const ClienteDialog: React.FC<ClienteDialogProps> = ({ editar, id, onHide, visib
     tipoDocumento: '',
     documento: '',
     telefono: '',
-    direccion: ''
+    direccion: '',
+    email: '',
+    nacionalidad: ''
   };
 
   const { register, handleSubmit, setError, reset, setValue, formState: { errors, isSubmitting } } = useForm<ClienteValidador>({
@@ -44,6 +45,8 @@ const ClienteDialog: React.FC<ClienteDialogProps> = ({ editar, id, onHide, visib
           setValue('num_documento', cliente.numDocumento);
           setValue('telefono', cliente.telefono);
           setValue('direccion', cliente.direccion);
+          setValue('email', cliente.email);
+          setValue('nacionalidad', cliente.nacionalidad);
           setTipoDocumento(cliente.tipoDocumento)
         } else {
           reset(defaultValues);
@@ -62,7 +65,7 @@ const ClienteDialog: React.FC<ClienteDialogProps> = ({ editar, id, onHide, visib
   const onSubmit: SubmitHandler<ClienteValidador> = async (data) => {
     try {
       // const cliente: Cliente = { id, nombre: data.nombre, tipoDocumento, numeroDocumento: data.num_documento, telefono: data.telefono, direccion: data.direccion, activo: true,  );
-      const cliente :Cliente = { id, nombre: data.nombre, tipoDocumento, numeroDocumento: data.num_documento, telefono: data.telefono, direccion: data.direccion, activo: true, usuario: user! };
+      const cliente :Cliente = { id, nombre: data.nombre, tipoDocumento, numeroDocumento: data.num_documento, telefono: data.telefono, direccion: data.direccion, activo: true, email: data.email, nacionalidad: data.nacionalidad };
       await onSave(cliente);
       onHide();
     } catch (error) {
@@ -108,6 +111,16 @@ const ClienteDialog: React.FC<ClienteDialogProps> = ({ editar, id, onHide, visib
           <label htmlFor="direccion">Dirección</label>
           <InputText id="direccion" {...register('direccion')} />
           {errors.direccion && <small className="p-error">{errors.direccion.message}</small>}
+        </div>
+        <div className="field">
+          <label htmlFor="email">Email</label>
+          <InputText id="email" {...register('email')} />
+          {errors.email && <small className="p-error">{errors.email.message}</small>}
+        </div>
+        <div className="field">
+          <label htmlFor="nacionalidad">Nacionalidad</label>
+          <InputText id="nacionalidad" {...register('nacionalidad')} />
+          {errors.nacionalidad && <small className="p-error">{errors.nacionalidad.message}</small>}
         </div>
       </form>
     </Dialog>

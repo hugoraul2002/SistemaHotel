@@ -51,7 +51,8 @@ export default function Reserva() {
     telefono: "",
     direccion: "",
     activo: true,
-    usuario: {} as Usuario,
+    email: "",
+    nacionalidad: "",
   });
   const tiposDocumento = [
     { label: "NIT", value: "NIT" },
@@ -269,6 +270,15 @@ export default function Reserva() {
       return false;
     }
 
+    if (cliente.email === "" || !cliente.email.includes("@")) {
+      setErrorMessageClient("El correo electrónico es requerido.");
+      return false;
+    }
+    if (cliente.nacionalidad === "" || cliente.nacionalidad.length < 2) {
+      setErrorMessageClient("La nacionalidad es requerida.");
+      return false;
+    }
+
     // Si todas las validaciones son correctas
     setErrorMessageClient(""); // Limpiar mensaje de error
     return true;
@@ -329,17 +339,13 @@ export default function Reserva() {
             estado: "Pendiente",
           });
           if (pago) {
-            console.log(pago);
             const enlacePago = await registrarEnlacePago(
               selectedHabitacion,
               cliente,
               pago.idHash,
               (totalNoches * selectedHabitacion.precio)
             );
-            console.log("Enlace de pago generado:", enlacePago);
             window.location.href = enlacePago.checkout_url;
-            // window.open(enlacePago.checkout_url, '_blank');
-            // window.close();
           }
         } else {
           mostrarToast("Error al registrar la reservación", "error");
@@ -374,7 +380,7 @@ export default function Reserva() {
         className="flex-auto"
         style={{ width: "100%", height: "100%" }}
       >
-        <StepperPanel header="Header I">
+        <StepperPanel header="Fechas a Reservar">
           <div className="flex flex-col flex-auto h-full justify-center items-center">
             <Card title="Fechas" footer={footer} className="w-96">
               <label className="block mb-2 font-medium">Fechas</label>
@@ -641,6 +647,20 @@ export default function Reserva() {
                   value={cliente.direccion}
                   onChange={(e) =>
                     handleClienteChange("direccion", e.target.value)
+                  }
+                />
+                <InputText
+                  placeholder="Email"
+                  value={cliente.email}
+                  onChange={(e) =>
+                    handleClienteChange("email", e.target.value)
+                  }
+                />
+                <InputText
+                  placeholder="Nacionalidad"
+                  value={cliente.nacionalidad}
+                  onChange={(e) =>
+                    handleClienteChange("nacionalidad", e.target.value)
                   }
                 />
                 {errorMessageClient !== "" && (

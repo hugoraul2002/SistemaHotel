@@ -31,7 +31,7 @@ export default function ClientePage() {
     numDocumento: { value: null, matchMode: FilterMatchMode.STARTS_WITH },
     telefono: { value: null, matchMode: FilterMatchMode.STARTS_WITH },
     direccion: { value: null, matchMode: FilterMatchMode.STARTS_WITH },
-    'user.fullName': { value: null, matchMode: FilterMatchMode.STARTS_WITH },
+    // 'user.fullName': { value: null, matchMode: FilterMatchMode.STARTS_WITH },
   });
   const [dialogVisible, setDialogVisible] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
@@ -199,13 +199,17 @@ export default function ClientePage() {
       <DataTable dataKey="id" loading={loading} showGridlines size='small' value={clientes} filters={filters}
         onSelectionChange={(e) => setSelectedCliente(e.value)}
         selectionMode="single" selection={selectedCliente!}
-        globalFilterFields={['nombre', 'user.fullName', 'tipoDocumento', 'numDocumento', 'telefono', 'direccion']} paginator rows={10} rowsPerPageOptions={[5, 10, 25, 50]} tableStyle={{ minWidth: '50rem' }} header={header} emptyMessage="No se encuentran clientes.">
+        globalFilterFields={['nombre', 'tipoDocumento', 'numDocumento', 'telefono', 'direccion']} paginator rows={10} rowsPerPageOptions={[5, 10, 25, 50]} tableStyle={{ minWidth: '50rem' }} header={header} emptyMessage="No se encuentran clientes.">
+        <Column field="id" header="Código" style={{ width: 'auto', textAlign: 'center' }}></Column>        
         <Column field="nombre" sortable header="Nombre" style={{ width: '20%' }}></Column>
         <Column field="tipoDocumento" sortable header="Tipo Documento" style={{ width: '15%' }}></Column>
         <Column field="numDocumento" sortable header="Número Documento" style={{ width: '20%' }}></Column>
         <Column field="telefono" sortable header="Teléfono" style={{ width: '15%' }}></Column>
         <Column field="direccion" sortable header="Dirección" style={{ width: '20%' }}></Column>
-        <Column field="user.fullName" sortable header="Usuario" style={{ width: '20%' }}></Column>
+        <Column field="email" sortable header="Email" style={{ width: '20%' }}></Column>
+        <Column field="nacionalidad" sortable header="Nacionalidad" style={{ width: '20%' }}></Column>
+
+        {/* <Column field="user.fullName" sortable header="Usuario" style={{ width: '20%' }}></Column> */}
 
         <Column body={actionBodyTemplate} header="Acciones" bodyStyle={{ width: '10%', textAlign: 'center' }} exportable={false}></Column>
       </DataTable>

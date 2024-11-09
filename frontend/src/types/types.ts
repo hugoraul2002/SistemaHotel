@@ -70,8 +70,10 @@ export interface Usuario {
     numeroDocumento: string;
     telefono: string;
     direccion: string;
+    nacionalidad: string;
+    email: string;
     activo: boolean;
-    usuario: Usuario;
+    // usuario: Usuario;
   }
   export interface ClienteFactura {
     nit: string;

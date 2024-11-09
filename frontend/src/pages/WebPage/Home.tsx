@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react';
-import img1 from '../../../src/assets/img/img1.png';
-import img2 from '../../../src/assets/img/img2.png';
-import img3 from '../../../src/assets/img/img3.png';
-import img4 from '../../../src/assets/img/img4.png';
-import img5 from '../../../src/assets/img/img5.png';
+import img1 from '../../../src/assets/img/img1.jpg';
+import img2 from '../../../src/assets/img/img2.jpg';
+import img3 from '../../../src/assets/img/img3.jpg';
+import img4 from '../../../src/assets/img/img4.jpg';
+import img5 from '../../../src/assets/img/img5.jpg';
 import habitacion from '../../../src/assets/homepage/habitacion.jpg';
 import imgUbicacion from '../../../src/assets/homepage/ubicacion.png';
 
@@ -12,7 +12,6 @@ const images = [img1, img2, img3, img4, img5];
 
 export default function Component() {
     const [currentSlide, setCurrentSlide] = useState(0);
-    const [isMenuOpen, setIsMenuOpen] = useState(false);
     const navigate = useNavigate();
     useEffect(() => {
         const timer = setInterval(() => {
@@ -130,7 +129,6 @@ export default function Component() {
                                 <p className="mb-4">Localizados en el área central de Flores.</p>
                                 <p>Dirección: 2da calle 6-57 Zona 02 Flores, Petén</p>
                                 <p>Phone: +502 7797 0502</p>
-                                <p>Email: info@hotelmargarita.com</p>
                             </div>
                             <div className="flex-1 mt-4 md:mt-0">
                                 <img
@@ -162,18 +160,18 @@ export default function Component() {
                                     <a href="https://www.facebook.com/hotel.margarita1/?locale=es_LA" className="hover:text-yellow-500">Facebook</a></li>
                                 <li>
                                     <i className="pi pi-instagram mr-2"></i>
-                                    <a href="#" className="hover:text-yellow-500">Instagram</a></li>
-                                <li>
+                                    <a href="https://www.instagram.com/hotelmargarita.019?igsh=MXc3YTA4ZmsxOHU5Zw==" className="hover:text-yellow-500">Instagram</a></li>
+                                {/* <li>
                                     <i className="pi pi-whatsapp mr-2"></i>
-                                    <a href="#" className="hover:text-yellow-500">WhatsApp</a></li>
+                                    <a href="#" className="hover:text-yellow-500">WhatsApp</a></li> */}
                             </ul>
                         </div>
-                        <div className="w-full md:w-1/3">
+                        {/* <div className="w-full md:w-1/3">
                             <h3 className="text-lg md:text-xl font-bold mb-4">Noticias</h3>
                             <p className="mb-4">Mantente actualizado con nuevas ofertas y actualizaciones.</p>
                             <input type="email" placeholder="Tu correo" className="text-gray-700 w-full p-2 rounded mb-2 text-sm" />
                             <button className="bg-yellow-500 text-white px-4 py-2 rounded w-full">Suscribirse</button>
-                        </div>
+                        </div> */}
                     </div>
                 </div>
             </footer>

@@ -38,7 +38,7 @@ const Dashboard: React.FC = () => {
         title="Reporte Power BI"
         width="100%"
         height="100%"
-        src="https://app.powerbi.com/view?r=eyJrIjoiMTcxNTY3MzktMDM0NS00OTdlLTkwMmItNjg5MTQwZmZiZjJiIiwidCI6IjVmNTNiNGNlLTYzZDQtNGVlOC04OGQyLTIyZjBiMmQ0YjI3YSIsImMiOjR9"
+        src="https://app.powerbi.com/view?r=eyJrIjoiODYxNDhlNDItN2I3Ny00YTM0LWFjODktNmNiNDBlZTM4MDkxIiwidCI6IjVmNTNiNGNlLTYzZDQtNGVlOC04OGQyLTIyZjBiMmQ0YjI3YSIsImMiOjR9"
         frameBorder="0"
         allowFullScreen={true}
       />

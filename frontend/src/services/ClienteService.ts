@@ -37,6 +37,8 @@ export class ClienteService {
                 num_documento: data.numeroDocumento,
                 telefono: data.telefono,
                 direccion: data.direccion,
+                email: data.email,
+                nacionalidad: data.nacionalidad,
                 activo: true
             };
             const response = await apiRequest.post('/clientes/store', newData, {
@@ -60,6 +62,8 @@ export class ClienteService {
                 num_documento: data.numeroDocumento,
                 telefono: data.telefono,
                 direccion: data.direccion,
+                email: data.email,
+                nacionalidad: data.nacionalidad,
                 activo: true
             };
             const response = await apiRequest.post('/reservacionOnline/registrarCliente', newData);
@@ -78,6 +82,8 @@ export class ClienteService {
                 numeroDocumento: data.numeroDocumento,
                 telefono: data.telefono,
                 direccion: data.direccion,
+                email: data.email,
+                nacionalidad: data.nacionalidad,
                 activo: data.activo
             };
             const token = localStorage.getItem('token');

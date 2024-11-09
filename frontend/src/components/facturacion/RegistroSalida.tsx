@@ -50,6 +50,7 @@ const RegistroSalida = () => {
   const [selectedProduct, setSelectedProduct] = useState<Producto | null>(null); // Estado para el producto seleccionado
   const [formFacturarVisible, setFormFacturarVisible] = useState(false);
   const [description, setDescription] = useState("");
+  const [esFel, setEsFel] = useState(false);
   const [quantity, setQuantity] = useState<number | null>(null);
   const [price, setPrice] = useState<number | null>(null);
   const [discount, setDiscount] = useState<number | null>(null);
@@ -361,6 +362,7 @@ const RegistroSalida = () => {
   );
   const handleFacturar = async (cliente: ClienteFactura) => {
     const data = {
+      fel: esFel,
       hospedajeId: hospedaje!.id,
       nit: cliente.nit,
       nombre: cliente.nombre,
@@ -405,11 +407,11 @@ const RegistroSalida = () => {
         );
 
         // Descargar el PDF de la factura
-        if (formatoTicket) {
-          await getTicketFactura(response.id, response.numFactura);
-        } else {
-          await getPDF.getPDF(idFactura);
-        }
+        // if (formatoTicket) {
+        //   await getTicketFactura(response.id, response.numFactura);
+        // } else {
+        //   await getPDF.getPDF(idFactura);
+        // }
         // Cerrar el formulario y redirigir al checkout
         setFormFacturarVisible(false);
         setTimeout(() => {
@@ -596,6 +598,8 @@ const RegistroSalida = () => {
             : { nit: "", nombre: "", direccion: "" }
         }
         total={totalPagado}
+        esFEL={esFel}
+        setEsFel = {setEsFel}
         onSave={handleFacturar}
         visible={formFacturarVisible}
         opcionesPago={metodosPago}

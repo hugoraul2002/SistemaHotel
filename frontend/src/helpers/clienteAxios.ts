@@ -13,5 +13,3 @@ const apiRequest = axios.create({
 export {
   apiRequest
 };
-
-

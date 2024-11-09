@@ -3,7 +3,7 @@ import PagoTransaccion from '#models/pago_transaccion'
 import env from '#start/env'
 import CryptoJS from 'crypto-js'
 import Reservacion from '#models/reservacion'
-import { messages } from '@vinejs/vine/defaults'
+
 export default class PagoTransaccionsController {
   private CLAVE_CRYPTO: string | undefined = env.get('CLAVE_CRYPTO')
   async store({ request, response }: HttpContext) {
@@ -90,6 +90,11 @@ export default class PagoTransaccionsController {
     const encrypted = CryptoJS.AES.encrypt(idPago.toString(), this.CLAVE_CRYPTO!).toString()
     // Reemplaza '/' con '_', '+' con '-'
     return encrypted.replace(/\//g, '_').replace(/\+/g, '-')
+  }
+
+  async encriptarId({ request, response }: HttpContext) {
+    const id = this.encryptIdPago(request.input('id'))
+    return response.status(200).json({ id })
   }
 
   // Desencripta el ID luego de revertir la codificación URL-safe

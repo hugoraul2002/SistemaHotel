@@ -19,7 +19,8 @@ const registrarEnlacePago = async (habitacion: Habitacion, cliente: Cliente, idP
           quantity: 1
         }
       ],
-      success_url: `http://localhost:5173/checkTransaction/${idPago}`,
+      success_url: `https://hotelmargarita.online/checkTransaction/${idPago}`,
+      // success_url: `http://localhost:3333/checkTransaction/${idPago}`,
       user_id: cliente.numeroDocumento,
       metadata: {
         cliente: cliente.nombre,
@@ -60,6 +61,8 @@ const createCliente = async (data: Cliente) => {
       num_documento: data.numeroDocumento,
       telefono: data.telefono,
       direccion: data.direccion,
+      email: data.email,
+      nacionalidad: data.nacionalidad,
       activo: true
     };
     const response = await apiRequest.post(`/reservacionOnline/registrarCliente`, newData);

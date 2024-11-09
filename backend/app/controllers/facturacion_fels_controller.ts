@@ -281,7 +281,8 @@ export default class FacturacionFelController {
       const hospedajeId = request.input('hospedajeId')
       const detalles = await DetalleHospedaje.query().where('hospedajeId', hospedajeId)
 
-      const { nit, nombre, direccion, fecha, usuarioId } = request.only([
+      const { fel, nit, nombre, direccion, fecha, usuarioId } = request.only([
+        'fel',
         'nit',
         'nombre',
         'direccion',
@@ -333,6 +334,15 @@ export default class FacturacionFelController {
           habitacion.estado = 'D'
           await habitacion.save()
         }
+      }
+
+      if (!fel) {
+        return response.status(200).json({
+          success: true,
+          message: 'Facturación registrada exitosamente',
+          numFactura: factura.numFactura,
+          id: factura.id,
+        })
       }
 
       // Datos generales de la factura
