@@ -104,7 +104,7 @@ export default function Component() {
                                 En nuestras habitaciones, el confort y la elegancia se unen para ofrecerte una experiencia inolvidable.
                                 Cada espacio está cuidadosamente diseñado con atención al detalle, desde la decoración acogedora hasta las comodidades modernas.
                             </p>
-                            <button className="bg-yellow-500 text-white px-4 md:px-6 py-2 rounded">Learn more</button>
+                            {/* <button className="bg-yellow-500 text-white px-4 md:px-6 py-2 rounded">Learn more</button> */}
                         </div>
                         <div className="flex-1">
                             <img

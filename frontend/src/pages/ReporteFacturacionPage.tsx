@@ -101,7 +101,6 @@ const ReporteFacturasPage: React.FC = () => {
                 <div className="flex justify-between items-center w-full">
                     <h2 className="text-lg font-semibold mb-4 md:mb-0">Reporte de Facturas</h2>
                     <div className="flex gap-2 items-center">
-                    <InputSwitch checked={formatoTicket} onChange={(e) => setFormatoTicket(e.value)} tooltip='Impresión en Ticket' tooltipOptions={{ position: 'top' }} />
                     <Button label='Exportar' severity='success' icon="pi pi-file-excel" onClick={exportToExcel} />
                     </div>
                 </div>
@@ -193,7 +192,7 @@ const ReporteFacturasPage: React.FC = () => {
                     icon="pi pi-file-pdf"
                     className="p-button-rounded"
                     severity='danger'
-                    onClick={() =>{ formatoTicket ? downloadTicketPDF(rowData.id, rowData.numFactura) : downloadPDF(rowData.numFactura)}}
+                    onClick={() =>{ downloadTicketPDF(rowData.id, rowData.numFactura) }}
                     tooltip="Descargar PDF"
                     disabled={rowData.anulado == 1 }
                     tooltipOptions={{ position: 'top' }}

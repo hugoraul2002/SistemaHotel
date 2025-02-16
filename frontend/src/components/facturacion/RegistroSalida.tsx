@@ -55,7 +55,7 @@ const RegistroSalida = () => {
   const [price, setPrice] = useState<number | null>(null);
   const [discount, setDiscount] = useState<number | null>(null);
   const [subtotal, setSubtotal] = useState<number | null>(null);
-  const [formatoTicket, setFormatoTicket] = useState(false);
+  // const [formatoTicket, setFormatoTicket] = useState(false);
   const [metodosPago, setMetodosPago] = useState<MetodoPago[]>([
     { metodo: "EFECTIVO", monto: 0 },
     { metodo: "TARJETA", monto: 0 },
@@ -405,7 +405,7 @@ const RegistroSalida = () => {
             }
           })
         );
-
+        await getTicketFactura(response.id, response.numFactura);
         // Descargar el PDF de la factura
         // if (formatoTicket) {
         //   await getTicketFactura(response.id, response.numFactura);
@@ -568,13 +568,13 @@ const RegistroSalida = () => {
               onClick={() => navigate(-1)}
             />
           </div>
-          <div className="card flex justify-content-center gap-1">
+          {/* <div className="card flex justify-content-center gap-1">
             <Checkbox
               onChange={(e) => setFormatoTicket(e.checked)}
               checked={formatoTicket}
             ></Checkbox>
             <label className="p-checkbox-label">Impresión en Ticket</label>
-          </div>
+          </div> */}
         </Panel>
       </div>
       <Dialog
